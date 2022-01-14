@@ -49,7 +49,7 @@ class Grid:
                     key = (start_coordinates, end_coordinates)
 
                     print(f"Netlist from {start_gate.chips} to {end_gate.chips}")
-                    netlist = Netlist(start_gate, end_gate, self)
+                    netlist = Netlist(start_gate.chips, end_gate.chips, self)
                     self.netlistsdict[key] = netlist
                     
                 except ValueError:
@@ -57,15 +57,11 @@ class Grid:
 
     def make_connections(self):
         for netlist in self.netlistsdict:
-            start = self.netlistsdict[netlist].start.chips
-            end = self.netlistsdict[netlist].end.chips
-            #print(netlist, start, end)
+            start = self.netlistsdict[netlist].start.copy()
+            end = self.netlistsdict[netlist].end
             x, y = self.netlistsdict[netlist].find_path(start, end)
             pylab.plot(x, y)
-            pylab.savefig("test.png")
-
-    def add_wire():
-        pass
+        pylab.savefig("test.png")
 
 
 class Gate:
