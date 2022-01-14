@@ -20,6 +20,7 @@ class Grid:
 
     def merge(self):
         print("test")
+        print("test2")
 
 
     def load_gates(self):
