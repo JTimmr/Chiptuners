@@ -19,7 +19,7 @@ class Grid:
         self.make_connections()
 
     def merge(self):
-        pass
+        print("test")
 
 
     def load_gates(self):
