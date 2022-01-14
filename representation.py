@@ -1,9 +1,11 @@
-import random
 import pylab
 import csv
 
 class Grid:
-    def __init__(self):
+    def __init__(self, chip, netlist):
+
+        self.chip = chip
+        self.netlist = netlist
 
         # All coorinates where a linesegment is located
         self.points = set()
@@ -11,56 +13,82 @@ class Grid:
         # Dictionary of coordinates gates
         self.gates = {}
 
-        self.netlistsdict = {}
+        # Dictionary containing all connections
+        self.netlists = {}
 
+        # Create gate objects
         self.load_gates()
 
+        # Create netlist objects
         self.load_netlists()
 
+        # Find shortest connection paths
         self.make_connections()
 
 
     def load_gates(self):
-        chip = "chip_0"
-        netlist = "print_0"
-        with open (f"Data/{chip}/{netlist}.csv") as file:
+        """Reads requested file containing the location of the gates, and extracts their id's and coordinates. Creates gate object for each row"""
+
+        with open (f"Data/chip_{self.chip}/print_{self.chip}.csv") as file:
             reader = csv.reader(file)
             for row in reader:
+
+                # Only take rows with the actual data into account
                 try:
                     id, x, y = int(row[0]), int(row[1]), int(row[2])
-                    
-                    # print(f"Row id: {id}")
+
+                    # Make object and add to dictionary
                     gate = Gate(id, x, y)
                     self.gates[id] = gate
+
                 except ValueError:
                     pass
 
     def load_netlists(self):
-        chip = "chip_0"
-        netlist = "netlist_1"
-        with open (f"Data/{chip}/{netlist}.csv") as file:
+        """Reads requested file containing the requested netlists, and extracts their starting and ending coordinates. Creates gate object for each row"""
+
+        with open (f"Data/chip_{self.chip}/netlist_{self.netlist}.csv") as file:
             reader = csv.reader(file)
             for row in reader:
+
+                # Only take rows with the actual data into account
                 try:
+
+                    # Extract coordinates
                     start_coordinates, end_coordinates = int(row[0]), int(row[1])
+
+                    # Retrieve gate objects corresponding with coordinates
                     start_gate = self.gates[start_coordinates]
                     end_gate = self.gates[end_coordinates]
 
+                    # Make netlist object
+                    netlist = Netlist(start_gate.chips, end_gate.chips, self)
+
+                    # Create unique key per netlist
                     key = (start_coordinates, end_coordinates)
 
-                    print(f"Netlist from {start_gate.chips} to {end_gate.chips}")
-                    netlist = Netlist(start_gate.chips, end_gate.chips, self)
-                    self.netlistsdict[key] = netlist
+                    # Store netlist in dictionary with unique key
+                    self.netlists[key] = netlist
                     
-                except ValueError:
+                except:
                     pass
 
     def make_connections(self):
-        for netlist in self.netlistsdict:
-            start = self.netlistsdict[netlist].start.copy()
-            end = self.netlistsdict[netlist].end
-            x, y = self.netlistsdict[netlist].find_path(start, end)
+        """Connects two points on the grid, and plots the result"""
+
+        for netlist in self.netlists:
+
+            # Retrieve starting and ending point
+            start = self.netlists[netlist].start.copy()
+            end = self.netlists[netlist].end
+
+            # Find the shortest path
+            x, y = self.netlists[netlist].find_path(start, end)
+
+            # Add path to plot
             pylab.plot(x, y)
+
+        # Save plot
         pylab.savefig("test.png")
 
 
@@ -79,15 +107,25 @@ class Netlist:
         self.grid = grid
     
     def find_path(self, position, end):
+        """Find the shortest path between two coordinates on a grid"""
+
+        # Store path so plot can be made
         x = []
         y = []
 
+        # Until destination is reached
         while True:
             x.append(position[0])
             y.append(position[1])
+
+            # Find smartest move from current position to destination
             new_position = self.find_smartest_step(position, end)
+
+            # If destination is not reached, make step
             if new_position:
                 position = new_position
+
+            # Return path if destination is reached
             else:
                 return x, y
 
@@ -101,6 +139,7 @@ class Netlist:
         # Calculate total movement before destination is reached
         direction = (destination[0] - position[0], destination[1] - position[1])
 
+        # First move in the y direction
         if direction[1] != 0:
             step_in_direction = 1
         else:
@@ -110,6 +149,8 @@ class Netlist:
         position[step_in_direction] += direction[step_in_direction] // abs(direction[step_in_direction])
 
         return position
-    
 
-Grid()
+
+chip = "2"
+netlist = "7"
+Grid(chip, netlist)
