@@ -11,8 +11,7 @@ class Grid:
         # Dictionary of coordinates gates
         self.gates = {}
 
-        # Set of all connections between gates
-        self.netlists = set()
+        self.netlistsdict = {}
 
         self.load_gates()
 
@@ -43,23 +42,27 @@ class Grid:
             reader = csv.reader(file)
             for row in reader:
                 try:
-                    start, end = int(row[0]), int(row[1])
-                    start = self.gates[start]
-                    end = self.gates[end]
+                    start_coordinates, end_coordinates = int(row[0]), int(row[1])
+                    start_gate = self.gates[start_coordinates]
+                    end_gate = self.gates[end_coordinates]
 
-                    # print(f"Netlist from {start} to {end}")
-                    netlist = Netlist(start, end, self)
-                    self.netlists.add(netlist)
+                    key = (start_coordinates, end_coordinates)
+
+                    print(f"Netlist from {start_gate.chips} to {end_gate.chips}")
+                    netlist = Netlist(start_gate, end_gate, self)
+                    self.netlistsdict[key] = netlist
+                    
                 except ValueError:
                     pass
 
     def make_connections(self):
-        for netlist in self.netlists:
-            start = netlist.start
-            end = netlist.end
-            start = start.chips
-            end = end.chips
-            netlist.find_path(start, end)
+        for netlist in self.netlistsdict:
+            start = self.netlistsdict[netlist].start.chips
+            end = self.netlistsdict[netlist].end.chips
+            #print(netlist, start, end)
+            x, y = self.netlistsdict[netlist].find_path(start, end)
+            pylab.plot(x, y)
+            pylab.savefig("test.png")
 
     def add_wire():
         pass
@@ -79,14 +82,18 @@ class Netlist:
         self.end = end
         self.grid = grid
     
-    def find_path(self, position, destination):
-        print("test")
+    def find_path(self, position, end):
+        x = []
+        y = []
+
         while True:
-            new_position = self.find_smartest_step(position, destination)
+            x.append(position[0])
+            y.append(position[1])
+            new_position = self.find_smartest_step(position, end)
             if new_position:
                 position = new_position
             else:
-                break
+                return x, y
 
     def find_smartest_step(self, position, destination):
         """Calculate step to follow shortest path from current position to any location. If position equals destination, return None"""
@@ -94,17 +101,14 @@ class Netlist:
         # No new position is required when destination is already reached
         if position == destination:
             return
-        
+
         # Calculate total movement before destination is reached
-        direction = [destination[0] - position[0], destination[1] - position[1]]
-        print(direction)
+        direction = (destination[0] - position[0], destination[1] - position[1])
 
-        weights = direction
-        for i in range(len(direction)):
-            weights[i] = abs(direction[i])
-
-        # Choose random move, weighted with number of required steps
-        step_in_direction = random.choices([0, 1], weights)[0]
+        if direction[1] != 0:
+            step_in_direction = 1
+        else:
+            step_in_direction = 0
 
         # Make single step in right direction
         position[step_in_direction] += direction[step_in_direction] // abs(direction[step_in_direction])
@@ -112,3 +116,4 @@ class Netlist:
         return position
     
 
+Grid()
