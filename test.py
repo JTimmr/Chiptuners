@@ -1,4 +1,3 @@
-import random
 import pylab
 import csv
 
@@ -11,7 +10,7 @@ class Grid:
         # Dictionary of coordinates gates
         self.gates = {}
 
-        self.netlistsdict = {}
+        self.netlists = {}
 
         self.load_gates()
 
@@ -28,8 +27,7 @@ class Grid:
             for row in reader:
                 try:
                     id, x, y = int(row[0]), int(row[1]), int(row[2])
-                    
-                    # print(f"Row id: {id}")
+
                     gate = Gate(id, x, y)
                     self.gates[id] = gate
                 except ValueError:
@@ -48,18 +46,17 @@ class Grid:
 
                     key = (start_coordinates, end_coordinates)
 
-                    print(f"Netlist from {start_gate.chips} to {end_gate.chips}")
                     netlist = Netlist(start_gate.chips, end_gate.chips, self)
-                    self.netlistsdict[key] = netlist
+                    self.netlists[key] = netlist
                     
                 except ValueError:
                     pass
 
     def make_connections(self):
-        for netlist in self.netlistsdict:
-            start = self.netlistsdict[netlist].start.copy()
-            end = self.netlistsdict[netlist].end
-            x, y = self.netlistsdict[netlist].find_path(start, end)
+        for netlist in self.netlists:
+            start = self.netlists[netlist].start.copy()
+            end = self.netlists[netlist].end
+            x, y = self.netlists[netlist].find_path(start, end)
             pylab.plot(x, y)
         pylab.savefig("test.png")
 
