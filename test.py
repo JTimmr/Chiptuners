@@ -19,6 +19,9 @@ class Grid:
 
         self.make_connections()
 
+    def merge(self):
+        pass
+
 
     def load_gates(self):
         chip = "chip_0"
