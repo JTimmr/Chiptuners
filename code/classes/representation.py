@@ -1,4 +1,3 @@
-from email.mime import base
 import pylab
 import csv
 from code.algorithms.basic import base_movement
@@ -24,6 +23,9 @@ class Grid:
 
         # Dictionary containing all connections
         self.netlists = {}
+
+        # Set boundaries such that the paths do not leave the grid
+        self.layers= ()
 
         # Create gate objects
         self.load_gates()
