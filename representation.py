@@ -25,6 +25,8 @@ class Grid:
         # Find shortest connection paths
         self.make_connections()
 
+        self.cost = 0
+
 
     def load_gates(self):
         """Reads requested file containing the location of the gates, and extracts their id's and coordinates. Creates gate object for each row"""
@@ -99,9 +101,25 @@ class Grid:
         pylab.savefig("test.png", dpi=100, bbox_inches="tight")
 
     def to_csv(self):
-        """ Writes a csv file that contains an overview of the grid"""
+        """Writes a csv file that contains an overview of the grid"""
 
-        header = ["net", "wires"]
+        with open("output.csv", "w", newline="") as csvfile:
+
+            # set up fieldnames 
+            fieldnames = ["net", "wires"]
+
+            # set up wiriter and write the header
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writeheader()
+
+            # write the net and wire values
+            for item in self.netlists:
+                writer.writerow({
+                    "net": item, "wires": self.netlists[item].path
+                    })
+
+            # write total cost for the grid
+            writer.writerow({"net": f"chip_{self.chip}_net_{self.netlist}", "wires": self.cost})
 
 
 
@@ -118,6 +136,7 @@ class Netlist:
         self.start = start
         self.end = end
         self.grid = grid
+        self.path = []
     
     def find_path(self, position, end):
         """Find the shortest path between two coordinates on a grid"""
@@ -130,6 +149,9 @@ class Netlist:
         while True:
             x.append(position[0])
             y.append(position[1])
+
+            coordinate = (position[0], position[1])
+            self.path.append(coordinate)
 
             # Find smartest move from current position to destination
             new_position = self.find_smartest_step(position, end)
@@ -166,3 +188,6 @@ class Netlist:
 
 chip = "0"
 netlist = "1"
+
+grid = Grid(0,1)
+grid.to_csv()
