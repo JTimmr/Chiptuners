@@ -40,51 +40,43 @@ class Grid:
     def load_gates(self):
         """Reads requested file containing the location of the gates, and extracts their id's and coordinates. Creates gate object for each row"""
 
-        with open (f"Data/chip_{self.chip}/print_{self.chip}.csv") as file:
-            reader = csv.reader(file)
+        with open (f"Data/chip_{self.chip}/print_{self.chip}.csv", 'r') as file:
+            reader = csv.DictReader(file)
             for row in reader:
 
-                # Only take rows with the actual data into account
-                try:
-                    id, x, y = int(row[0]), int(row[1]), int(row[2])
+                # Extract information
+                uid, x, y = int(row['chip']), int(row['x']), int(row['y'])
 
-                    self.gate_coordinates.add((x,y))
+                self.gate_coordinates.add((x, y))
 
-                    # Make object and add to dictionary
-                    gate = Gate(id, x, y)
-                    self.gates[id] = gate
+                # Make object and add to dictionary
+                gate = Gate(uid, x, y)
+                self.gates[uid] = gate
 
-                except ValueError:
-                    pass
 
     def load_netlists(self):
         """Reads requested file containing the requested netlists, and extracts their starting and ending coordinates. Creates gate object for each row"""
 
         with open (f"Data/chip_{self.chip}/netlist_{self.netlist}.csv") as file:
-            reader = csv.reader(file)
+            reader = csv.DictReader(file)
             for row in reader:
 
-                # Only take rows with the actual data into account
-                try:
+                # Extract coordinates
+                start_gate_id, end_gate_id = int(row['chip_a']), int(row['chip_b'])
 
-                    # Extract coordinates
-                    start_gate_id, end_gate_id = int(row[0]), int(row[1])
+                # Retrieve gate objects corresponding with coordinates
+                start_gate = self.gates[start_gate_id]
+                end_gate = self.gates[end_gate_id]
 
-                    # Retrieve gate objects corresponding with coordinates
-                    start_gate = self.gates[start_gate_id]
-                    end_gate = self.gates[end_gate_id]
+                # Make netlist object
+                netlist = Netlist(start_gate.coordinates, end_gate.coordinates, self)
 
-                    # Make netlist object
-                    netlist = Netlist(start_gate.coordinates, end_gate.coordinates, self)
+                # Create unique key per netlist
+                key = (start_gate_id, end_gate_id)
 
-                    # Create unique key per netlist
-                    key = (start_gate_id, end_gate_id)
+                # Store netlist in dictionary with unique key
+                self.netlists[key] = netlist
 
-                    # Store netlist in dictionary with unique key
-                    self.netlists[key] = netlist
-                    
-                except:
-                    pass
 
     def make_connections(self):
         """Connects two points on the grid, and plots the result"""
@@ -115,35 +107,35 @@ class Grid:
 
         with open("output/output.csv", "w", newline="") as csvfile:
 
-            # set up fieldnames 
+            # Set up fieldnames 
             fieldnames = ["net", "wires"]
 
-            # set up wiriter and write the header
+            # Set up wiriter and write the header
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
 
-            # write the net and wire values
+            # Write the net and wire values
             for item in self.netlists:
                 writer.writerow({
                     "net": item, "wires": self.netlists[item].path
                     })
 
-            # write total cost for the grid
+            # Write total cost for the grid
             writer.writerow({"net": f"chip_{self.chip}_net_{self.netlist}", "wires": f"C = {self.cost}"})
 
     def compute_costs(self):
+        """Calculate total cost of the current configuration"""
         
         wire_amount = len(self.wire_segments)
 
         # Update cost
         self.cost = wire_amount + 300 * self.intersections
 
-        return self.cost
 
 
 class Gate:
-    def __init__(self, id, x, y) -> None:
-        self.id = id
+    def __init__(self, uid, x, y) -> None:
+        self.id = uid
         self.coordinates = (x,y)
 
 
