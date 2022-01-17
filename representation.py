@@ -91,6 +91,12 @@ class Grid:
         # Save plot
         pylab.savefig("test.png")
 
+    def to_csv(self):
+        """ Writes a csv file that contains an overview of the grid"""
+
+        header = ["net", "wires"]
+
+
 
 class Gate:
     def __init__(self, id, x, y) -> None:
@@ -151,6 +157,5 @@ class Netlist:
         return position
 
 
-chip = "2"
-netlist = "7"
-Grid(chip, netlist)
+chip = "0"
+netlist = "1"
