@@ -1,5 +1,6 @@
 import pylab
 import csv
+from copy import deepcopy
 
 class Grid:
     def __init__(self, chip, netlist):
@@ -75,7 +76,7 @@ class Grid:
                     end_gate = self.gates[end_gate_id]
 
                     # Make netlist object
-                    netlist = Netlist(start_gate.chips, end_gate.chips, self)
+                    netlist = Netlist(start_gate.coordinates, end_gate.coordinates, self)
 
                     # Create unique key per netlist
                     key = (start_gate_id, end_gate_id)
@@ -92,7 +93,7 @@ class Grid:
         for netlist in self.netlists:
 
             # Retrieve starting and ending point
-            start = self.netlists[netlist].start.copy()
+            start = deepcopy(self.netlists[netlist].start)
             end = self.netlists[netlist].end
 
             # Find the shortest path
@@ -145,10 +146,8 @@ class Grid:
 
 class Gate:
     def __init__(self, id, x, y) -> None:
-        self.x = x
-        self.y = y
         self.id = id
-        self.chips = [x,y]
+        self.coordinates = (x,y)
 
 
 class Netlist:
@@ -158,7 +157,7 @@ class Netlist:
         self.grid = grid
         self.path = []
     
-    def find_path(self, position, end):
+    def find_path(self, position, destination):
         """Find the shortest path between two coordinates on a grid"""
 
         # Store path so plot can be made
@@ -170,29 +169,24 @@ class Netlist:
             x.append(position[0])
             y.append(position[1])
 
-            coordinate = (position[0], position[1])
-                
-            self.path.append(coordinate)
+            self.path.append(position)
 
             # Find smartest move from current position to destination
-            new_position = self.find_smartest_step(position, end)
+            new_position = self.find_smartest_step(position, destination)
 
             # If destination is not reached, make step
             if new_position:
 
-                # BEAUTIFY remove this part when possible
-                point_tuple = (new_position[0],new_position[1])
-
                 # if the coordinate is not in the gate add wire segment and check for intersections
-                if point_tuple not in self.grid.gate_coordinates:
+                if new_position not in self.grid.gate_coordinates:
 
-                    if point_tuple in self.grid.points:
+                    if new_position in self.grid.points:
                         self.grid.intersections += 1
-                        print(f"Intersection at: {point_tuple}")
+                        print(f"Intersection at: {new_position}")
                     else:
-                         self.grid.points.add(point_tuple)
+                         self.grid.points.add(new_position)
 
-                    self.grid.wire_segments.add(((position[0], position[0]),point_tuple))
+                self.grid.wire_segments.add((position,new_position))
                     
                 position = new_position
 
@@ -217,7 +211,11 @@ class Netlist:
         else:
             step_in_direction = 0
 
-        # Make single step in right direction
-        position[step_in_direction] += direction[step_in_direction] // abs(direction[step_in_direction])
+        new_position = list(position)
 
-        return position
+        # Make single step in right direction
+        new_position[step_in_direction] += direction[step_in_direction] // abs(direction[step_in_direction])
+    
+        new_position = tuple(new_position)
+
+        return new_position
