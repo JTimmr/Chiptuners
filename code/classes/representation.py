@@ -57,17 +57,17 @@ class Grid:
                 try:
 
                     # Extract coordinates
-                    start_coordinates, end_coordinates = int(row[0]), int(row[1])
+                    start_gate_id, end_gate_id = int(row[0]), int(row[1])
 
                     # Retrieve gate objects corresponding with coordinates
-                    start_gate = self.gates[start_coordinates]
-                    end_gate = self.gates[end_coordinates]
+                    start_gate = self.gates[start_gate_id]
+                    end_gate = self.gates[end_gate_id]
 
                     # Make netlist object
                     netlist = Netlist(start_gate.chips, end_gate.chips, self)
 
                     # Create unique key per netlist
-                    key = (start_coordinates, end_coordinates)
+                    key = (start_gate_id, end_gate_id)
 
                     # Store netlist in dictionary with unique key
                     self.netlists[key] = netlist
@@ -98,7 +98,7 @@ class Grid:
             pylab.legend(self.netlists, prop={'size': 7}, loc = "upper left", title = "netlist", ncol = 6, bbox_to_anchor=(0.0, -0.22))
             
         # Save plot
-        pylab.savefig("output/test.png", dpi=100, bbox_inches="tight")
+        pylab.savefig("output/visual.png", dpi=100, bbox_inches="tight")
 
     def to_csv(self):
         """Writes a csv file that contains an overview of the grid"""
