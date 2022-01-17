@@ -130,7 +130,7 @@ class Grid:
                     })
 
             # write total cost for the grid
-            writer.writerow({"net": f"chip_{self.chip}_net_{self.netlist}", "wires": self.cost})
+            writer.writerow({"net": f"chip_{self.chip}_net_{self.netlist}", "wires": f"C = {self.cost}"})
 
     def compute_costs(self):
         
@@ -171,11 +171,7 @@ class Netlist:
             y.append(position[1])
 
             coordinate = (position[0], position[1])
-            self.grid.points.add(coordinate)
-
-            if coordinate in self.grid.gates.values():
-                print("test")
-
+                
             self.path.append(coordinate)
 
             # Find smartest move from current position to destination
@@ -183,11 +179,27 @@ class Netlist:
 
             # If destination is not reached, make step
             if new_position:
+
+                # BEAUTIFY remove this part when possible
+                point_tuple = (new_position[0],new_position[1])
+
+                # if the coordinate is not in the gate add wire segment and check for intersections
+                if point_tuple not in self.grid.gate_coordinates:
+
+                    if point_tuple in self.grid.points:
+                        self.grid.intersections += 1
+                        print(f"Intersection at: {point_tuple}")
+                    else:
+                         self.grid.points.add(point_tuple)
+
+                    self.grid.wire_segments.add(((position[0], position[0]),point_tuple))
+                    
                 position = new_position
 
             # Return path if destination is reached
             else:
                 return x, y
+
 
     def find_smartest_step(self, position, destination):
         """Calculate step to follow shortest path from current position to any location. If position equals destination, return None"""
