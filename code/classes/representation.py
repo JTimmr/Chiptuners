@@ -1,14 +1,14 @@
+from email.mime import base
 import pylab
 import csv
+from code.algorithms.basic import base_movement
+from copy import deepcopy
 
 class Grid:
     def __init__(self, chip, netlist):
 
         self.chip = chip
         self.netlist = netlist
-
-        # All coorinates where a linesegment is located excluding coordinates of gates
-        self.points = set()
 
         # All intersections
         self.intersections = 0
@@ -75,7 +75,7 @@ class Grid:
                     end_gate = self.gates[end_gate_id]
 
                     # Make netlist object
-                    netlist = Netlist(start_gate.chips, end_gate.chips, self)
+                    netlist = Netlist(start_gate.coordinates, end_gate.coordinates, self)
 
                     # Create unique key per netlist
                     key = (start_gate_id, end_gate_id)
@@ -90,9 +90,8 @@ class Grid:
         """Connects two points on the grid, and plots the result"""
 
         for netlist in self.netlists:
-
             # Retrieve starting and ending point
-            start = self.netlists[netlist].start.copy()
+            start = deepcopy(self.netlists[netlist].start)
             end = self.netlists[netlist].end
 
             # Find the shortest path
@@ -144,10 +143,8 @@ class Grid:
 
 class Gate:
     def __init__(self, id, x, y) -> None:
-        self.x = x
-        self.y = y
         self.id = id
-        self.chips = [x,y]
+        self.coordinates = (x,y)
 
 
 class Netlist:
@@ -157,71 +154,9 @@ class Netlist:
         self.grid = grid
         self.path = []
     
-    def find_path(self, position, end):
+    def find_path(self, position, destination):
         """Find the shortest path between two coordinates on a grid"""
-  
-        # INSERT base_movement_function()
 
+        x,y = base_movement(position, destination, self.grid, self.path)
 
-
-
-        # Store path so plot can be made
-        x = []
-        y = []
-
-        # Until destination is reached
-        while True:
-            x.append(position[0])
-            y.append(position[1])
-
-            coordinate = (position[0], position[1])
-                
-            self.path.append(coordinate)
-
-            # Find smartest move from current position to destination
-            new_position = self.find_smartest_step(position, end)
-
-            # If destination is not reached, make step
-            if new_position:
-
-                # BEAUTIFY remove this part when possible
-                point_tuple = (new_position[0],new_position[1])
-
-                # if the coordinate is not in the gate add wire segment and check for intersections
-                if point_tuple not in self.grid.gate_coordinates:
-
-                    if point_tuple in self.grid.points:
-                        self.grid.intersections += 1
-                        print(f"Intersection at: {point_tuple}")
-                    else:
-                         self.grid.points.add(point_tuple)
-
-                    self.grid.wire_segments.add(((position[0], position[0]),point_tuple))
-                    
-                position = new_position
-
-            # Return path if destination is reached
-            else:
-                return x, y
-
-
-    def find_smartest_step(self, position, destination):
-        """Calculate step to follow shortest path from current position to any location. If position equals destination, return None"""
-
-        # No new position is required when destination is already reached
-        if position == destination:
-            return
-
-        # Calculate total movement before destination is reached
-        direction = (destination[0] - position[0], destination[1] - position[1])
-
-        # First move in the y direction
-        if direction[1] != 0:
-            step_in_direction = 1
-        else:
-            step_in_direction = 0
-
-        # Make single step in right direction
-        position[step_in_direction] += direction[step_in_direction] // abs(direction[step_in_direction])
-
-        return position
+        return x,y
