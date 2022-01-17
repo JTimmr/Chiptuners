@@ -98,12 +98,12 @@ class Grid:
             pylab.legend(self.netlists, prop={'size': 7}, loc = "upper left", title = "netlist", ncol = 6, bbox_to_anchor=(0.0, -0.22))
             
         # Save plot
-        pylab.savefig("test.png", dpi=100, bbox_inches="tight")
+        pylab.savefig("output/test.png", dpi=100, bbox_inches="tight")
 
     def to_csv(self):
         """Writes a csv file that contains an overview of the grid"""
 
-        with open("output.csv", "w", newline="") as csvfile:
+        with open("output/output.csv", "w", newline="") as csvfile:
 
             # set up fieldnames 
             fieldnames = ["net", "wires"]
