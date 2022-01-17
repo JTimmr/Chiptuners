@@ -8,9 +8,6 @@ class Grid:
         self.chip = chip
         self.netlist = netlist
 
-        # All coorinates where a linesegment is located excluding coordinates of gates
-        self.points = set()
-
         # All intersections
         self.intersections = 0
 
@@ -177,14 +174,13 @@ class Netlist:
             # If destination is not reached, make step
             if new_position:
 
-                # if the coordinate is not in the gate add wire segment and check for intersections
+                # If the coordinate is not in the gate add wire segment and check for intersections
                 if new_position not in self.grid.gate_coordinates:
 
-                    if new_position in self.grid.points:
-                        self.grid.intersections += 1
+                    # Check if current segment makes an interection
+                    if [segment for segment in self.grid.wire_segments if new_position in segment]:
                         print(f"Intersection at: {new_position}")
-                    else:
-                         self.grid.points.add(new_position)
+                        self.grid.intersections += 1
 
                 self.grid.wire_segments.add((position,new_position))
                     
