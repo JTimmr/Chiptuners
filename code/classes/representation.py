@@ -142,7 +142,6 @@ class Grid:
         return self.cost
 
 
-
 class Gate:
     def __init__(self, id, x, y) -> None:
         self.x = x
@@ -160,6 +159,11 @@ class Netlist:
     
     def find_path(self, position, end):
         """Find the shortest path between two coordinates on a grid"""
+  
+        # INSERT base_movement_function()
+
+
+
 
         # Store path so plot can be made
         x = []
