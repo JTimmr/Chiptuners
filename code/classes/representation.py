@@ -7,11 +7,20 @@ class Grid:
         self.chip = chip
         self.netlist = netlist
 
-        # All coorinates where a linesegment is located
+        # All coorinates where a linesegment is located excluding coordinates of gates
         self.points = set()
+
+        # All intersections
+        self.intersections = 0
+
+        # All segments
+        self.wire_segments = set()
 
         # Dictionary of coordinates gates
         self.gates = {}
+
+        # Set op gate points
+        self.gate_coordinates = set()
 
         # Dictionary containing all connections
         self.netlists = {}
@@ -38,6 +47,8 @@ class Grid:
                 # Only take rows with the actual data into account
                 try:
                     id, x, y = int(row[0]), int(row[1]), int(row[2])
+
+                    self.gate_coordinates.add((x,y))
 
                     # Make object and add to dictionary
                     gate = Gate(id, x, y)
@@ -121,6 +132,15 @@ class Grid:
             # write total cost for the grid
             writer.writerow({"net": f"chip_{self.chip}_net_{self.netlist}", "wires": self.cost})
 
+    def compute_costs(self):
+        
+        wire_amount = len(self.wire_segments)
+
+        # Update cost
+        self.cost = wire_amount + 300 * self.intersections
+
+        return self.cost
+
 
 
 class Gate:
@@ -151,6 +171,11 @@ class Netlist:
             y.append(position[1])
 
             coordinate = (position[0], position[1])
+            self.grid.points.add(coordinate)
+
+            if coordinate in self.grid.gates.values():
+                print("test")
+
             self.path.append(coordinate)
 
             # Find smartest move from current position to destination
@@ -184,10 +209,3 @@ class Netlist:
         position[step_in_direction] += direction[step_in_direction] // abs(direction[step_in_direction])
 
         return position
-
-
-chip = "0"
-netlist = "1"
-
-grid = Grid(0,1)
-grid.to_csv()
