@@ -32,7 +32,6 @@ def base_movement(origin, destination, grid, path, netlist):
                     print(f"Intersection at: {new_origin}")
                     grid.intersections += 1
 
-            #grid.wire_segments.add((origin,new_origin))
             grid.wire_segments[(origin, new_origin)] = netlist
                 
             origin = new_origin

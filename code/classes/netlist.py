@@ -1,4 +1,4 @@
-from code.algorithms.basic import base_movement
+from code.algorithms.representation import base_movement
 
 class Netlist:
     def __init__(self, start, end, grid) -> None:
