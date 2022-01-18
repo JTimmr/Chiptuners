@@ -1,4 +1,4 @@
-import code.classes.representation as rep
+import code.classes.grid as rep
 
 if __name__ == "__main__": 
     grid = rep.Grid("0","1")
