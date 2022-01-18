@@ -13,7 +13,7 @@ class Grid:
         self.intersections = 0
 
         # All segments
-        self.wire_segments = set()
+        self.wire_segments = {}
 
         # Dictionary of coordinates gates
         self.gates = {}
