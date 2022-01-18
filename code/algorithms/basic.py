@@ -2,17 +2,19 @@
 Defines/ contains the algorithm for random (uniformly distributed) movements as used in our base case.
 """
 
-def base_movement(origin, destination, grid, path):
+def base_movement(origin, destination, grid, path, netlist):
     """Description bla bla bla"""
 
     # Store path so plot can be made
     x = []
     y = []
+    z = []
 
     # Until destination is reached
     while True:
         x.append(origin[0])
         y.append(origin[1])
+        z.append(origin[2])
 
         path.append(origin)
 
@@ -30,13 +32,14 @@ def base_movement(origin, destination, grid, path):
                     print(f"Intersection at: {new_origin}")
                     grid.intersections += 1
 
-            grid.wire_segments.add((origin,new_origin))
+            #grid.wire_segments.add((origin,new_origin))
+            grid.wire_segments[(origin, new_origin)] = netlist
                 
             origin = new_origin
 
         # Return path if destination is reached
         else:
-            return x, y
+            return x, y, z
 
 
 def find_smartest_step(position, destination):
@@ -47,7 +50,7 @@ def find_smartest_step(position, destination):
             return
 
         # Calculate total movement before destination is reached
-        direction = (destination[0] - position[0], destination[1] - position[1])
+        direction = (destination[0] - position[0], destination[1] - position[1], destination[2] - position[2])
 
         # First move in the y direction
         if direction[1] != 0:
