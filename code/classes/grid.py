@@ -3,6 +3,7 @@ import csv
 from code.classes.gate import Gate
 from code.classes.netlist import Netlist
 from copy import deepcopy
+import operator
 
 class Grid:
     def __init__(self, chip, netlist):
@@ -84,13 +85,15 @@ class Grid:
     def make_connections(self):
         """Connects two points on the grid, and plots the result"""
 
-        for netlist in self.netlists:
+        # Sorts the netlist by minimal path length
+        for netlist in (sorted(self.netlists.values(), key=operator.attrgetter('minimal_length'))):
+
             # Retrieve starting and ending point
-            start = deepcopy(self.netlists[netlist].start)
-            end = self.netlists[netlist].end
+            start = deepcopy(netlist.start)
+            end = netlist.end
 
             # Find the shortest path
-            x, y, z = self.netlists[netlist].find_path(start, end)
+            x, y, z = netlist.find_path(start, end)
 
             # Add path to plot
             pylab.plot(x, y, alpha = 0.5)
