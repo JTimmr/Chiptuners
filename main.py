@@ -23,21 +23,21 @@ def log_simulation(times):
             baseline = base.Baseline(chip)
             baseline.run()
             chip.compute_costs()
-            simulations[i] = chip.cost
+            simulations[i] = chip
             writer.writerow({
-                    "simulation": i, "cost": grid.cost
+                    "simulation": i, "cost": chip.cost
                     })
 
 if __name__ == "__main__": 
 
-    log_simulation(1)
+    log_simulation(10)
 
-    # Main values for checking
-    print()
-    print(f"The gate coordinates are: {chip.gate_coordinates}")
-    #print(f"The wire segment paths are: {grid.wire_segments}")
-    print(f"The number of intersections: {chip.intersections}")
-    print()
-    print(f"The total amount of costs = {chip.cost}")
-    print(f"The total amount of attempts taken = {chip.tot_attempts}")
-    print()
+    # # Main values for checking
+    # print()
+    # # print(f"The gate coordinates are: {chip.gate_coordinates}")
+    # #print(f"The wire segment paths are: {grid.wire_segments}")
+    # print(f"The number of intersections: {chip.intersections}")
+    # print()
+    # print(f"The total amount of costs = {chip.cost}")
+    # print(f"The total amount of attempts taken = {chip.tot_attempts}")
+    # print()
