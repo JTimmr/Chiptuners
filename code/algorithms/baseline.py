@@ -12,6 +12,7 @@ class Baseline:
     def __init__(self, grid):
         self.grid = grid
         self.attempts = 0
+        pylab.clf()
 
     def run(self):
         """Runs the algorithm until a solution is found"""
