@@ -1,16 +1,55 @@
 import code.classes.grid as rep
+import csv
 
-if __name__ == "__main__": 
+def run_once():
+
     grid = rep.Grid("0","1")
     grid.compute_costs()
     grid.to_csv()
 
+def log_simulation(times):
+    
+    simulations = {}
 
-    # Main values for checking
-    print()
-    print(f"The gate coordinates are: {grid.gate_coordinates}")
-    print(f"The wire segment paths are: {grid.wire_segments}")
-    print(f"The number of intersections: {grid.intersections}")
-    print()
-    print(f"The total amount of costs = {grid.cost}")
-    print()
+    for i in range(times):
+        grid = rep.Grid("0","1")
+        grid.compute_costs()
+        simulations[i] = grid.cost
+        
+    with open(f"output/{times}_tries.csv", "w", newline="") as csvfile:
+
+        # Set up fieldnames 
+        fieldnames = ["simulation", "cost"]
+
+        # Set up wiriter and write the header
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+
+        for simulation in simulations:
+            writer.writerow({
+                    "simulation": simulation, "cost": simulations[simulation]
+                    })
+    
+    print(grid)
+
+    # with open(f"output/{times}_tries.csv", "w", newline="") as csvfile:
+
+    #     # Set up fieldnames 
+    #     fieldnames = ["simulation", "cost"]
+
+    #     # Set up wiriter and write the header
+    #     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+    #     writer.writeheader()
+
+    #     # Run n simulations and log each run in a new row
+    #     for i in range(times):
+    #         grid = rep.Grid("0","1")
+    #         grid.compute_costs()
+    #         writer.writerow({
+    #                 "simulation": i, "cost": grid.cost
+    #                 })
+
+if __name__ == "__main__": 
+
+    log_simulation(4)
+    

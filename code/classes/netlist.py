@@ -14,3 +14,6 @@ class Netlist:
         x, y, z = base_movement(position, destination, self.grid, self.path, self)
 
         return x, y, z
+
+    def __repr__(self) -> str:
+        return ("\n\t\t")

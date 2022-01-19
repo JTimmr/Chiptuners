@@ -29,7 +29,7 @@ def base_movement(origin, destination, grid, path, netlist):
 
                 # Check if current segment makes an interection
                 if [segment for segment in grid.wire_segments if new_origin in segment]:
-                    print(f"Intersection at: {new_origin}")
+                    # print(f"Intersection at: {new_origin}")
                     grid.intersections += 1
 
             grid.wire_segments[(origin, new_origin)] = netlist

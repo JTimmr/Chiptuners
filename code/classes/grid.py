@@ -136,3 +136,10 @@ class Grid:
 
         # Update cost
         self.cost = wire_amount + 300 * self.intersections
+
+    def __str__(self) -> str:
+        return (f"grid for chip {self.chip} with netlist {self.netlist} \n"
+                f"\033[1mCost: \033[0m\t\t{self.cost} \n"
+                f"\033[1mIntersections: \033[0m\t{self.intersections} \n"
+                f"\033[1mGates: \033[0m\t\t{self.gate_coordinates}\n"
+                f"\033[1mWire: \033[0m\t\t{self.wire_segments}\n")
