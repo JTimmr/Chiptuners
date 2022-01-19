@@ -3,6 +3,8 @@ import random
 import pylab
 import math
 import operator
+import matplotlib.pyplot as plt
+from mpl_toolkits import mplot3d
 
 """
 Defines/ contains the algorithm for random (uniformly distributed) movements as used in our base case.
@@ -27,6 +29,20 @@ class Baseline:
     def make_connections(self):
         """Connects two points on the grid, and plots the result"""
 
+        fig = plt.figure()
+        ax = plt.axes(projection='3d')
+        
+        # set labels
+        ax.set_xlabel('X axis')
+        ax.set_ylabel('Y axis')
+        ax.set_zlabel('Layer')
+
+        # set axis values
+        ax.set_xlim(0, 7)
+        # NOG AANPASSEN UITEINDELIJK!
+        ax.set_ylim(0, 7)
+        ax.set_zlim(0, 7)
+
         # Run over netlists
         # for netlist in self.grid.netlists.values():
         for netlist in (sorted(self.grid.netlists.values(), key=operator.attrgetter('minimal_length'))):
@@ -50,20 +66,28 @@ class Baseline:
             # If a path is found, update number of attempts and retrieve coordinates
             self.attempts += current_attempt
             x, y, z = path_data[:3]
-
-            # Add path to plot
-            pylab.plot(x, y, alpha = 0.5)
-            pylab.locator_params(axis="both", integer=True)
-            pylab.annotate(text = str(x[0])+ "," +str(y[0]), fontsize= 7, xy= (x[0], y[0]), xytext = (x[0] + 0.1, y[0] + 0.1))
-            pylab.annotate(text = str(x[-1])+ "," +str(y[-1]), fontsize= 7, xy= (x[-1], y[-1]), xytext = (x[-1] + 0.1, y[-1] + 0.1))
-            pylab.grid(alpha=0.2)
-            pylab.xlabel('x-coordinates')
-            pylab.ylabel('y-coordinates')
-            pylab.legend(self.grid.netlists, prop={'size': 7}, loc = "upper left", title = "netlist", ncol = 6, bbox_to_anchor=(0.0, -0.22))
             
-        # Save plot
-        pylab.savefig("output/visual.png", dpi=100, bbox_inches="tight")
+            #     Add path to plot
+            #     pylab.plot(x, y, alpha = 0.5)
+            #     pylab.locator_params(axis="both", integer=True)
+            #     pylab.annotate(text = str(x[0])+ "," +str(y[0]), fontsize= 7, xy= (x[0], y[0]), xytext = (x[0] + 0.1, y[0] + 0.1))
+            #     pylab.annotate(text = str(x[-1])+ "," +str(y[-1]), fontsize= 7, xy= (x[-1], y[-1]), xytext = (x[-1] + 0.1, y[-1] + 0.1))
+            #     pylab.grid(alpha=0.2)
+            #     pylab.xlabel('x-coordinates')
+            #     pylab.ylabel('y-coordinates')
+            #     pylab.legend(self.grid.netlists, prop={'size': 7}, loc = "upper left", title = "netlist", ncol = 6, bbox_to_anchor=(0.0, -0.22))
 
+            # 3D plot netlists and gates
+            ax.plot(x, y, z, label = "fo")
+            ax.scatter3D(start[0], start[1], start[2], c = "black")
+            ax.scatter3D(end[0], end[1], end[2], c = "black")
+            ax.legend()
+
+        plt.show()
+
+        # Save plot
+        # pylab.savefig("output/visual.png", dpi=100, bbox_inches="tight")
+        
         self.grid.tot_attempts = self.attempts
         return True
 
