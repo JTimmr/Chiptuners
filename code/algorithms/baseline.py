@@ -222,18 +222,6 @@ class Baseline_optimized:
 
     def run(self):
         """Runs the algorithm until a solution is found"""
-
-        # Until a solution is found, reset everything and try again
-        while not self.make_connections():
-            pylab.clf()
-            self.grid.wire_segments = {}
-            self.grid.intersections = 0
-        
-        
-    def make_connections(self):
-        """Connects two points on the grid, and plots the result"""
-
-        fig = plt.figure()
         ax = plt.axes(projection='3d')
         ax.set_title("3D Visual Chips&Curcuits")
         
@@ -241,6 +229,16 @@ class Baseline_optimized:
         ax.set_xlabel('X axis')
         ax.set_ylabel('Y axis')
         ax.set_zlabel('Layer')
+
+        # Until a solution is found, reset everything and try again
+        while not self.make_connections(ax):
+            pylab.clf()
+            self.grid.wire_segments = {}
+            self.grid.intersections = 0
+        
+        
+    def make_connections(self, ax):
+        """Connects two points on the grid, and plots the result"""
 
         max_x = 0
         max_y = 0
