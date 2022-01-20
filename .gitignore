@@ -2,6 +2,6 @@
 __pycache__/
 output/
 output/visual.png
-code/__pycache__
-code/algorithms/__pycache__
-code/classes/__pycache__
+code/__pycache__/
+code/algorithms/__pycache__/
+code/classes/__pycache__/
