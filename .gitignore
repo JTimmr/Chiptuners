@@ -1,4 +1,7 @@
 .DS_Store
-__pycache__
+__pycache__/
 output/
 output/visual.png
+code/__pycache__
+code/algorithms/__pycache__
+code/classes/__pycache__
