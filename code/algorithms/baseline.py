@@ -216,28 +216,31 @@ class Baseline:
 
 
 class Baseline_optimized:
-    def __init__(self, grid):
+    def __init__(self, grid, render):
         self.grid = grid
-        pylab.clf()
+        self.render = render
+        if render:
+            self.ax = plt.axes(projection='3d')
 
     def run(self):
         """Runs the algorithm until a solution is found"""
-        ax = plt.axes(projection='3d')
-        ax.set_title("3D Visual Chips&Curcuits")
         
-        # set labels
-        ax.set_xlabel('X axis')
-        ax.set_ylabel('Y axis')
-        ax.set_zlabel('Layer')
+        if self.render:
+            self.ax.set_title("3D Visual Chips&Curcuits")
+            
+            # set labels
+            self.ax.set_xlabel('X axis')
+            self.ax.set_ylabel('Y axis')
+            self.ax.set_zlabel('Layer')
 
         # Until a solution is found, reset everything and try again
-        while not self.make_connections(ax):
+        while not self.make_connections():
             pylab.clf()
             self.grid.wire_segments = {}
             self.grid.intersections = 0
         
         
-    def make_connections(self, ax):
+    def make_connections(self):
         """Connects two points on the grid, and plots the result"""
 
         max_x = 0
@@ -263,7 +266,7 @@ class Baseline_optimized:
                 current_attempt += path_data
 
                 # Give up if it takes too long
-                if current_attempt > 200000:
+                if current_attempt > 50000:
                     self.grid.tot_attempts += current_attempt
                     print(f"break, total attempts {self.grid.tot_attempts}")
                     return False
@@ -272,34 +275,37 @@ class Baseline_optimized:
             self.grid.tot_attempts += current_attempt
             x, y, z = path_data[:3]
 
-            # Find maximum x and y values
-            if max(x) > max_x:
-                max_x = max(x)
-            if max(y) > max_y:
-                max_y = max(y)
+            if self.render:
+                # Find maximum x and y values
+                if max(x) > max_x:
+                    max_x = max(x)
+                if max(y) > max_y:
+                    max_y = max(y)
 
-            #     Add path to plot
-            #     pylab.plot(x, y, alpha = 0.5)
-            #     pylab.locator_params(axis="both", integer=True)
-            #     pylab.annotate(text = str(x[0])+ "," +str(y[0]), fontsize= 7, xy= (x[0], y[0]), xytext = (x[0] + 0.1, y[0] + 0.1))
-            #     pylab.annotate(text = str(x[-1])+ "," +str(y[-1]), fontsize= 7, xy= (x[-1], y[-1]), xytext = (x[-1] + 0.1, y[-1] + 0.1))
-            #     pylab.grid(alpha=0.2)
-            #     pylab.xlabel('x-coordinates')
-            #     pylab.ylabel('y-coordinates')
-            #     pylab.legend(self.grid.netlists, prop={'size': 7}, loc = "upper left", title = "netlist", ncol = 6, bbox_to_anchor=(0.0, -0.22))
+                #     Add path to plot
+                #     pylab.plot(x, y, alpha = 0.5)
+                #     pylab.locator_params(axis="both", integer=True)
+                #     pylab.annotate(text = str(x[0])+ "," +str(y[0]), fontsize= 7, xy= (x[0], y[0]), xytext = (x[0] + 0.1, y[0] + 0.1))
+                #     pylab.annotate(text = str(x[-1])+ "," +str(y[-1]), fontsize= 7, xy= (x[-1], y[-1]), xytext = (x[-1] + 0.1, y[-1] + 0.1))
+                #     pylab.grid(alpha=0.2)
+                #     pylab.xlabel('x-coordinates')
+                #     pylab.ylabel('y-coordinates')
+                #     pylab.legend(self.grid.netlists, prop={'size': 7}, loc = "upper left", title = "netlist", ncol = 6, bbox_to_anchor=(0.0, -0.22))
 
-            # 3D plot netlists and gates
-            ax.plot(x, y, z, label = f"chip {start_gate} to {end_gate}")
-            ax.scatter3D(start[0], start[1], start[2], c = "black")
-            ax.scatter3D(end[0], end[1], end[2], c = "black")
-            ax.legend(title = "Netlist", prop={'size': 7}, bbox_to_anchor=(1.15, 1),loc='upper left')
+                # 3D plot netlists and gates
+                self.ax.plot(x, y, z, label = f"chip {start_gate} to {end_gate}")
+                self.ax.scatter3D(start[0], start[1], start[2], c = "black")
+                self.ax.scatter3D(end[0], end[1], end[2], c = "black")
+                self.ax.legend(title = "Netlist", prop={'size': 7}, bbox_to_anchor=(1.15, 1),loc='upper left')
 
-        # set axis values
-        ax.set_xlim(0, max_x)
-        ax.set_ylim(0, max_y)
-        ax.set_zlim(0, 7)
+        if self.render:
 
-        plt.show()
+            # set axis values
+            self.ax.set_xlim(0, max_x)
+            self.ax.set_ylim(0, max_y)
+            self.ax.set_zlim(0, 7)
+
+            plt.show()
 
         # Save plot
         # pylab.savefig("output/visual.png", dpi=100, bbox_inches="tight")
@@ -311,7 +317,7 @@ class Baseline_optimized:
         x = []
         y = []
         z = []
-        max_pathlength = netlist.minimal_length * 2 + 6
+        max_pathlength = netlist.minimal_length +10#* 2 + 6
 
         # Temporary values until path is confirmed
         origin_tmp = deepcopy(origin)
