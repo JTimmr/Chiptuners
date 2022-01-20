@@ -216,9 +216,11 @@ class Baseline:
 
 
 class Baseline_optimized:
-    def __init__(self, grid, render):
+    def __init__(self, grid, render, print_connections):
         self.grid = grid
         self.render = render
+        self.print_connections = print_connections
+
         if render:
             self.ax = plt.axes(projection='3d')
 
@@ -268,7 +270,8 @@ class Baseline_optimized:
                 # Give up if it takes too long
                 if current_attempt > 50000:
                     self.grid.tot_attempts += current_attempt
-                    print(f"break, total attempts {self.grid.tot_attempts}")
+                    if self.print_connections:
+                        print(f"break, total attempts {self.grid.tot_attempts}")
                     return False
 
             # If a path is found, update number of attempts and retrieve coordinates
@@ -375,7 +378,8 @@ class Baseline_optimized:
             # Return path if destination is reached
             else:
                 current_attempt += new_attempts
-                print(f"Path found between {netlist.start} and {netlist.end} of length {current_length}, attempt {current_attempt}")
+                if self.print_connections:
+                    print(f"Path found between {netlist.start} and {netlist.end} of length {current_length}, attempt {current_attempt}")
 
                 # Make everything up to date
                 self.grid.wire_segments.update(wire_segments_tmp)
