@@ -1,6 +1,7 @@
 import random
 from copy import deepcopy
 import math
+import code.algorithms.sorting as sort
 
 class Hillclimber:
     def __init__(self, grid, limit):
@@ -9,21 +10,21 @@ class Hillclimber:
         self.attempt = 0
 
     def run(self):
-        print(self.grid.netlists)
-        #while self.attempt < self.limit:
-        for netlist in self.grid.netlists.values():
-            print(netlist.path)
-            # while (isinstance(data := self.improve_connection(netlist), int)):
-            #     self.attempt += data
+        while self.attempt < self.limit:
+            netlists = sort.sort_length(self.grid.netlists, descending=True)
+            for netlist in netlists:
+                self.attempt += self.improve_connection(netlist)
             
-        #self.grid.to_csv()
+        self.grid.to_csv()
 
     def improve_connection(self, netlist):
-        print(netlist)
-        return 0
-        # origin = netlist.start
-        # destination = netlist.end
-        # self.find_path(origin, destination, netlist)
+        origin = netlist.start
+        destination = netlist.end
+        best_path = netlist.path
+        attempts = 0
+        for attempt in range(1000):
+            attempts += self.find_path(origin, destination, netlist)
+        return attempts
 
 
     def find_path(self, origin, destination, netlist):
@@ -33,6 +34,8 @@ class Hillclimber:
         y = []
         z = []
         max_pathlength = netlist.minimal_length * 2
+
+        current_attempt = 0
 
         # Temporary values until path is confirmed
         origin_tmp = deepcopy(origin)
@@ -89,6 +92,7 @@ class Hillclimber:
 
             # Return path if destination is reached
             else:
+                current_attempt += new_attempts
                 print(f"Path found between {netlist.start} and {netlist.end} of length {current_length}: {x, y, z}, attempt {current_attempt}")
 
                 # Make everything up to date
@@ -96,7 +100,7 @@ class Hillclimber:
                 self.grid.intersections += intersections_tmp
                 path = path_tmp
 
-                return x, y, z, path
+                return current_attempt
 
         # Return number of failed attempts if destination was not reached
         return new_attempts + 1

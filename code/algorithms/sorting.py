@@ -9,7 +9,7 @@ def sort_length(netlists, descending=False):
     return (sorted(netlists.values(),key=operator.attrgetter('minimal_length'),reverse=descending))
 
 def random_sort(netlists):
-    value_list = list(netlist.values())
+    value_list = list(netlists.values())
 
     return (random.shuffle(value_list))
 
@@ -47,4 +47,4 @@ def sort_middle_first(netlists, descending=False):
     return (sorted(netlists.values(),key=operator.attrgetter('ranking'),reverse=descending))
 
 def sort_intersections():
-    
+    pass
