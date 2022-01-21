@@ -19,7 +19,6 @@ def visualize(chip):
         y = path[1]
         z = path[2]
 
-        
         ax.plot(x, y, z, label = netlist)
     
     ax.set_xlim(0, max_x) 

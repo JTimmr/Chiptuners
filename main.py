@@ -42,19 +42,19 @@ def log_simulation(times, print_connections, netlist):
             "simulation": "Avg costs", "cost": avgCosts
         })
 
-def improve(netlist):
+def improve(netlist, inputfile):
     chip_nr = int((netlist - 1) / 3)
-    chip = grid.Grid(chip_nr, netlist, "output/output.csv")
+    chip = grid.Grid(chip_nr, netlist, inputfile)
 
     hillclimber = climber.Hillclimber(chip, 10)
     hillclimber.run()
 
 
-def visualize_three_dimensional(netlist):
+def visualize_three_dimensional(netlist, inputfile):
     """Text."""
 
     chip_nr = int((netlist - 1) / 3)
-    chip = grid.Grid(chip_nr, netlist, "output/output.csv")
+    chip = grid.Grid(chip_nr, netlist, inputfile)
     vis(chip)
 
 if __name__ == "__main__": 
@@ -65,8 +65,10 @@ if __name__ == "__main__":
 
     netlist = 4
 
-    log_simulation(N, print_connections, netlist)
+    inputfile = "output/output.csv"
 
-    # visualize_three_dimensional(netlist)
+    # log_simulation(N, print_connections, netlist)
 
-    # improve(netlist)
+    visualize_three_dimensional(netlist, inputfile)
+
+    # improve(netlist, inputfile)
