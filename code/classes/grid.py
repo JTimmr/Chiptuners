@@ -82,7 +82,6 @@ class Grid:
 
                 # Store netlist in dictionary with unique key
                 self.netlists[key] = netlist_object
-
     def to_csv(self):
         """Writes a csv file that contains an overview of the grid"""
 

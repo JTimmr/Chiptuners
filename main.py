@@ -32,10 +32,10 @@ def log_simulation(times, render, print_connections, netlist):
 
 if __name__ == "__main__": 
 
-    N = 10
+    N = 1
     render = False
-    print_connections = False
-    netlist = 4
+    print_connections = True
+    netlist = 2
     
     log_simulation(N, render, print_connections, netlist)
 
