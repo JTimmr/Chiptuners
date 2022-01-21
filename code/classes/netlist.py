@@ -5,6 +5,7 @@ class Netlist:
         self.minimal_length = abs(start[0] - end[0]) + abs(start[1] - end[1])
         self.grid = grid
         self.path = []
+        self.ranking = 0
 
     def __str__(self) -> str:
         return ("\n\t\t")

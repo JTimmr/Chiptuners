@@ -44,7 +44,7 @@ class Baseline_optimized:
         max_y = 0
 
         # Run over netlists
-        for netlist in sorting.sort_length(self.grid.netlists):
+        for netlist in sorting.sort_middle_first(self.grid.netlists):
             current_attempt = 0
 
             # Retrieve starting and ending point
