@@ -73,6 +73,7 @@ class Baseline_optimized:
             # If a path is found, update number of attempts and retrieve coordinates
             self.grid.tot_attempts += current_attempt
             x, y, z = path_data[:3]
+            netlist.path = [x, y, z]
 
             if self.render:
                 # Find maximum x and y values
@@ -116,7 +117,7 @@ class Baseline_optimized:
         x = []
         y = []
         z = []
-        max_pathlength = netlist.minimal_length +10#* 2 + 6
+        max_pathlength = netlist.minimal_length +10 #* 2 + 6
 
         # Temporary values until path is confirmed
         origin_tmp = deepcopy(origin)
