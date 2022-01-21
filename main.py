@@ -24,8 +24,7 @@ def log_simulation(times, print_connections, netlist):
 
         # Run n simulations and log each run in a new row
         for i in range(1, times + 1):
-            infile = None
-            chip = grid.Grid(chip_nr, netlist, infile)
+            chip = grid.Grid(chip_nr, netlist)
             baseline = base.Baseline(chip, print_connections)
             baseline.run()
             chip.compute_costs()
@@ -63,12 +62,12 @@ if __name__ == "__main__":
 
     print_connections = False
 
-    netlist = 4
+    netlist = 1
 
     inputfile = "output/output.csv"
 
-    # log_simulation(N, print_connections, netlist)
+    log_simulation(N, print_connections, netlist)
 
-    visualize_three_dimensional(netlist, inputfile)
+    # visualize_three_dimensional(netlist, inputfile)
 
     # improve(netlist, inputfile)

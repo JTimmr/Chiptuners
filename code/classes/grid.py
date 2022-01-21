@@ -3,7 +3,7 @@ from code.classes import gate, netlist
 import pandas as pd
 
 class Grid:
-    def __init__(self, chip, netlist, infile):
+    def __init__(self, chip, netlist, infile=None):
 
         self.chip = chip
         self.netlist = netlist
