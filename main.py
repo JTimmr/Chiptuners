@@ -1,3 +1,4 @@
+from calendar import c
 import csv
 import code.classes.grid as grid
 from code.algorithms import hillclimber, representation as rep
@@ -18,6 +19,8 @@ def log_simulation(times, render, print_connections, netlist):
         # Set up wiriter and write the header
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
+        
+        costs = []
 
         # Run n simulations and log each run in a new row
         for i in range(1, times + 1):
@@ -26,12 +29,18 @@ def log_simulation(times, render, print_connections, netlist):
             baseline = base.Baseline_optimized(chip, render, print_connections)
             baseline.run()
             chip.compute_costs()
+            costs.append(chip.cost)
             simulations[i] = chip
             writer.writerow({
                     "simulation": i, "cost": chip.cost, "attempts": chip.tot_attempts
                     })
             print(f"Completed simulation {i}: C = {chip.cost}, found on attempt {chip.tot_attempts}")
             chip.to_csv()
+
+        avgCosts = sum(costs)/times
+        writer.writerow({
+            "simulation": "Avg costs", "cost": avgCosts
+        })
 
 def improve(netlist):
     chip_nr = int((netlist - 1) / 3)
@@ -42,12 +51,12 @@ def improve(netlist):
 
 if __name__ == "__main__": 
 
-    N = 1
+    N = 30
 
-    render = True
+    render = False
 
-    print_connections = True
-    netlist = 2
+    print_connections = False
+    netlist = 3
     
     log_simulation(N, render, print_connections, netlist)
     # improve(netlist)
