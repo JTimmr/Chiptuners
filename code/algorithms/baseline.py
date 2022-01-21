@@ -15,20 +15,10 @@ class Baseline_optimized:
         self.grid = grid
         self.render = render
         self.print_connections = print_connections
-
-        if render:
-            self.ax = plt.axes(projection='3d')
+        
 
     def run(self):
         """Runs the algorithm until a solution is found"""
-        
-        if self.render:
-            self.ax.set_title("3D Visual Chips&Curcuits")
-            
-            # set labels
-            self.ax.set_xlabel('X axis')
-            self.ax.set_ylabel('Y axis')
-            self.ax.set_zlabel('Layer')
 
         # Until a solution is found, reset everything and try again
         while not self.make_connections():
@@ -40,9 +30,6 @@ class Baseline_optimized:
     def make_connections(self):
         """Connects two points on the grid, and plots the result"""
 
-        max_x = 0
-        max_y = 0
-
         # Run over netlists
         for netlist in sorting.sort_middle_first(self.grid.netlists):
             current_attempt = 0
@@ -50,12 +37,6 @@ class Baseline_optimized:
             # Retrieve starting and ending point
             start = netlist.start
             end = netlist.end
-
-            for key, value in self.grid.gates.items():
-                if netlist.start == value.coordinates:
-                    start_gate = key
-                if netlist.end == value.coordinates:
-                    end_gate = key
 
             # Search for path until a valid path is found
             while isinstance((path_data := self.find_path(start, end, netlist, current_attempt)), int):
@@ -73,40 +54,6 @@ class Baseline_optimized:
             x, y, z = path_data[:3]
             netlist.path = [x, y, z]
 
-            if self.render:
-                # Find maximum x and y values
-                if max(x) > max_x:
-                    max_x = max(x)
-                if max(y) > max_y:
-                    max_y = max(y)
-
-                #     Add path to plot
-                #     pylab.plot(x, y, alpha = 0.5)
-                #     pylab.locator_params(axis="both", integer=True)
-                #     pylab.annotate(text = str(x[0])+ "," +str(y[0]), fontsize= 7, xy= (x[0], y[0]), xytext = (x[0] + 0.1, y[0] + 0.1))
-                #     pylab.annotate(text = str(x[-1])+ "," +str(y[-1]), fontsize= 7, xy= (x[-1], y[-1]), xytext = (x[-1] + 0.1, y[-1] + 0.1))
-                #     pylab.grid(alpha=0.2)
-                #     pylab.xlabel('x-coordinates')
-                #     pylab.ylabel('y-coordinates')
-                #     pylab.legend(self.grid.netlists, prop={'size': 7}, loc = "upper left", title = "netlist", ncol = 6, bbox_to_anchor=(0.0, -0.22))
-
-                # 3D plot netlists and gates
-                self.ax.plot(x, y, z, label = f"chip {start_gate} to {end_gate}")
-                self.ax.scatter3D(start[0], start[1], start[2], c = "black")
-                self.ax.scatter3D(end[0], end[1], end[2], c = "black")
-                self.ax.legend(title = "Netlist", prop={'size': 7}, bbox_to_anchor=(1.15, 1),loc='upper left')
-
-        if self.render:
-
-            # set axis values
-            self.ax.set_xlim(0, max_x)
-            self.ax.set_ylim(0, max_y)
-            self.ax.set_zlim(0, 7)
-
-            plt.show()
-
-        # Save plot
-        # pylab.savefig("output/visual.png", dpi=100, bbox_inches="tight")
         return True
 
     def find_path(self, origin, destination, netlist, current_attempt):
