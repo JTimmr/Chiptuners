@@ -3,9 +3,10 @@ import code.classes.grid as grid
 from code.algorithms import hillclimber, representation as rep
 from code.algorithms import baseline as base
 from code.algorithms import hillclimber as climber
+from code.visualize import visualize as vis
 
 
-def log_simulation(times, render, print_connections, netlist):
+def log_simulation(times, print_connections, netlist):
     
     simulations = {}
     chip_nr = int((netlist - 1) / 3)
@@ -25,7 +26,7 @@ def log_simulation(times, render, print_connections, netlist):
         for i in range(1, times + 1):
             infile = None
             chip = grid.Grid(chip_nr, netlist, infile)
-            baseline = base.Baseline_optimized(chip, render, print_connections)
+            baseline = base.Baseline(chip, print_connections)
             baseline.run()
             chip.compute_costs()
             costs.append(chip.cost)
@@ -48,17 +49,24 @@ def improve(netlist):
     hillclimber = climber.Hillclimber(chip, 10)
     hillclimber.run()
 
+
+def visualize_three_dimensional(netlist):
+    """Text."""
+
+    chip_nr = int((netlist - 1) / 3)
+    chip = grid.Grid(chip_nr, netlist, "output/output.csv")
+    vis(chip)
+
 if __name__ == "__main__": 
 
     N = 1
 
-    render = True
-
-
     print_connections = False
 
-    netlist = 3
-    
-    # log_simulation(N, render, print_connections, netlist)
-    improve(netlist)
+    netlist = 4
 
+    log_simulation(N, print_connections, netlist)
+
+    # visualize_three_dimensional(netlist)
+
+    # improve(netlist)
