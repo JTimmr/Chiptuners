@@ -7,24 +7,33 @@ class Hillclimber:
     def __init__(self, grid, limit):
         self.grid = grid
         self.limit = limit
-        self.attempt = 0
+        self.iterations = 0
 
     def run(self):
-        while self.attempt < self.limit:
+        while self.iterations < self.limit:
             netlists = sort.sort_length(self.grid.netlists, descending=True)
             for netlist in netlists:
-                self.attempt += self.improve_connection(netlist)
+                self.improve_connection(netlist)
+            self.iterations += 1
             
         self.grid.to_csv()
 
     def improve_connection(self, netlist):
         origin = netlist.start
         destination = netlist.end
-        best_path = netlist.path
-        attempts = 0
-        for attempt in range(1000):
-            attempts += self.find_path(origin, destination, netlist)
-        return attempts
+        best_path = deepcopy(netlist.path)
+        self.grid.compute_costs()
+        best_costs = deepcopy(self.grid.cost)
+
+        for attempt in range(10):
+            new_path = self.find_path(origin, destination, netlist)
+            netlist.path = new_path
+            self.grid.compute_costs()
+            if self.grid.cost < best_costs:
+                print(f"Improvement found: from {best_costs} to {self.grid.cost}")
+                best_path = deepcopy(new_path)
+                best_costs = deepcopy(self.grid.cost)
+
 
 
     def find_path(self, origin, destination, netlist):
@@ -60,7 +69,7 @@ class Hillclimber:
 
                 # Give up after 10 failed attempts to make a single step
                 if new_attempts > 10:
-                    return new_attempts
+                    return
 
             # If destination is not reached, make step
             if new_origin != "reached":
@@ -73,7 +82,7 @@ class Hillclimber:
 
                 # Check if segment already in use, try again otherwise
                 if segment in self.grid.wire_segments or segment in wire_segments_tmp:
-                    return new_attempts
+                    return
 
                 # Add segment to dictionary if it was new
                 wire_segments_tmp[segment] = netlist
@@ -100,10 +109,10 @@ class Hillclimber:
                 self.grid.intersections += intersections_tmp
                 path = path_tmp
 
-                return current_attempt
+                return
 
         # Return number of failed attempts if destination was not reached
-        return new_attempts + 1
+        return [x, y, z]
 
     def find_smartest_step(self, position, destination, path_tmp):
             """Calculate step to follow random path from current position to any location. If origin equals destination, return None"""

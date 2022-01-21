@@ -17,4 +17,3 @@ def middle_first(netlist):
     # for netlist in self.netlists.values():
     pass
         
-
