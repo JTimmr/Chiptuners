@@ -10,12 +10,11 @@ class Hillclimber:
         self.iterations = 0
 
     def run(self):
-        print(self.grid.wire_segments)
-        # while self.iterations < self.limit:
-        #     netlists = sort.sort_length(self.grid.netlists, descending=True)
-        #     for netlist in netlists:
-        #         self.improve_connection(netlist)
-        #     self.iterations += 1
+        while self.iterations < self.limit:
+            netlists = sort.sort_length(self.grid.netlists, descending=True)
+            for netlist in netlists:
+                self.improve_connection(netlist)
+            self.iterations += 1
             
         # self.grid.to_csv()
 
@@ -26,14 +25,16 @@ class Hillclimber:
         self.grid.compute_costs()
         best_costs = deepcopy(self.grid.cost)
 
-        for attempt in range(10):
+        for attempt in range(100):
             new_path = self.find_path(origin, destination, netlist)
-            netlist.path = new_path
-            self.grid.compute_costs()
-            if self.grid.cost < best_costs:
-                print(f"Improvement found: from {best_costs} to {self.grid.cost}")
-                best_path = deepcopy(new_path)
-                best_costs = deepcopy(self.grid.cost)
+            if new_path:
+                netlist.path = new_path
+                self.grid.compute_costs()
+                print(self.grid.cost, best_costs)
+                if self.grid.cost < best_costs:
+                    print(f"Improvement found: from {best_costs} to {self.grid.cost}")
+                    best_path = deepcopy(new_path)
+                    best_costs = deepcopy(self.grid.cost)
 
 
 
@@ -103,17 +104,16 @@ class Hillclimber:
             # Return path if destination is reached
             else:
                 current_attempt += new_attempts
-                print(f"Path found between {netlist.start} and {netlist.end} of length {current_length}: {x, y, z}, attempt {current_attempt}")
 
                 # Make everything up to date
                 self.grid.wire_segments.update(wire_segments_tmp)
                 self.grid.intersections += intersections_tmp
                 path = path_tmp
 
-                return
+                return [x, y, z]
 
         # Return number of failed attempts if destination was not reached
-        return [x, y, z]
+        return 
 
     def find_smartest_step(self, position, destination, path_tmp):
             """Calculate step to follow random path from current position to any location. If origin equals destination, return None"""

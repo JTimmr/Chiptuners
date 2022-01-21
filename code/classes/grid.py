@@ -1,6 +1,5 @@
 import csv
 from code.classes import gate, netlist
-from ast import literal_eval as make_tuple
 import pandas as pd
 
 class Grid:
@@ -61,6 +60,17 @@ class Grid:
             for netlist in self.netlists.values():
                 if netlist.start == gate_origin and netlist.end == gate_destination:
                     netlist.path = [x[i], y[i], z[i]]
+                    for coordinate in range(len(x[i]) - 1):
+
+                        start = (x[i][coordinate], y[i][coordinate], z[i][coordinate])
+                        end = (x[i][coordinate + 1], y[i][coordinate + 1], z[i][coordinate + 1])
+
+                        if [segment for segment in self.wire_segments if end in segment and end not in self.gate_coordinates]:
+                            self.intersections += 1
+
+                        segment = (start, end)
+                        self.wire_segments[segment] = netlist
+                        
             
             
 
@@ -131,11 +141,9 @@ class Grid:
         df = pd.DataFrame({'netlist': netlists, 'x': x, 'y': y, 'z': z})
         df.to_csv("output/output.csv", index=False)
 
-
-
     def compute_costs(self):
         """Calculate total cost of the current configuration"""
-        
+
         wire_amount = len(self.wire_segments)
 
         # Update cost
