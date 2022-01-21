@@ -29,12 +29,13 @@ def log_simulation(times, render, print_connections, netlist):
                     "simulation": i, "cost": chip.cost, "attempts": chip.tot_attempts
                     })
             print(f"Completed simulation {i}: C = {chip.cost}, found on attempt {chip.tot_attempts}")
+            chip.to_csv()
 
 if __name__ == "__main__": 
 
-    N = 10
-    render = False
-    print_connections = False
+    N = 1
+    render = True
+    print_connections = True
     netlist = 4
     
     log_simulation(N, render, print_connections, netlist)

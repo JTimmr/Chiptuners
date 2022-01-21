@@ -31,7 +31,7 @@ class Baseline:
 
         fig = plt.figure()
         ax = plt.axes(projection='3d')
-        ax.set_title("3D Visual Chips&Curcuits")
+        ax.set_title("3D Visual Chips&Circuits")
         
         # set labels
         ax.set_xlabel('X axis')
@@ -61,7 +61,7 @@ class Baseline:
                 current_attempt += path_data
 
                 # Give up if it takes too long
-                if current_attempt > 10000:
+                if current_attempt > 100000:
                     self.grid.tot_attempts += current_attempt
                     print(f"break, total attempts {self.grid.tot_attempts}")
                     return False
@@ -277,6 +277,7 @@ class Baseline_optimized:
             # If a path is found, update number of attempts and retrieve coordinates
             self.grid.tot_attempts += current_attempt
             x, y, z = path_data[:3]
+            netlist.path = [x, y, z]
 
             if self.render:
                 # Find maximum x and y values
@@ -320,7 +321,7 @@ class Baseline_optimized:
         x = []
         y = []
         z = []
-        max_pathlength = netlist.minimal_length +10#* 2 + 6
+        max_pathlength = netlist.minimal_length +10 #* 2 + 6
 
         # Temporary values until path is confirmed
         origin_tmp = deepcopy(origin)
