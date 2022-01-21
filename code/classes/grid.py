@@ -7,6 +7,7 @@ class Grid:
 
         self.chip = chip
         self.netlist = netlist
+        self.size = [0, 0, 7]
 
         # All intersections
         self.intersections = 0
@@ -48,6 +49,13 @@ class Grid:
 
                 self.gate_coordinates.add((x, y, 0))
 
+                # Find the size of the grid
+                if x > self.size[0]:
+                    self.size[0] = x + 1
+
+                if y > self.size[1]:
+                    self.size[1] = y + 1
+                    
                 # Make object and add to dictionary
                 gate_object = gate.Gate(uid, x, y, 0)
                 self.gates[uid] = gate_object
