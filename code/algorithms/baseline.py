@@ -12,16 +12,16 @@ class Baseline:
         self.grid = grid
         self.print_connections = print_connections
         
-
     def run(self):
         """Runs the algorithm until a solution is found"""
+
+        print("Searching for semi random configuration...")
 
         # Until a solution is found, reset everything and try again
         while not self.make_connections():
             self.grid.wire_segments = {}
             self.grid.intersections = 0
-        
-        
+
     def make_connections(self):
         """Connects two points on the grid, and plots the result"""
 
@@ -52,6 +52,7 @@ class Baseline:
         return True
 
     def find_path(self, origin, destination, netlist, current_attempt):
+        """Attempts to find a path between two coordinates in the grid."""
 
         # Store path so plot can be made
         x = []
