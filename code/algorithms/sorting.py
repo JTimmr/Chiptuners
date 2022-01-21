@@ -6,8 +6,8 @@ import random
 import operator
 
 
-def sort_length(netlist, decending=False):
-    return (sorted(netlist.values(),key=operator.attrgetter('minimal_length'),reverse=decending))
+def sort_length(netlist, descending=False):
+    return (sorted(netlist.values(),key=operator.attrgetter('minimal_length'),reverse=descending))
 
 def random_sort(netlist):
     value_list = list(netlist.values())
