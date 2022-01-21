@@ -3,10 +3,11 @@ from code.classes import gate, netlist
 
 
 class Grid:
-    def __init__(self, chip, netlist):
+    def __init__(self, chip, netlist, infile):
 
         self.chip = chip
         self.netlist = netlist
+        self.infile = infile
         self.size = [0, 0, 7]
 
         # All intersections
@@ -34,8 +35,20 @@ class Grid:
 
         # Create netlist objects
         self.load_netlists()
+        if infile:
+            self.load_configuration()
 
         self.cost = 0
+
+    def load_configuration(self):
+        print(self.netlists)
+        with open(self.infile, 'r') as file:
+            reader = csv.DictReader(file)
+            for row in reader:
+                netlistid, path = (row['net']), row['wires']
+                print(self.netlists[netlistid])
+                #self.netlists[netlistid].path = path
+            
 
     def load_gates(self):
         """Reads requested file containing the location of the gates, and extracts their id's and coordinates. Creates gate object for each row"""
