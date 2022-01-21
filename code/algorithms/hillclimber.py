@@ -10,13 +10,14 @@ class Hillclimber:
         self.iterations = 0
 
     def run(self):
-        while self.iterations < self.limit:
-            netlists = sort.sort_length(self.grid.netlists, descending=True)
-            for netlist in netlists:
-                self.improve_connection(netlist)
-            self.iterations += 1
+        print(self.grid.wire_segments)
+        # while self.iterations < self.limit:
+        #     netlists = sort.sort_length(self.grid.netlists, descending=True)
+        #     for netlist in netlists:
+        #         self.improve_connection(netlist)
+        #     self.iterations += 1
             
-        self.grid.to_csv()
+        # self.grid.to_csv()
 
     def improve_connection(self, netlist):
         origin = netlist.start

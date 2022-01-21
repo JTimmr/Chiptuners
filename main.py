@@ -44,11 +44,11 @@ if __name__ == "__main__":
 
     N = 1
 
-    render = True
+    render = False
 
     print_connections = True
-    netlist = 2
+    netlist = 3
     
-    log_simulation(N, render, print_connections, netlist)
-    # improve(netlist)
+    # log_simulation(N, render, print_connections, netlist)
+    improve(netlist)
 
