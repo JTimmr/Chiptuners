@@ -1,6 +1,7 @@
 import csv
 from code.classes import gate, netlist
-
+from ast import literal_eval as make_tuple
+import pandas as pd
 
 class Grid:
     def __init__(self, chip, netlist, infile):
@@ -45,8 +46,10 @@ class Grid:
         with open(self.infile, 'r') as file:
             reader = csv.DictReader(file)
             for row in reader:
-                netlistid, path = (row['net']), row['wires']
-                print(self.netlists[netlistid])
+                netlistid = make_tuple(row['net'])
+                #path = [list(map(int, row['wires'].split(',')))]
+                path = row['wires']
+                print(path)
                 #self.netlists[netlistid].path = path
             
 
@@ -99,23 +102,42 @@ class Grid:
     def to_csv(self):
         """Writes a csv file that contains an overview of the grid"""
 
-        with open("output/output.csv", "w", newline="") as csvfile:
+        netlists = {}
+        x = {}
+        y = {}
+        z = {}
 
-            # Set up fieldnames 
-            fieldnames = ["net", "wires"]
+        for item in self.netlists:
+            x_path = [str(element) for element in self.netlists[item].path[0]]
+            y_path = [str(element) for element in self.netlists[item].path[1]]
+            z_path = [str(element) for element in self.netlists[item].path[2]]
 
-            # Set up wiriter and write the header
-            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-            writer.writeheader()
+            x[item] = ";".join(x_path)
+            y[item] = ";".join(y_path)
+            z[item] = ";".join(z_path)
+            netlists[item] = item
+
+        df = pd.DataFrame({'netlist': netlists, 'x': x, 'y': y, 'z': z})
+        #df.index.name = 'a'
+        df.to_csv("output/output.csv", index=False)
+
+        # with open("output/output.csv", "w", newline="") as csvfile:
+
+        #     # Set up fieldnames 
+        #     fieldnames = ["net", "wires"]
+
+        #     # Set up wiriter and write the header
+        #     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        #     writer.writeheader()
 
             # Write the net and wire values
-            for item in self.netlists:
-                writer.writerow({
-                    "net": item, "wires": self.netlists[item].path
-                    })
 
-            # Write total cost for the grid
-            writer.writerow({"net": f"chip_{self.chip}_net_{self.netlist}", "wires": f"C = {self.cost}"})
+                # writer.writerow({
+                #     "net": item, "wires": self.netlists[item].path
+                #     })
+
+            # # Write total cost for the grid
+            # writer.writerow({"net": f"chip_{self.chip}_net_{self.netlist}", "wires": f"C = {self.cost}"})
 
     def compute_costs(self):
         """Calculate total cost of the current configuration"""
