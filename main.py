@@ -51,7 +51,7 @@ def improve(netlist):
 
 if __name__ == "__main__": 
 
-    N = 30
+    N = 100
 
     render = False
 

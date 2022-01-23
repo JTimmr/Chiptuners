@@ -10,8 +10,8 @@ def sort_length(netlists, descending=False):
 
 def random_sort(netlists):
     value_list = list(netlists.values())
-
-    return (random.shuffle(value_list))
+    random.shuffle(value_list)
+    return (value_list)
 
 def sort_middle_first(netlists, descending=False):
     x_champion = 0
