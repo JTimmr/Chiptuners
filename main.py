@@ -1,12 +1,13 @@
-from calendar import c
 import csv
 import code.classes.grid as grid
 from code.algorithms import hillclimber, representation as rep
 from code.algorithms import baseline as base
 from code.algorithms import hillclimber as climber
+from code.visualize import visualize as vis
 
 
-def log_simulation(times, render, print_connections, netlist):
+def log_simulation(times, print_connections, netlist):
+    """Run the given algorithm a number of times, creating a set of solutions. Set N to 1 if a single solution suffices."""
     
     simulations = {}
     chip_nr = int((netlist - 1) / 3)
@@ -24,9 +25,8 @@ def log_simulation(times, render, print_connections, netlist):
 
         # Run n simulations and log each run in a new row
         for i in range(1, times + 1):
-            infile = None
-            chip = grid.Grid(chip_nr, netlist, infile)
-            baseline = base.Baseline_optimized(chip, render, print_connections)
+            chip = grid.Grid(chip_nr, netlist)
+            baseline = base.Baseline(chip, print_connections)
             baseline.run()
             chip.compute_costs()
             costs.append(chip.cost)
@@ -42,22 +42,73 @@ def log_simulation(times, render, print_connections, netlist):
             "simulation": "Avg costs", "cost": avgCosts
         })
 
-def improve(netlist):
-    chip_nr = int((netlist - 1) / 3)
-    chip = grid.Grid(chip_nr, netlist, "output/output.csv")
 
-    hillclimber = climber.Hillclimber(chip, 1)
-    hillclimber.run()
+def improve(netlist, specific_file, update_csv, iterations):
+    """Takes a csv containing previously generated paths, and tries to improve the costs of the solution using an iterative algorithm."""
+    
+    # Open specific set of paths if desired
+    add_string = ""
+    if specific_file:
+        add_string = f"_C_{specific_file}"
+
+    # Open file
+    inputfile = f"output/paths_netlist_{netlist}{add_string}.csv"
+    chip_nr = int((netlist - 1) / 3)
+
+    # Load paths into grid
+    chip = grid.Grid(chip_nr, netlist, inputfile)
+
+    # Run hillclimber algorithm with a number of iterations
+    hillclimber = climber.Hillclimber(chip, iterations, update_csv)
+    costs = hillclimber.run()
+
+    visualize_three_dimensional(netlist, costs)
+
+
+def visualize_three_dimensional(netlist, specific_file):
+    """Takes a csv file containing previously generates paths, and create a 3-dimensional plot to visualize them."""
+
+    # Open specific set of paths if desired
+    add_string = ""
+    if specific_file:
+        add_string = f"_C_{specific_file}"
+
+    # Open file
+    inputfile = f"output/paths_netlist_{netlist}{add_string}.csv"
+    chip_nr = int((netlist - 1) / 3)
+
+    # Load paths into grid
+    chip = grid.Grid(chip_nr, netlist, inputfile)
+
+    # Make visualization
+    vis(chip)
+
 
 if __name__ == "__main__": 
 
+<<<<<<< HEAD
     N = 100
+=======
+    # Number of solutions the function log_simulation will try to find
+    N = 1
+>>>>>>> fe8ea926ecc62f65f6688df6f1659ec25e6aec1e
 
-    render = False
+    # Each iteration attempts to improve all netlists until improvement is found or none it found after long time
+    iterations = 100
 
+    # Prints all paths immediately when found
     print_connections = False
-    netlist = 3
-    
-    log_simulation(N, render, print_connections, netlist)
-    # improve(netlist)
 
+    # Netlist to be solved
+    netlist = 3
+
+    # Indicator from which specific file the paths will be extracted
+    specific_file = None
+
+    # Makes a new csv file for each improvement made in costs
+    # Final form will always be saved
+    update_csv = False
+
+    log_simulation(N, print_connections, netlist)
+    visualize_three_dimensional(netlist, specific_file)
+    improve(netlist, specific_file, update_csv, iterations)

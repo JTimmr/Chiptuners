@@ -3,46 +3,118 @@ from copy import deepcopy
 import math
 import code.algorithms.sorting as sort
 
+
 class Hillclimber:
-    def __init__(self, grid, limit):
+    def __init__(self, grid, limit, update_csv):
         self.grid = grid
         self.limit = limit
         self.iterations = 0
+        self.attempts_without_improvement = 0
+        self.update_csv = update_csv
 
     def run(self):
+        """Keeps the Hillclimber algorithm running."""
+
+        print("Searching for improvements...")
+
+        # Run a number of iterations
         while self.iterations < self.limit:
+
+            # Sort netlist in desired order
             netlists = sort.sort_length(self.grid.netlists, descending=True)
             for netlist in netlists:
+
+                # Try to make an inprovement
                 self.improve_connection(netlist)
+
+                # Quit when no improvement is made after a large amount of attempts
+                if self.attempts_without_improvement > 500000:
+                    self.grid.compute_costs()
+                    print(f"No more improvements found. Costs are {self.grid.cost}")
+                    self.grid.to_csv(self.grid.cost)
+                    return False
+
             self.iterations += 1
-            
-        self.grid.to_csv()
+
+        self.grid.compute_costs()
+        print(f"Reached max number of iterations. Costs are {self.grid.cost}")
+        self.grid.to_csv(self.grid.cost)
+
+        return self.grid.cost
 
     def improve_connection(self, netlist):
+        """Takes a netlist as an input, and tries to find a shorter path between its two gates."""
+
         origin = netlist.start
         destination = netlist.end
+
+        # Make copies so original values aren't lost
         best_path = deepcopy(netlist.path)
         self.grid.compute_costs()
         best_costs = deepcopy(self.grid.cost)
+        
+        # Try a number of times before succes becomes unlikely
+        for attempt in range(1000):
 
-        for attempt in range(10):
             new_path = self.find_path(origin, destination, netlist)
-            netlist.path = new_path
-            self.grid.compute_costs()
-            if self.grid.cost < best_costs:
-                print(f"Improvement found: from {best_costs} to {self.grid.cost}")
-                best_path = deepcopy(new_path)
-                best_costs = deepcopy(self.grid.cost)
 
+            # If path is found, calculate new costs
+            if new_path:
+                old_path = deepcopy(netlist.path)
+                netlist.path = new_path
+                self.grid.compute_costs()
 
+                # Allow change of path with no benefit once every 25 attempts
+                if self.attempts_without_improvement % 25 == 0:
+
+                    # Make change if costs are equal or lower
+                    if self.grid.cost <= best_costs:
+                        best_path = deepcopy(new_path)
+                        best_costs = deepcopy(self.grid.cost)
+                        self.attempts_without_improvement = 0
+
+                        # Keep csv updated if update_csv is set to True in main function
+                        if self.update_csv:
+                            self.grid.to_csv(self.grid.cost)
+
+                    # Reset if new path is denied
+                    else:
+                        netlist.path = old_path
+                        self.attempts_without_improvement += 1
+
+                # Only allow changes to decrease the cost 24/25 attempts
+                else:
+
+                    # Make change if costs are lower
+                    if self.grid.cost < best_costs:
+                        print(f"Improvement found: Reduced costs from {best_costs} to {self.grid.cost}")
+                        best_path = deepcopy(new_path)
+                        best_costs = deepcopy(self.grid.cost)
+                        self.attempts_without_improvement = 0
+
+                        # Keep csv updated if update_csv is set to True in main function
+                        if self.update_csv:
+                            self.grid.to_csv(self.grid.cost)
+
+                    # Reset if new path is denied
+                    else:
+                        netlist.path = old_path
+                        self.attempts_without_improvement += 1
+            
+            # If no path was found at all, register as failed attempt
+            else:
+                self.attempts_without_improvement += 1
 
     def find_path(self, origin, destination, netlist):
+        """Attempts to find a path between two coordinates in the grid."""
 
         # Store path so plot can be made
         x = []
         y = []
         z = []
-        max_pathlength = netlist.minimal_length * 2
+
+        #  Set limit for pathlength
+        max_pathlength = netlist.minimal_length * 2 + 10
 
         current_attempt = 0
 
@@ -102,48 +174,45 @@ class Hillclimber:
             # Return path if destination is reached
             else:
                 current_attempt += new_attempts
-                print(f"Path found between {netlist.start} and {netlist.end} of length {current_length}: {x, y, z}, attempt {current_attempt}")
 
                 # Make everything up to date
                 self.grid.wire_segments.update(wire_segments_tmp)
                 self.grid.intersections += intersections_tmp
-                path = path_tmp
 
-                return
+                return [x, y, z]
 
         # Return number of failed attempts if destination was not reached
-        return [x, y, z]
+        return 
 
     def find_smartest_step(self, position, destination, path_tmp):
-            """Calculate step to follow random path from current position to any location. If origin equals destination, return None"""
+        """Calculate step to follow random path from current position to any location. If origin equals destination, return None"""
 
-            # No new position is required when destination is already reached
-            if position == destination:
-                return "reached"
-            
-            # Cannot go down from the lowest layer
-            if position[2] == 0:
-                step_in_direction = random.choices([0, 1, 2], weights=[2, 2, 1])[0]
-                if step_in_direction == 2:
-                    direction = 1
-                else:
-                    direction = random.choice([-1, 1])
-
-            # If in middle of grid, all directions are equally likely
+        # No new position is required when destination is already reached
+        if position == destination:
+            return "reached"
+        
+        # Cannot go down from the lowest layer
+        if position[2] == 0:
+            step_in_direction = random.choices([0, 1, 2], weights=[2, 2, 1])[0]
+            if step_in_direction == 2:
+                direction = 1
             else:
-                step_in_direction = random.choice([0, 1, 2])
                 direction = random.choice([-1, 1])
 
-            new_position = list(position)
+        # If in middle of grid, all directions are equally likely
+        else:
+            step_in_direction = random.choice([0, 1, 2])
+            direction = random.choice([-1, 1])
 
-            # Make single step in random direction
-            new_position[step_in_direction] += direction
-        
-            new_position = tuple(new_position)
+        new_position = list(position)
 
-            # Check if step is legal
-            if new_position in path_tmp or (new_position in self.grid.gate_coordinates and new_position != destination):
-                return
+        # Make single step in random direction
+        new_position[step_in_direction] += direction
+    
+        new_position = tuple(new_position)
 
-            return new_position
+        # Check if step is legal
+        if new_position in path_tmp or (new_position in self.grid.gate_coordinates and new_position != destination):
+            return
 
+        return new_position

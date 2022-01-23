@@ -8,10 +8,12 @@ import operator
 def sort_length(netlists, descending=False):
     return (sorted(netlists.values(),key=operator.attrgetter('minimal_length'),reverse=descending))
 
+
 def random_sort(netlists):
     value_list = list(netlists.values())
     random.shuffle(value_list)
     return (value_list)
+
 
 def sort_middle_first(netlists, descending=False):
     x_champion = 0
@@ -45,6 +47,7 @@ def sort_middle_first(netlists, descending=False):
         netlists[key].ranking = ranking
 
     return (sorted(netlists.values(),key=operator.attrgetter('ranking'),reverse=descending))
+
 
 def sort_intersections():
     pass

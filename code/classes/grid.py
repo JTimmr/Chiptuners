@@ -1,10 +1,10 @@
 import csv
 from code.classes import gate, netlist
-from ast import literal_eval as make_tuple
 import pandas as pd
 
+
 class Grid:
-    def __init__(self, chip, netlist, infile):
+    def __init__(self, chip, netlist, infile=None):
 
         self.chip = chip
         self.netlist = netlist
@@ -42,12 +42,18 @@ class Grid:
         self.cost = 0
 
     def load_configuration(self):
+        """Load a previously generated set of netlists."""
+
+        # Extract data from csv
         data = pd.read_csv(self.infile)
         x = pd.Series.tolist((data['x'].str.split(';')))
         y = pd.Series.tolist(data['y'].str.split(';'))
         z = pd.Series.tolist(data['z'].str.split(';'))
         
+        # Run over all imported netlists
         for i in range(len(x)):
+
+            # Change to list of integers
             for j in range(len(x[i])):
                 x[i][j] = int(x[i][j])
             for j in range(len(y[i])):
@@ -55,14 +61,49 @@ class Grid:
             for j in range(len(z[i])):
                 z[i][j] = int(z[i][j])
 
+            # Extract coordinates of the gates the netlist connects
             gate_origin = (x[i][0], y[i][0], 0)
             gate_destination = (x[i][-1], y[i][-1], 0)
 
+            # Extract corresponding netlist from dictionry
             for netlist in self.netlists.values():
                 if netlist.start == gate_origin and netlist.end == gate_destination:
+
+                    # Save path to correct netlist
                     netlist.path = [x[i], y[i], z[i]]
-            
-            
+
+        # Update grid
+        self.update()
+
+    def update(self):
+        """Ensure dictionary of segments and number of intersections are up to date when a change in the configuration of the grid has been made."""
+        
+        # Reset dictionary wire segments and number of intersections
+        self.wire_segments = {}
+        self.intersections = 0
+
+        # Run over netlists
+        for netlist in self.netlists.values():
+            netlist.current_length = 0
+
+            # Extract path
+            x, y, z = netlist.path[0], netlist.path[1], netlist.path[2]
+            for coordinate in range(len(x) - 1):
+
+                # Keep count of actual length
+                netlist.current_length += 1
+
+                # Temporarily save coordinates of each segment
+                start = (x[coordinate], y[coordinate], z[coordinate])
+                end = (x[coordinate + 1], y[coordinate + 1], z[coordinate + 1])
+
+                # Check for intersections
+                if [segment for segment in self.wire_segments if end in segment and end not in self.gate_coordinates]:
+                    self.intersections += 1
+
+                # Add segment to dictionary
+                segment = (start, end)
+                self.wire_segments[segment] = netlist
 
     def load_gates(self):
         """Reads requested file containing the location of the gates, and extracts their id's and coordinates. Creates gate object for each row"""
@@ -110,7 +151,7 @@ class Grid:
                 # Store netlist in dictionary with unique key
                 self.netlists[key] = netlist_object
 
-    def to_csv(self):
+    def to_csv(self, number=None):
         """Writes a csv file that contains an overview of the grid"""
 
         netlists = {}
@@ -118,24 +159,34 @@ class Grid:
         y = {}
         z = {}
 
+        # Run over netlists
         for item in self.netlists:
+
+            # Extract list for coordinate in each dimension
             x_path = [str(element) for element in self.netlists[item].path[0]]
             y_path = [str(element) for element in self.netlists[item].path[1]]
             z_path = [str(element) for element in self.netlists[item].path[2]]
 
+            # Make individual coordinates ;-seperated
             x[item] = ";".join(x_path)
             y[item] = ";".join(y_path)
             z[item] = ";".join(z_path)
             netlists[item] = item
 
+        # Ensure correct file is created/modified
+        if number:
+            string = f"_C_{number}"
+        else:
+            string = ""
+        
+        # Save dataframe to csv
         df = pd.DataFrame({'netlist': netlists, 'x': x, 'y': y, 'z': z})
-        df.to_csv("output/output.csv", index=False)
-
-
+        df.to_csv(f"output/paths_netlist_{self.netlist}{string}.csv", index=False)
 
     def compute_costs(self):
         """Calculate total cost of the current configuration"""
-        
+
+        self.update()
         wire_amount = len(self.wire_segments)
 
         # Update cost
