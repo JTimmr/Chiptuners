@@ -19,8 +19,7 @@ def log_simulation(times, print_connections, netlist):
 
         # Set up wiriter and write the header
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-        writer.writeheader()
-        
+        writer.writeheader()        
         costs = []
 
         # Run n simulations and log each run in a new row
@@ -121,7 +120,7 @@ if __name__ == "__main__":
     # log_simulation(N, print_connections, netlist)
     for i in range(1, N + 1):
         for j in range(1, N+1):
-            improve(netlist, specific_file, update_csv, iterations, i, j)
+            improve(netlist, specific_file, update_csv, iterations, i, j)§
 
     # improve(netlist, specific_file, update_csv, iterations, 3)
 
