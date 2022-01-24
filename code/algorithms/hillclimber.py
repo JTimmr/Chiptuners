@@ -2,15 +2,21 @@ import random
 from copy import deepcopy
 import math
 import code.algorithms.sorting as sort
+import csv 
 
 
 class Hillclimber:
-    def __init__(self, grid, limit, update_csv):
+    def __init__(self, grid, limit, update_csv, name, n):
         self.grid = grid
         self.limit = limit
         self.iterations = 0
         self.attempts_without_improvement = 0
         self.update_csv = update_csv
+        self.iterationlist = []
+        self.costs = []
+        self.name = name
+        self.n = n
+        self.lowest_costs = None
 
     def run(self):
         """Keeps the Hillclimber algorithm running."""
@@ -19,7 +25,7 @@ class Hillclimber:
 
         # Run a number of iterations
         while self.iterations < self.limit:
-
+            print(f"Iteration {self.iterations}")
             # Sort netlist in desired order
             netlists = sort.sort_length(self.grid.netlists, descending=True)
             for netlist in netlists:
@@ -28,17 +34,20 @@ class Hillclimber:
                 self.improve_connection(netlist)
 
                 # Quit when no improvement is made after a large amount of attempts
-                if self.attempts_without_improvement > 500000:
-                    self.grid.compute_costs()
-                    print(f"No more improvements found. Costs are {self.grid.cost}")
-                    self.grid.to_csv(self.grid.cost)
-                    return False
+                if self.attempts_without_improvement > 500:
+                    continue
 
+            self.iterationlist.append(self.iterations)
             self.iterations += 1
+
+            while len(self.costs) < len(self.iterationlist):
+                self.costs.append(self.lowest_costs)
 
         self.grid.compute_costs()
         print(f"Reached max number of iterations. Costs are {self.grid.cost}")
         self.grid.to_csv(self.grid.cost)
+
+        self.to_csv()
 
         return self.grid.cost
 
@@ -87,6 +96,7 @@ class Hillclimber:
 
                     # Make change if costs are lower
                     if self.grid.cost < best_costs:
+                        self.lowest_costs = self.grid.cost
                         print(f"Improvement found: Reduced costs from {best_costs} to {self.grid.cost}")
                         best_path = deepcopy(new_path)
                         best_costs = deepcopy(self.grid.cost)
@@ -216,3 +226,17 @@ class Hillclimber:
             return
 
         return new_position
+
+
+    def to_csv(self):
+        with open(f"output/results_hillclimber/hill_netlist_{self.grid.netlist}{self.name}{self.n}_length(d).csv", "w", newline="") as csvfile:
+            fieldnames = ["iteration", "cost"]
+
+            # Set up wiriter and write the header
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writeheader()
+
+            for i in range(len(self.iterationlist)):
+                 writer.writerow({
+                    "iteration": i + 1, "cost": self.costs[i]
+                    })

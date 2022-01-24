@@ -29,6 +29,9 @@ def log_simulation(times, print_connections, netlist):
             baseline = base.Baseline(chip, print_connections)
             baseline.run()
             chip.compute_costs()
+
+            chip.to_csv(name=i)
+
             costs.append(chip.cost)
             simulations[i] = chip
             writer.writerow({
@@ -43,7 +46,7 @@ def log_simulation(times, print_connections, netlist):
         })
 
 
-def improve(netlist, specific_file, update_csv, iterations):
+def improve(netlist, specific_file, update_csv, iterations, i, j):
     """Takes a csv containing previously generated paths, and tries to improve the costs of the solution using an iterative algorithm."""
     
     # Open specific set of paths if desired
@@ -51,18 +54,28 @@ def improve(netlist, specific_file, update_csv, iterations):
     if specific_file:
         add_string = f"_C_{specific_file}"
 
+    if i:
+        i = f"_{i}"
+    else:
+        i = ""
+    
+    if j:
+        j = f"_{j}"
+    else:
+        j = ""
+
     # Open file
-    inputfile = f"output/paths_netlist_{netlist}{add_string}.csv"
+    inputfile = f"output/paths_netlist_{netlist}{i}{add_string}.csv"
     chip_nr = int((netlist - 1) / 3)
 
     # Load paths into grid
     chip = grid.Grid(chip_nr, netlist, inputfile)
 
     # Run hillclimber algorithm with a number of iterations
-    hillclimber = climber.Hillclimber(chip, iterations, update_csv)
+    hillclimber = climber.Hillclimber(chip, iterations, update_csv, i, j)
     costs = hillclimber.run()
 
-    visualize_three_dimensional(netlist, costs)
+    # visualize_three_dimensional(netlist, costs)
 
 
 def visualize_three_dimensional(netlist, specific_file):
@@ -87,16 +100,16 @@ def visualize_three_dimensional(netlist, specific_file):
 if __name__ == "__main__": 
 
     # Number of solutions the function log_simulation will try to find
-    N = 1
+    N = 10
 
     # Each iteration attempts to improve all netlists until improvement is found or none it found after long time
-    iterations = 100
+    iterations = 50
 
     # Prints all paths immediately when found
     print_connections = False
 
     # Netlist to be solved
-    netlist = 7
+    netlist = 3
 
     # Indicator from which specific file the paths will be extracted
     specific_file = None
@@ -105,6 +118,15 @@ if __name__ == "__main__":
     # Final form will always be saved
     update_csv = False
 
-    log_simulation(N, print_connections, netlist)
+    # log_simulation(N, print_connections, netlist)
+    for i in range(1, N + 1):
+        for j in range(1, N+1):
+            improve(netlist, specific_file, update_csv, iterations, i, j)
+
+    # improve(netlist, specific_file, update_csv, iterations, 3)
+
     # visualize_three_dimensional(netlist, specific_file)
     # improve(netlist, specific_file, update_csv, iterations)
+
+
+
