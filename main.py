@@ -96,7 +96,7 @@ if __name__ == "__main__":
     print_connections = False
 
     # Netlist to be solved
-    netlist = 3
+    netlist = 7
 
     # Indicator from which specific file the paths will be extracted
     specific_file = None
@@ -106,5 +106,5 @@ if __name__ == "__main__":
     update_csv = False
 
     log_simulation(N, print_connections, netlist)
-    visualize_three_dimensional(netlist, specific_file)
-    improve(netlist, specific_file, update_csv, iterations)
+    # visualize_three_dimensional(netlist, specific_file)
+    # improve(netlist, specific_file, update_csv, iterations)
