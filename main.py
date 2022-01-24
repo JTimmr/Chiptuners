@@ -1,8 +1,9 @@
 import csv
 import code.classes.grid as grid
-from code.algorithms import hillclimber, representation as rep
+from code.algorithms import representation as rep
 from code.algorithms import baseline as base
 from code.algorithms import hillclimber as climber
+from code.algorithms import A_star as star
 from code.visualize import visualize as vis
 
 
@@ -100,7 +101,7 @@ def visualize_three_dimensional(netlist, specific_file):
 if __name__ == "__main__": 
 
     # Number of solutions the function log_simulation will try to find
-    N = 10
+    N = 1
 
     # Each iteration attempts to improve all netlists until improvement is found or none it found after long time
     iterations = 50
@@ -109,7 +110,7 @@ if __name__ == "__main__":
     print_connections = False
 
     # Netlist to be solved
-    netlist = 3
+    netlist = 1
 
     # Indicator from which specific file the paths will be extracted
     specific_file = None
@@ -119,14 +120,18 @@ if __name__ == "__main__":
     update_csv = False
 
     # log_simulation(N, print_connections, netlist)
-    for i in range(1, N + 1):
-        for j in range(1, N+1):
-            improve(netlist, specific_file, update_csv, iterations, i, j)
+    # for i in range(1,2):
+    #     for j in range(1, N+1):
+    #         improve(netlist, specific_file, update_csv, iterations, i, j)
 
     # improve(netlist, specific_file, update_csv, iterations, 3)
 
     # visualize_three_dimensional(netlist, specific_file)
     # improve(netlist, specific_file, update_csv, iterations)
 
-
-
+    chip_nr = int((netlist - 1) / 3)
+    chip = grid.Grid(chip_nr, netlist)
+    a = star.A_Star(chip)
+    a.run()
+    chip.to_csv()
+    visualize_three_dimensional(netlist, specific_file)

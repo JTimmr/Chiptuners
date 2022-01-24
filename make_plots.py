@@ -43,7 +43,7 @@ plt.errorbar(iterations, ticks, std, capthick=1, elinewidth=0.5)
 plt.savefig("test.png")
 
 
-with open(f"output/results_hillclimber/hill_netlist_{netlist}_plot_data_length(a).csv", "w", newline="") as csvfile:
+with open(f"output/results_hillclimber/hill_netlist_{netlist}_plot_data_length(d).csv", "w", newline="") as csvfile:
     fieldnames = ["iteration", "cost", "std"]
 
     # Set up wiriter and write the header
