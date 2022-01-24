@@ -86,12 +86,8 @@ def visualize_three_dimensional(netlist, specific_file):
 
 if __name__ == "__main__": 
 
-<<<<<<< HEAD
-    N = 100
-=======
     # Number of solutions the function log_simulation will try to find
     N = 1
->>>>>>> fe8ea926ecc62f65f6688df6f1659ec25e6aec1e
 
     # Each iteration attempts to improve all netlists until improvement is found or none it found after long time
     iterations = 100
