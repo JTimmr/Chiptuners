@@ -5,10 +5,15 @@ import math
 class A_Star:
     def __init__(self, grid):
         self.grid = grid
-    
-    def run(self):
-        for netlist in sorting.sort_length(self.grid.netlists, descending=True):
 
+    def run(self):
+        total = len(self.grid.netlists)
+        completed = 0
+        print(f"{completed}/{total} done")
+
+        for netlist in sorting.sort_length(self.grid.netlists, descending=False):
+
+            
             # Retrieve starting and ending point
             start = netlist.start
             end = netlist.end
@@ -19,7 +24,10 @@ class A_Star:
                 x.append(a.path[coordinate][0])
                 y.append(a.path[coordinate][1])
                 z.append(a.path[coordinate][2])
-            netlist.path = [x, y, z]
+            path = [x, y, z]
+            netlist.path = path
+            completed += 1
+            print(f"{completed}/{total} done")
 
 
 class State(object):
@@ -47,6 +55,7 @@ class State_Path(State):
         self.goal = goal
         self.grid = grid
         self.netlist = netlist
+        self.intersections = 0
  
     def GetDistance(self):
             if self.value == self.goal:
@@ -56,7 +65,14 @@ class State_Path(State):
     def CreateChildren(self):
             if not self.children:
                 for i in range(3):
-                    for j in [-1, 1]:
+                    if self.value[i] == 0:
+                        directions = [1]
+                    elif self.value[i] == self.grid.size[i]:
+                        directions = [-1]
+                    else:
+                        directions = [-1, 1]
+
+                    for j in directions:
                         val = list(self.value)
                         val[i] += j
                         child = State_Path(self.grid, self.netlist, tuple(val), self, self.goal)
@@ -66,13 +82,13 @@ class State_Path(State):
 class A_Star_Solver:
     def __init__(self, grid, netlist, start, goal):
         self.path = []
-        self.vistedQueue =[]
-        self.priorityQueue = PriorityQueue()
+        self.visitedQueue = set()
+        self.priorityQueue = PriorityQueue(maxsize=0)
         self.start = start
         self.goal = goal
         self.grid = grid
         self.netlist = netlist
-        self.tmp_segments = {}
+        # print(self.start, self.goal)
  
     def Solve(self):
         startState = State_Path(self.grid, self.netlist, self.start, 0, self.goal, self.start)
@@ -82,10 +98,23 @@ class A_Star_Solver:
         while(not self.path and self.priorityQueue.qsize()):
             closesetChild = self.priorityQueue.get()[2]
             closesetChild.CreateChildren()
-            self.vistedQueue.append(closesetChild.value)
+            self.visitedQueue.add(closesetChild.value)
 
             for child in closesetChild.children:
+                if child.value in self.visitedQueue:
+                    continue
+                print(child.value)
                 
+                # Chance of success is higher when gates aren't blocked unnessicarily
+                illegal = False
+                for gate in self.grid.gate_coordinates:
+                    if child.value[:2] == gate[:2] and gate != self.goal and child.value[2] <= 1:
+                        illegal = True
+                if illegal:
+                    continue
+                # if child.value in self.grid.gate_coordinates and child.value != self.goal and child.value != self.start:
+                #     continue
+
                 # Save step as segment, and ensure two identical segments are never stored in reverse order (a, b VS b, a)
                 if ((math.sqrt(sum(i**2 for i in child.path[-2]))) >= (math.sqrt(sum(i**2 for i in child.value)))):
                     segment = (child.value, child.path[-2])
@@ -93,11 +122,20 @@ class A_Star_Solver:
                     segment = (child.path[-2], child.value)
 
                 if segment not in self.grid.wire_segments:
-                    self.tmp_segments[self.netlist] = segment
                     count += 1
+                    child.intersections += len([segment for segment in self.grid.wire_segments if child.value in segment])
+
                     if child.dist == 0:
                         self.path = child.path
-                        self.grid.wire_segments.update(self.tmp_segments)
+                        tmp_segments = {}
+                        for coordinate in range(len(self.path) - 1):
+                            if ((math.sqrt(sum(i**2 for i in self.path[coordinate]))) >= (math.sqrt(sum(i**2 for i in self.path[coordinate + 1])))):
+                                segment = (self.path[coordinate + 1], self.path[coordinate])
+                            else:
+                                segment = (self.path[coordinate], self.path[coordinate + 1])
+                            tmp_segments[segment] = self.netlist
+                        self.grid.wire_segments.update(tmp_segments)
+                        print(self.path)
                         return self.path
 
-                    self.priorityQueue.put((child.dist, count, child))
+                    self.priorityQueue.put(((child.dist + 300 * child.intersections), count, child))
