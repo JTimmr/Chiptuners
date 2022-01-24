@@ -29,6 +29,9 @@ def log_simulation(times, print_connections, netlist):
             baseline = base.Baseline(chip, print_connections)
             baseline.run()
             chip.compute_costs()
+
+            chip.to_csv(name=i)
+
             costs.append(chip.cost)
             simulations[i] = chip
             writer.writerow({
@@ -43,7 +46,7 @@ def log_simulation(times, print_connections, netlist):
         })
 
 
-def improve(netlist, specific_file, update_csv, iterations):
+def improve(netlist, specific_file, update_csv, iterations,name):
     """Takes a csv containing previously generated paths, and tries to improve the costs of the solution using an iterative algorithm."""
     
     # Open specific set of paths if desired
@@ -52,17 +55,17 @@ def improve(netlist, specific_file, update_csv, iterations):
         add_string = f"_C_{specific_file}"
 
     # Open file
-    inputfile = f"output/paths_netlist_{netlist}{add_string}.csv"
+    inputfile = f"output/paths_netlist_{name}_{netlist}{add_string}.csv"
     chip_nr = int((netlist - 1) / 3)
 
     # Load paths into grid
     chip = grid.Grid(chip_nr, netlist, inputfile)
 
     # Run hillclimber algorithm with a number of iterations
-    hillclimber = climber.Hillclimber(chip, iterations, update_csv)
+    hillclimber = climber.Hillclimber(chip, iterations, update_csv, name)
     costs = hillclimber.run()
 
-    visualize_three_dimensional(netlist, costs)
+    # visualize_three_dimensional(netlist, costs)
 
 
 def visualize_three_dimensional(netlist, specific_file):
@@ -87,7 +90,7 @@ def visualize_three_dimensional(netlist, specific_file):
 if __name__ == "__main__": 
 
     # Number of solutions the function log_simulation will try to find
-    N = 1
+    N = 10
 
     # Each iteration attempts to improve all netlists until improvement is found or none it found after long time
     iterations = 100
@@ -105,6 +108,15 @@ if __name__ == "__main__":
     # Final form will always be saved
     update_csv = False
 
-    log_simulation(N, print_connections, netlist)
-    visualize_three_dimensional(netlist, specific_file)
-    improve(netlist, specific_file, update_csv, iterations)
+    # log_simulation(N, print_connections, netlist)
+
+    # for i in range(1,N+1):
+    #     improve(netlist, specific_file, update_csv, iterations, i)
+
+    improve(netlist, specific_file, update_csv, iterations, 3)
+
+    # visualize_three_dimensional(netlist, specific_file)
+    # improve(netlist, specific_file, update_csv, iterations)
+
+
+
