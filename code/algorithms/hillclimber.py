@@ -27,7 +27,9 @@ class Hillclimber:
         while self.iterations < self.limit:
             print(f"Iteration {self.iterations}")
             # Sort netlist in desired order
-            netlists = sort.random_sort(self.grid.netlists)
+
+            netlists = sort.sort_length(self.grid.netlists, descending=False)
+
             for netlist in netlists:
 
                 # Try to make an inprovement
@@ -229,7 +231,7 @@ class Hillclimber:
 
 
     def to_csv(self):
-        with open(f"output/results_hillclimber/hill_netlist_{self.grid.netlist}{self.name}{self.n}_length(d).csv", "w", newline="") as csvfile:
+        with open(f"output/results_hillclimber/hill_netlist_{self.grid.netlist}{self.name}{self.n}_length(a).csv", "w", newline="") as csvfile:
             fieldnames = ["iteration", "cost"]
 
             # Set up wiriter and write the header
