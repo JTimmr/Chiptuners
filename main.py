@@ -109,7 +109,11 @@ if __name__ == "__main__":
     print_connections = False
 
     # Netlist to be solved
+<<<<<<< HEAD
     netlist = 4
+=======
+    netlist = 9
+>>>>>>> fdab40f9908d33d794dae4fa2670b48f5f636d90
 
     # Indicator from which specific file the paths will be extracted
     specific_file = None
