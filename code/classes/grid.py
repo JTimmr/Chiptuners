@@ -108,7 +108,7 @@ class Grid:
     def load_gates(self):
         """Reads requested file containing the location of the gates, and extracts their id's and coordinates. Creates gate object for each row"""
 
-        with open (f"Data/chip_{self.chip}/print_{self.chip}.csv", 'r') as file:
+        with open (f"data/chip_{self.chip}/print_{self.chip}.csv", 'r') as file:
             reader = csv.DictReader(file)
             for row in reader:
 
@@ -131,7 +131,7 @@ class Grid:
     def load_netlists(self):
         """Reads requested file containing the requested netlists, and extracts their starting and ending coordinates. Creates gate object for each row"""
 
-        with open (f"Data/chip_{self.chip}/netlist_{self.netlist}.csv") as file:
+        with open (f"data/chip_{self.chip}/netlist_{self.netlist}.csv") as file:
             reader = csv.DictReader(file)
             for row in reader:
 
