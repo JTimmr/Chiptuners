@@ -109,7 +109,7 @@ if __name__ == "__main__":
     print_connections = False
 
     # Netlist to be solved
-    netlist = 1
+    netlist = 4
 
     # Indicator from which specific file the paths will be extracted
     specific_file = None
@@ -133,6 +133,5 @@ if __name__ == "__main__":
     chip = grid.Grid(chip_nr, netlist)
     a = star.A_Star(chip)
     a.run()
-    breakpoint()
     chip.to_csv()
     visualize_three_dimensional(netlist, specific_file)

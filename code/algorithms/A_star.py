@@ -11,9 +11,8 @@ class A_Star:
         completed = 0
         print(f"{completed}/{total} done")
 
-        for netlist in sorting.sort_length(self.grid.netlists, descending=False):
+        for netlist in sorting.sort_exp_intersections(self.grid.netlists, descending=True):
 
-            
             # Retrieve starting and ending point
             start = netlist.start
             end = netlist.end
