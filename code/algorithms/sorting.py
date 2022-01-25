@@ -48,6 +48,23 @@ def sort_middle_first(netlists, descending=False):
 
     return (sorted(netlists.values(),key=operator.attrgetter('ranking'),reverse=descending))
 
+def sort_gate(grid, descending=True):
+    gate_occupation = {}
+    netlist_neighbors = {}
+
+    for gate in grid.gates.values():
+        gate_occupation[gate.coordinates] = 0
+
+    for netlist in grid.netlists.values():
+        netlist_neighbors[netlist] = 0
+        gate_occupation[netlist.start] += 1
+        gate_occupation[netlist.end] += 1
+
+    for netlist in grid.netlists.values():
+        netlist_neighbors[netlist] += gate_occupation[netlist.start] + gate_occupation[netlist.end] - 2
+
+    return sorted(netlist_neighbors, key=netlist_neighbors.get, reverse=descending)
+
 
 def sort_intersections():
     pass
