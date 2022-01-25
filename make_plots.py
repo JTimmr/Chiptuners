@@ -54,3 +54,18 @@ with open(f"output/results_hillclimber/hill_netlist_{netlist}_plot_data_length(d
             writer.writerow({
             "iteration": i + 1, "cost": ticks[i], "std": std[i]
             })
+
+
+
+# for file in files:
+#     with open(file) as file:
+#         reader = csv.Dictreader(file)
+#         iterations = []
+#         costs = []
+#         stds = []
+#         for row in reader:
+#             iterations.append(row['iteration'])
+#             costs.append(row['cost'])
+#             stds.append(row['std'])
+#         plt.errorbar(iterations, costs, stds)
+# plt.show()
