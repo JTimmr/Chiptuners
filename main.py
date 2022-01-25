@@ -20,8 +20,7 @@ def log_simulation(times, print_connections, netlist):
 
         # Set up wiriter and write the header
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-        writer.writeheader()
-        
+        writer.writeheader()        
         costs = []
 
         # Run n simulations and log each run in a new row
@@ -120,6 +119,7 @@ if __name__ == "__main__":
     update_csv = False
 
     # log_simulation(N, print_connections, netlist)
+
     # for i in range(1,2):
     #     for j in range(1, N+1):
     #         improve(netlist, specific_file, update_csv, iterations, i, j)
@@ -133,5 +133,6 @@ if __name__ == "__main__":
     chip = grid.Grid(chip_nr, netlist)
     a = star.A_Star(chip)
     a.run()
+    breakpoint()
     chip.to_csv()
     visualize_three_dimensional(netlist, specific_file)

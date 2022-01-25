@@ -27,7 +27,9 @@ class Hillclimber:
         while self.iterations < self.limit:
             print(f"Iteration {self.iterations}")
             # Sort netlist in desired order
+
             netlists = sort.sort_length(self.grid.netlists, descending=False)
+
             for netlist in netlists:
 
                 # Try to make an inprovement
