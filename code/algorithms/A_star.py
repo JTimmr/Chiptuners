@@ -28,6 +28,8 @@ class A_Star:
             netlist.path = path
             completed += 1
             print(f"{completed}/{total} done")
+        self.grid.update()
+        print(self.grid.cost)
 
 
 class State(object):
@@ -49,14 +51,14 @@ class State(object):
  
  
 class State_Path(State):
-    def __init__(self, grid, netlist, visitedQueue, value, parent, goal, start = 0):
+    def __init__(self, grid, netlist, visitedQueue, intersections, value, parent, goal, start = 0):
         super(State_Path, self).__init__(value, parent, start, goal)
         self.dist = self.GetDistance()
         self.goal = goal
         self.grid = grid
         self.netlist = netlist
-        self.intersections = 0
         self.visitedQueue = visitedQueue
+        self.intersections = intersections
  
     def GetDistance(self):
             if self.value == self.goal:
@@ -76,7 +78,10 @@ class State_Path(State):
                     for j in directions:
                         val = list(self.value)
                         val[i] += j
-                        child = State_Path(self.grid, self.netlist, self.visitedQueue, tuple(val), self, self.goal)
+                        val = tuple(val)
+                        if new_intersections := len([segment for segment in self.grid.wire_segments if val == segment[0] and val not in self.grid.gates]):
+                            self.intersections += new_intersections
+                        child = State_Path(self.grid, self.netlist, self.visitedQueue, self.intersections, val, self, self.goal)
                         if child.value not in self.visitedQueue:    
                             self.children.append(child)
  
@@ -92,7 +97,7 @@ class A_Star_Solver:
         self.netlist = netlist
  
     def Solve(self):
-        startState = State_Path(self.grid, self.netlist, self.visitedQueue, self.start, 0, self.goal, self.start)
+        startState = State_Path(self.grid, self.netlist, self.visitedQueue, 0, self.start, 0, self.goal, self.start)
         count = 0
 
         self.priorityQueue.put((0,count, startState, self.goal))
@@ -103,7 +108,7 @@ class A_Star_Solver:
             self.visitedQueue.add(closesetChild.value)
 
             for child in closesetChild.children:
-  
+
                 # Chance of success is higher when gates aren't blocked unnessicarily
                 illegal = False
                 for gate in self.grid.gate_coordinates:
@@ -132,6 +137,7 @@ class A_Star_Solver:
                                 segment = (self.path[coordinate], self.path[coordinate + 1])
                             tmp_segments[segment] = self.netlist
                         self.grid.wire_segments.update(tmp_segments)
+                        
                         return self.path
-
+                    # print(child.intersections)
                     self.priorityQueue.put(((child.dist), count, child))

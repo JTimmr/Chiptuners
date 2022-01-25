@@ -6,12 +6,13 @@ import csv
 
 
 class Hillclimber:
-    def __init__(self, grid, limit, update_csv, name, n):
+    def __init__(self, grid, limit, update_csv_paths, make_csv_improvements, name, n):
         self.grid = grid
         self.limit = limit
         self.iterations = 0
         self.attempts_without_improvement = 0
-        self.update_csv = update_csv
+        self.update_csv_paths = update_csv_paths
+        self.make_csv_improvements = make_csv_improvements
         self.iterationlist = []
         self.costs = []
         self.name = name
@@ -49,7 +50,8 @@ class Hillclimber:
         print(f"Reached max number of iterations. Costs are {self.grid.cost}")
         self.grid.to_csv(self.grid.cost)
 
-        self.to_csv()
+        if self.make_csv_improvements:
+            self.to_csv()
 
         return self.grid.cost
 
@@ -85,7 +87,7 @@ class Hillclimber:
                         self.attempts_without_improvement = 0
 
                         # Keep csv updated if update_csv is set to True in main function
-                        if self.update_csv:
+                        if self.update_csv_paths:
                             self.grid.to_csv(self.grid.cost)
 
                     # Reset if new path is denied
@@ -105,7 +107,7 @@ class Hillclimber:
                         self.attempts_without_improvement = 0
 
                         # Keep csv updated if update_csv is set to True in main function
-                        if self.update_csv:
+                        if self.update_csv_paths:
                             self.grid.to_csv(self.grid.cost)
 
                     # Reset if new path is denied

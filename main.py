@@ -7,13 +7,14 @@ from code.algorithms import A_star as star
 from code.visualize import visualize as vis
 
 
-def log_simulation(times, print_connections, netlist):
+def log_simulation(runs, netlist):
     """Run the given algorithm a number of times, creating a set of solutions. Set N to 1 if a single solution suffices."""
     
-    simulations = {}
+    # Calculate chip number from netlist number
     chip_nr = int((netlist - 1) / 3)
 
-    with open(f"output/netlist_{netlist}_{times}x.csv", "w", newline="") as csvfile:
+    # Open file where results will be stored
+    with open(f"output/netlist_{netlist}_{runs}x.csv", "w", newline="") as csvfile:
 
         # Set up fieldnames 
         fieldnames = ["simulation", "cost", "attempts"]
@@ -24,58 +25,53 @@ def log_simulation(times, print_connections, netlist):
         costs = []
 
         # Run n simulations and log each run in a new row
-        for i in range(1, times + 1):
+        for i in range(1, runs + 1):
             chip = grid.Grid(chip_nr, netlist)
-            baseline = base.Baseline(chip, print_connections)
+            baseline = base.Baseline(chip)
             baseline.run()
             chip.compute_costs()
 
+            # Save path data to csv
             chip.to_csv(name=i)
 
+
             costs.append(chip.cost)
-            simulations[i] = chip
             writer.writerow({
                     "simulation": i, "cost": chip.cost, "attempts": chip.tot_attempts
                     })
             print(f"Completed simulation {i}: C = {chip.cost}, found on attempt {chip.tot_attempts}")
-            chip.to_csv()
 
-        avgCosts = sum(costs)/times
+        avgCosts = sum(costs)/runs
         writer.writerow({
             "simulation": "Avg costs", "cost": avgCosts
         })
 
 
-def improve(netlist, specific_file, update_csv, iterations, i="", j=""):
+
+def improve(netlist, specific_file, update_csv_paths, make_csv_improvements, iterations, N):
     """Takes a csv containing previously generated paths, and tries to improve the costs of the solution using an iterative algorithm."""
-    
-    # Open specific set of paths if desired
-    add_string = ""
-    if specific_file:
-        add_string = f"_C_{specific_file}"
 
-    if i:
-        i = f"_{i}"
-    else:
-        i = ""
-    
-    if j:
-        j = f"_{j}"
-    else:
-        j = ""
+    for i in range(1, N+1):
+        for j in range(1, N+1):
+            #improve(netlist, specific_file, update_csv_paths, make_csv_improvements, iterations, i, j)
 
-    # Open file
-    inputfile = f"output/paths_netlist_{netlist}{i}{add_string}.csv"
-    chip_nr = int((netlist - 1) / 3)
+            # Open specific set of paths if desired
+            add_string = ""
+            if specific_file:
+                add_string = f"_C_{specific_file}"
 
-    # Load paths into grid
-    chip = grid.Grid(chip_nr, netlist, inputfile)
+            run = f"_{i}"
 
-    # Run hillclimber algorithm with a number of iterations
-    hillclimber = climber.Hillclimber(chip, iterations, update_csv, i, j)
-    costs = hillclimber.run()
+            # Open file
+            inputfile = f"output/paths_netlist_{netlist}{run}{add_string}.csv"
+            chip_nr = int((netlist - 1) / 3)
 
-    # visualize_three_dimensional(netlist, costs)
+            # Load paths into grid
+            chip = grid.Grid(chip_nr, netlist, inputfile)
+
+            # Run hillclimber algorithm with a number of iterations
+            hillclimber = climber.Hillclimber(chip, iterations, update_csv_paths, make_csv_improvements, i, j)
+            costs = hillclimber.run()
 
 
 def visualize_three_dimensional(netlist, specific_file):
@@ -103,10 +99,7 @@ if __name__ == "__main__":
     N = 1
 
     # Each iteration attempts to improve all netlists until improvement is found or none it found after long time
-    iterations = 50
-
-    # Prints all paths immediately when found
-    print_connections = False
+    iterations = 5
 
     # Netlist to be solved
 
@@ -115,18 +108,18 @@ if __name__ == "__main__":
     # Indicator from which specific file the paths will be extracted
     specific_file = None
 
-    # Makes a new csv file for each improvement made in costs
+    # Makes a new csv file for each improvement made in costs by hillclimber or simulated annealing
     # Final form will always be saved
-    update_csv = False
+    update_csv_paths = False
 
-    # log_simulation(N, print_connections, netlist)
+    # Makes CSV files after a hillclimber is done, storing the new costs per iteration
+    make_csv_improvements = False
 
-    # for i in range(1,2):
-    #     for j in range(1, N+1):
-    #         improve(netlist, specific_file, update_csv, iterations, i, j)
+    log_simulation(N, netlist)
 
-    # improve(netlist, specific_file, update_csv, iterations, 3)
+    improve(netlist, specific_file, update_csv_paths, make_csv_improvements, iterations, N)
 
+##################################################################################################
     # visualize_three_dimensional(netlist, specific_file)
     # improve(netlist, specific_file, update_csv, iterations)
 
