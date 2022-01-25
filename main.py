@@ -46,7 +46,7 @@ def log_simulation(times, print_connections, netlist):
         })
 
 
-def improve(netlist, specific_file, update_csv, iterations, i, j):
+def improve(netlist, specific_file, update_csv, iterations, i="", j=""):
     """Takes a csv containing previously generated paths, and tries to improve the costs of the solution using an iterative algorithm."""
     
     # Open specific set of paths if desired
@@ -110,7 +110,7 @@ if __name__ == "__main__":
 
     # Netlist to be solved
 
-    netlist = 9
+    netlist = 3
 
     # Indicator from which specific file the paths will be extracted
     specific_file = None
@@ -132,7 +132,12 @@ if __name__ == "__main__":
 
     chip_nr = int((netlist - 1) / 3)
     chip = grid.Grid(chip_nr, netlist)
-    a = star.A_Star(chip)
+    a = base.Baseline(chip, print_connections)
     a.run()
     chip.to_csv()
-    visualize_three_dimensional(netlist, specific_file)
+
+    improve(netlist, specific_file, update_csv, iterations)
+
+    chip.compute_costs()
+    print(chip.cost)
+    # visualize_three_dimensional(netlist, specific_file)
