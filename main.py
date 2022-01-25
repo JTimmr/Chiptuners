@@ -6,6 +6,24 @@ from code.algorithms import hillclimber as climber
 from code.algorithms import A_star as star
 from code.visualize import visualize as vis
 
+def to_csv(costs):
+
+    with open(f"output/heavy_out.csv", "w", newline="") as csvfile:
+
+
+        fieldnames = ["simulation", "cost"]
+
+        # Set up wiriter and write the header
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader() 
+
+        for i in range(len(costs)):
+
+            writer.writerow({
+                    "simulation": i + 1, "cost": costs[i]
+                    })
+
+
 
 def log_simulation(runs, netlist):
     """Run the given algorithm a number of times, creating a set of solutions. Set N to 1 if a single solution suffices."""
@@ -46,11 +64,13 @@ def log_simulation(runs, netlist):
             "simulation": "Avg costs", "cost": avgCosts
         })
 
-
 def improve(netlist, specific_file, update_csv_paths, make_csv_improvements, iterations, N):
     """Takes a csv containing previously generated paths, and tries to improve the costs of the solution using an iterative algorithm."""
 
+    costs = []
+
     for i in range(1, N+1):
+    # for i in range(1,2):
         for j in range(1, N+1):
             #improve(netlist, specific_file, update_csv_paths, make_csv_improvements, iterations, i, j)
 
@@ -70,8 +90,11 @@ def improve(netlist, specific_file, update_csv_paths, make_csv_improvements, ite
 
             # Run hillclimber algorithm with a number of iterations
             hillclimber = climber.Hillclimber(chip, iterations, update_csv_paths, make_csv_improvements, i, j)
-            costs = hillclimber.run()
+            cost = hillclimber.run()
 
+            costs.append(cost)
+
+    return costs
 
 def visualize_three_dimensional(netlist, specific_file):
     """Takes a csv file containing previously generates paths, and create a 3-dimensional plot to visualize them."""
@@ -105,6 +128,7 @@ if __name__ == "__main__":
     # Netlist to be solved
     netlist = 4
 
+
     # Indicator from which specific file the paths will be extracted
     specific_file = None
 
@@ -121,11 +145,9 @@ if __name__ == "__main__":
 
     improve(netlist, specific_file, update_csv_paths, make_csv_improvements, iterations, N)
 
-    
-
     # chip_nr = int((netlist - 1) / 3)
     # chip = grid.Grid(chip_nr, netlist)
     # a = star.A_Star(chip)
     # a.run()
     # chip.to_csv()
-    # visualize_three_dimensional(netlist, specific_file)
+
