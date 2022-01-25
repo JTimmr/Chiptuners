@@ -8,6 +8,16 @@ class Representation:
     def __init__(self, grid):
         self.grid = grid
 
+    def run(self):
+        """Runs the algorithm until a solution is found"""
+
+        print("Searching for semi random configuration...")
+
+        # Until a solution is found, reset everything and try again
+        while not self.make_connections():
+            self.grid.wire_segments = {}
+            self.grid.intersections = 0
+
     def make_connections(self):
         """Connects two points on the grid, and plots the result"""
 
