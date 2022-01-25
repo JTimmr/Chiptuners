@@ -8,9 +8,8 @@ Defines/ contains the algorithm for random (uniformly distributed) movements as 
 """
 
 class Baseline:
-    def __init__(self, grid, print_connections):
+    def __init__(self, grid):
         self.grid = grid
-        self.print_connections = print_connections
         
     def run(self):
         """Runs the algorithm until a solution is found"""
@@ -40,8 +39,6 @@ class Baseline:
                 # Give up if it takes too long
                 if current_attempt > 50000:
                     self.grid.tot_attempts += current_attempt
-                    if self.print_connections:
-                        print(f"break, total attempts {self.grid.tot_attempts}")
                     return False
 
             # If a path is found, update number of attempts and retrieve coordinates
@@ -58,7 +55,7 @@ class Baseline:
         x = []
         y = []
         z = []
-        max_pathlength = netlist.minimal_length +10 #* 2 + 6
+        max_pathlength = netlist.minimal_length * 2 + 6
 
         # Temporary values until path is confirmed
         origin_tmp = deepcopy(origin)
@@ -116,8 +113,6 @@ class Baseline:
             # Return path if destination is reached
             else:
                 current_attempt += new_attempts
-                if self.print_connections:
-                    print(f"Path found between {netlist.start} and {netlist.end} of length {current_length}, attempt {current_attempt}")
 
                 # Make everything up to date
                 self.grid.wire_segments.update(wire_segments_tmp)
