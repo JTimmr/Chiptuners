@@ -8,7 +8,11 @@ from code.visualize import visualize as vis
 
 def to_csv(costs):
 
+    cost_found_before_netlist_3_base = [76,361,clear66,68,68,362,368,369,60,64,66,70,72,74,76,78,80,82,86,88,90,359,362,363,365,366,367,368,369,370,371,372,373,375,378,379,380,663,664,669,671,980]
+
     with open(f"output/heavy_out.csv", "w", newline="") as csvfile:
+
+        costs.append(cost_found_before_netlist_3_base)
 
         fieldnames = ["simulation", "cost"]
 
@@ -117,7 +121,7 @@ def visualize_three_dimensional(netlist, specific_file):
 if __name__ == "__main__": 
 
     # Number of solutions the function log_simulation will try to find
-    N = 20
+    N = 2
 
     # Each iteration attempts to improve all netlists until improvement is found or none it found after long time
     iterations = 50
@@ -141,8 +145,6 @@ if __name__ == "__main__":
     costs = improve(netlist, specific_file, update_csv_paths, make_csv_improvements, iterations, N)
 
     to_csv(costs)
-
-    cost_found_before_netlist_3_base = [60,64,66,70,72,74,76,78,80,82,86,88,90,359,362,363,365,366,367,368,369,370,371,372,373,375,378,379,380,663,664,669,671,980]
 
 
 ##################################################################################################
