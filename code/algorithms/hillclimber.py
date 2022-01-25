@@ -15,8 +15,8 @@ class Hillclimber:
         self.make_csv_improvements = make_csv_improvements
         self.iterationlist = []
         self.costs = []
-        self.name = name
-        self.n = n
+        self.name = f"_{name}"
+        self.n = f"_{n}"
         self.lowest_costs = None
 
     def run(self):
@@ -29,7 +29,7 @@ class Hillclimber:
             print(f"Iteration {self.iterations}")
             # Sort netlist in desired order
 
-            netlists = sort.sort_length(self.grid.netlists, descending=False)
+            netlists = sort.sort_exp_intersections(self.grid.netlists, descending=False)
 
             for netlist in netlists:
 
@@ -233,7 +233,7 @@ class Hillclimber:
 
 
     def to_csv(self):
-        with open(f"output/results_hillclimber/hill_netlist_{self.grid.netlist}{self.name}{self.n}_length(a).csv", "w", newline="") as csvfile:
+        with open(f"output/results_hillclimber/hill_netlist_{self.grid.netlist}{self.name}{self.n}_intersections_ascending.csv", "w", newline="") as csvfile:
             fieldnames = ["iteration", "cost"]
 
             # Set up wiriter and write the header

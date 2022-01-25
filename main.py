@@ -80,6 +80,8 @@ def visualize_three_dimensional(netlist, specific_file):
     add_string = ""
     if specific_file:
         add_string = f"_C_{specific_file}"
+    else:
+        add_string = f"_1"
 
     # Open file
     inputfile = f"output/paths_netlist_{netlist}{add_string}.csv"
@@ -98,28 +100,28 @@ if __name__ == "__main__":
     N = 1
 
     # Each iteration attempts to improve all netlists until improvement is found or none it found after long time
-    iterations = 5
+    iterations = 50
 
     # Netlist to be solved
-    netlist = 3
+    netlist = 4
 
     # Indicator from which specific file the paths will be extracted
     specific_file = None
 
     # Makes a new csv file for each improvement made in costs by hillclimber or simulated annealing
     # Final form will always be saved
-    update_csv_paths = False
+    update_csv_paths = True
 
     # Makes CSV files after a hillclimber is done, storing the new costs per iteration
     make_csv_improvements = False
 
     log_simulation(N, netlist)
 
+    visualize_three_dimensional(netlist, specific_file)
+
     improve(netlist, specific_file, update_csv_paths, make_csv_improvements, iterations, N)
 
-##################################################################################################
-    # visualize_three_dimensional(netlist, specific_file)
-    # improve(netlist, specific_file, update_csv, iterations)
+    
 
     # chip_nr = int((netlist - 1) / 3)
     # chip = grid.Grid(chip_nr, netlist)
