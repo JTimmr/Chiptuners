@@ -14,12 +14,15 @@ for i in range(1, 11):
     for j in range(1, 11):
         costs = []
 
-        with open (f"output/results_hillclimber/hill_netlist_{netlist}_{i}_{j}_length(d).csv") as file:
+        with open (f"output/results_hillclimber/hill_netlist_{netlist}_{i}_{j}_middle_ascending.csv") as file:
             reader = csv.DictReader(file)
             for row in reader:
 
                 # Extract coordinates
-                cost = int(row['cost'])
+                try:
+                    cost = int(row['cost'])
+                except ValueError:
+                    cost = 3000
                 costs.append(cost)
             costs = np.array(costs)
             many_costs.append(costs)
@@ -43,7 +46,7 @@ plt.errorbar(iterations, ticks, std, capthick=1, elinewidth=0.5)
 plt.savefig("test.png")
 
 
-with open(f"output/results_hillclimber/hill_netlist_{netlist}_plot_data_length(d).csv", "w", newline="") as csvfile:
+with open(f"output/results_hillclimber/hill_netlist_{netlist}_plot_data_sort_middle_first(a).csv", "w", newline="") as csvfile:
     fieldnames = ["iteration", "cost", "std"]
 
     # Set up wiriter and write the header

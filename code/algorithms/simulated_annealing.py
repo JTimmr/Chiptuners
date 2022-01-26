@@ -1,130 +1,106 @@
 import random
-from copy import deepcopy
 import math
+from copy import deepcopy
 import code.algorithms.sorting as sort
-import csv
-
-from code.visualize import visualize 
+import csv 
 
 
-class Hillclimber:
-    def __init__(self, grid, limit, update_csv_paths, make_csv_improvements, name, n):
+class SimulatedAnnealing:
+    def __init__(self, grid, limit, update_csv, name, n, temperature):
         self.grid = grid
         self.limit = limit
         self.iterations = 0
         self.attempts_without_improvement = 0
-        self.update_csv_paths = update_csv_paths
-        self.make_csv_improvements = make_csv_improvements
+        self.update_csv = update_csv
         self.iterationlist = []
         self.costs = []
-        self.name = f"_{name}"
-        self.n = f"_{n}"
+        self.name = name
+        self.n = n
         self.lowest_costs = None
-        self.i = 0
+        
+        # Starting temperature and current temperature
+        self.Starting_T = temperature
+        self.Current_T = temperature
+
+    def update_temperature(self):
+        # Check that ensures the temperature only updates when the iteration number has increased
+       if self.iterationlist:
+            if self.iterationlist[-1] != self.iterations:
+                # Temperature decreases linearly with every iteration
+                self.Current_T = self.Current_T - (self.Starting_T / ((self.limit + 1) - self.iterations))
+                print(f" Temperature is: {self.Current_T}")
+                return self.Current_T
+
+                #Exponential
+                # alpha = 0.999
+                # self.Current_T = self.Current_T * alpha
+                # return self.Current_T
+
 
     def run(self):
-        """Keeps the Hillclimber algorithm running."""
-
         print("Searching for improvements...")
 
-        # Sort netlist in desired order
-        netlists = sort.sort_length(self.grid.netlists, descending=True)
-
-        # Run a number of iterations
         while self.iterations < self.limit:
             print(f"Iteration {self.iterations}")
 
-            # Sort netlist in desired order
-            netlists = sort.sort_exp_intersections(self.grid.netlists, descending=False)
+            netlists = sort.sort_length(self.grid.netlists, descending=False)
 
             for netlist in netlists:
 
-                # Try to make an inprovement
                 self.improve_connection(netlist)
-
-                # Quit when no improvement is made after a large amount of attempts
-                if self.attempts_without_improvement > 500:
-                    continue
 
             self.iterationlist.append(self.iterations)
             self.iterations += 1
+
+            self.update_temperature()
 
             while len(self.costs) < len(self.iterationlist):
                 self.costs.append(self.lowest_costs)
 
         self.grid.compute_costs()
         print(f"Reached max number of iterations. Costs are {self.grid.cost}")
+
         self.grid.to_csv(self.grid.cost)
 
-        if self.make_csv_improvements:
-            self.to_csv()
+        self.to_csv()
 
         return self.grid.cost
 
+
     def improve_connection(self, netlist):
-        """Takes a netlist as an input, and tries to find a shorter path between its two gates."""
 
         origin = netlist.start
         destination = netlist.end
 
-        # Make copies so original values aren't lost
         best_path = deepcopy(netlist.path)
         self.grid.compute_costs()
         best_costs = deepcopy(self.grid.cost)
-        
-        # Try a number of times before succes becomes unlikely
-        for attempt in range(1000):
 
-            new_path = self.find_path(origin, destination, netlist)
+        new_path = self.find_path(origin, destination, netlist)
+        if new_path:
+            old_path = deepcopy(netlist.path)
+            netlist.path = new_path
+            self.grid.compute_costs()
 
-            # If path is found, calculate new costs
-            if new_path:
-                old_path = deepcopy(netlist.path)
-                netlist.path = new_path
-                self.grid.compute_costs()
+            delta = best_costs - self.grid.cost
+            probability = math.exp(-delta / self.Current_T)
+            rand = random.random() 
 
-                # Allow change of path with no benefit once every 25 attempts
-                if self.attempts_without_improvement % 25 == 0:
+            print(f"probability {probability}")
+            print(f"random: {rand}")
 
-                    # Make change if costs are equal or lower
-                    if self.grid.cost <= best_costs:
-                        best_path = deepcopy(new_path)
-                        best_costs = deepcopy(self.grid.cost)
-                        self.attempts_without_improvement = 0
+            if rand < probability:
+                self.lowest_costs = self.grid.cost
+                print(f"Improvement found: Reduced costs from {best_costs} to {self.grid.cost}")
+                best_path = deepcopy(new_path)
+                best_costs = deepcopy(self.grid.cost)
 
-                        # Keep csv updated if update_csv is set to True in main function
-                        if self.update_csv_paths:
-                            self.grid.to_csv(self.grid.cost)
+                if self.update_csv:
+                    self.grid.to_csv(self.grid.cost)
 
-                    # Reset if new path is denied
-                    else:
-                        netlist.path = old_path
-                        self.attempts_without_improvement += 1
-
-                # Only allow changes to decrease the cost 24/25 attempts
-                else:
-
-                    # Make change if costs are lower
-                    if self.grid.cost < best_costs:
-                        self.lowest_costs = self.grid.cost
-                        print(f"Improvement found: Reduced costs from {best_costs} to {self.grid.cost}")
-                        self.i+=1
-                        best_path = deepcopy(new_path)
-                        best_costs = deepcopy(self.grid.cost)
-                        self.attempts_without_improvement = 0
-
-                        # Keep csv updated if update_csv is set to True in main function
-                        if self.update_csv_paths:
-                            self.grid.to_csv(self.grid.cost)
-
-                    # Reset if new path is denied
-                    else:
-                        netlist.path = old_path
-                        self.attempts_without_improvement += 1
-            
-            # If no path was found at all, register as failed attempt
             else:
-                self.attempts_without_improvement += 1
+                netlist.path = old_path
+
 
     def find_path(self, origin, destination, netlist):
         """Attempts to find a path between two coordinates in the grid."""
@@ -229,7 +205,7 @@ class Hillclimber:
 
         # Make single step in random direction
         new_position[step_in_direction] += direction
-    
+
         new_position = tuple(new_position)
 
         # Check if step is legal
@@ -238,9 +214,8 @@ class Hillclimber:
 
         return new_position
 
-
     def to_csv(self):
-        with open(f"output/results_hillclimber/hill_netlist_{self.grid.netlist}{self.name}{self.n}_intersections_ascending.csv", "w", newline="") as csvfile:
+        with open(f"output/results_annealing/hill_netlist_{self.grid.netlist}{self.name}{self.n}_length(a).csv", "w", newline="") as csvfile:
             fieldnames = ["iteration", "cost"]
 
             # Set up wiriter and write the header
@@ -248,6 +223,6 @@ class Hillclimber:
             writer.writeheader()
 
             for i in range(len(self.iterationlist)):
-                 writer.writerow({
+                    writer.writerow({
                     "iteration": i + 1, "cost": self.costs[i]
-                    })
+                })

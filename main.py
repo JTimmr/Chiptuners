@@ -5,6 +5,7 @@ from code.algorithms import baseline as base
 from code.algorithms import hillclimber as climber
 from code.algorithms import A_star as star
 from code.visualize import visualize as vis
+from code.algorithms import simulated_annealing as sim
 
 def to_csv(costs):
 
@@ -94,6 +95,10 @@ def improve(netlist, specific_file, update_csv_paths, make_csv_improvements, ite
 
             costs.append(cost)
 
+            # simulated annealing
+            simanneal = sim.SimulatedAnnealing(chip, iterations, update_csv, i, j, temperature = 500)
+            costs = simanneal.run()
+
     return costs
 
 def visualize_three_dimensional(netlist, specific_file):
@@ -103,6 +108,8 @@ def visualize_three_dimensional(netlist, specific_file):
     add_string = ""
     if specific_file:
         add_string = f"_C_{specific_file}"
+    else:
+        add_string = f"_1"
 
     # Open file
     inputfile = f"output/paths_netlist_{netlist}{add_string}.csv"
@@ -124,6 +131,7 @@ if __name__ == "__main__":
     iterations = 100
 
     # Netlist to be solved
+    netlist = 4
 
     netlist = 2
 
@@ -132,7 +140,7 @@ if __name__ == "__main__":
 
     # Makes a new csv file for each improvement made in costs by hillclimber or simulated annealing
     # Final form will always be saved
-    update_csv_paths = False
+    update_csv_paths = True
 
     # Makes CSV files after a hillclimber is done, storing the new costs per iteration
     make_csv_improvements = False
@@ -148,8 +156,9 @@ if __name__ == "__main__":
     # to_csv(costs)
 
 
+    # chip_nr = int((netlist - 1) / 3)
+    # chip = grid.Grid(chip_nr, netlist)
+    # a = star.A_Star(chip)
+    # a.run()
+    # chip.to_csv()
 
-##################################################################################################
-    # visualize_three_dimensional(netlist, specific_file)
-    # improve(netlist, specific_file, update_csv, iterations)
-    # visualize_three_dimensional(netlist, specific_file)
