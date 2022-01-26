@@ -79,7 +79,7 @@ def improve(netlist, specific_file, update_csv_paths, make_csv_improvements, ite
             if specific_file:
                 add_string = f"_C_{specific_file}"
 
-            run = f"_{i}"
+            run = f""
 
             # Open file
             inputfile = f"output/paths_netlist_{netlist}{run}{add_string}.csv"
@@ -103,8 +103,6 @@ def visualize_three_dimensional(netlist, specific_file):
     add_string = ""
     if specific_file:
         add_string = f"_C_{specific_file}"
-    else:
-        add_string = f"_1"
 
     # Open file
     inputfile = f"output/paths_netlist_{netlist}{add_string}.csv"
@@ -123,14 +121,14 @@ if __name__ == "__main__":
     N = 1
 
     # Each iteration attempts to improve all netlists until improvement is found or none it found after long time
-    iterations = 50
+    iterations = 500
 
     # Netlist to be solved
-    netlist = 4
+    netlist = 3
 
 
     # Indicator from which specific file the paths will be extracted
-    specific_file = None
+    specific_file = 62
 
     # Makes a new csv file for each improvement made in costs by hillclimber or simulated annealing
     # Final form will always be saved
@@ -139,9 +137,9 @@ if __name__ == "__main__":
     # Makes CSV files after a hillclimber is done, storing the new costs per iteration
     make_csv_improvements = False
 
-    log_simulation(N, netlist)
+    # log_simulation(N, netlist)
 
-    visualize_three_dimensional(netlist, specific_file)
+    # visualize_three_dimensional(netlist, specific_file)
 
     improve(netlist, specific_file, update_csv_paths, make_csv_improvements, iterations, N)
 
@@ -150,4 +148,5 @@ if __name__ == "__main__":
     # a = star.A_Star(chip)
     # a.run()
     # chip.to_csv()
+    # visualize_three_dimensional(netlist, specific_file)
 
