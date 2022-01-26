@@ -118,14 +118,14 @@ def visualize_three_dimensional(netlist, specific_file):
 if __name__ == "__main__": 
 
     # Number of solutions the function log_simulation will try to find
-    N = 2
+    N = 1
 
     # Each iteration attempts to improve all netlists until improvement is found or none it found after long time
-    iterations = 50
+    iterations = 100
 
     # Netlist to be solved
 
-    netlist = 3
+    netlist = 2
 
     # Indicator from which specific file the paths will be extracted
     specific_file = None
@@ -137,13 +137,16 @@ if __name__ == "__main__":
     # Makes CSV files after a hillclimber is done, storing the new costs per iteration
     make_csv_improvements = False
 
-    # log_simulation(N, netlist)
+    log_simulation(N, netlist)
+    
+    improve(netlist, specific_file, update_csv_paths, make_csv_improvements, iterations, N)
 
     # costs = improve(netlist, specific_file, update_csv_paths, make_csv_improvements, iterations, N)
 
-    costs = [388,365,364,62,76,361,66,68,68,362,368,369,60,64,66,70,72,74,76,78,80,82,86,88,90,359,362,363,365,366,367,368,369,370,371,372,373,375,378,379,380,663,664,669,671,980]
+    # costs = [388,365,364,62,76,361,66,68,68,362,368,369,60,64,66,70,72,74,76,78,80,82,86,88,90,359,362,363,365,366,367,368,369,370,371,372,373,375,378,379,380,663,664,669,671,980]
 
-    to_csv(costs)
+    # to_csv(costs)
+
 
 
 ##################################################################################################
