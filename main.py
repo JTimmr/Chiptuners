@@ -1,6 +1,7 @@
 import csv
 import code.classes.grid as grid
-from code.algorithms import representation as rep
+from code import algorithms
+from code.algorithms import representation as rep, simulated_annealing
 from code.algorithms import baseline as base
 from code.algorithms import hillclimber as climber
 from code.algorithms import A_star as star
@@ -65,22 +66,21 @@ def log_simulation(runs, netlist):
             "simulation": "Avg costs", "cost": avgCosts
         })
 
-def improve(netlist, specific_file, update_csv_paths, make_csv_improvements, iterations, N):
+def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improvements, iterations, N):
     """Takes a csv containing previously generated paths, and tries to improve the costs of the solution using an iterative algorithm."""
 
     costs = []
 
     for i in range(1, N+1):
-    # for i in range(1,2):
+        
         for j in range(1, N+1):
-            #improve(netlist, specific_file, update_csv_paths, make_csv_improvements, iterations, i, j)
 
             # Open specific set of paths if desired
             add_string = ""
             if specific_file:
                 add_string = f"_C_{specific_file}"
 
-            run = f""
+            run = f"_1"
 
             # Open file
             inputfile = f"output/paths_netlist_{netlist}{run}{add_string}.csv"
@@ -90,14 +90,15 @@ def improve(netlist, specific_file, update_csv_paths, make_csv_improvements, ite
             chip = grid.Grid(chip_nr, netlist, inputfile)
 
             # Run hillclimber algorithm with a number of iterations
-            hillclimber = climber.Hillclimber(chip, iterations, update_csv_paths, make_csv_improvements, i, j)
-            cost = hillclimber.run()
+            if algorithm == "hillclimber":
+                hillclimber = climber.Hillclimber(chip, iterations, update_csv_paths, make_csv_improvements, i, j)
+                cost = hillclimber.run()
 
-            costs.append(cost)
+                costs.append(cost)
 
-            # simulated annealing
-            simanneal = sim.SimulatedAnnealing(chip, iterations, update_csv, i, j, temperature = 500)
-            costs = simanneal.run()
+            elif algorithm == "simulated_annealing":
+                simanneal = sim.SimulatedAnnealing(chip, iterations, update_csv_paths, i, j, temperature = 10000)
+                costs = simanneal.run()
 
     return costs
 
@@ -126,27 +127,28 @@ if __name__ == "__main__":
     N = 1
 
     # Each iteration attempts to improve all netlists until improvement is found or none it found after long time
-    iterations = 500
+    iterations = 10000
 
     # Netlist to be solved
-    netlist = 3
+    netlist = 2
 
+    algorithm = "simulated_annealing"
 
     # Indicator from which specific file the paths will be extracted
-    specific_file = 62
+    specific_file = None
 
     # Makes a new csv file for each improvement made in costs by hillclimber or simulated annealing
     # Final form will always be saved
-    update_csv_paths = True
+    update_csv_paths = False
 
     # Makes CSV files after a hillclimber is done, storing the new costs per iteration
     make_csv_improvements = False
 
-    # log_simulation(N, netlist)
+    log_simulation(N, netlist)
 
     # visualize_three_dimensional(netlist, specific_file)
 
-    improve(netlist, specific_file, update_csv_paths, make_csv_improvements, iterations, N)
+    improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improvements, iterations, N)
 
     # chip_nr = int((netlist - 1) / 3)
     # chip = grid.Grid(chip_nr, netlist)
