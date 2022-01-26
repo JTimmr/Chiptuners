@@ -1,3 +1,3 @@
 # Chiptuners
 
-<highlight>Usage: python main.py</highlight>
+Usage: python main.py
