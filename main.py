@@ -72,7 +72,7 @@ def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improv
     costs = []
 
     for i in range(1, N+1):
-        
+
         for j in range(1, N+1):
 
             # Open specific set of paths if desired
@@ -145,10 +145,11 @@ if __name__ == "__main__":
     make_csv_improvements = False
 
     log_simulation(N, netlist)
-
+    
     # visualize_three_dimensional(netlist, specific_file)
 
     improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improvements, iterations, N)
+
 
     # chip_nr = int((netlist - 1) / 3)
     # chip = grid.Grid(chip_nr, netlist)

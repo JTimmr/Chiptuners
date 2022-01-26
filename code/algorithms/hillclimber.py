@@ -2,7 +2,9 @@ import random
 from copy import deepcopy
 import math
 import code.algorithms.sorting as sort
-import csv 
+import csv
+
+from code.visualize import visualize 
 
 
 class Hillclimber:
@@ -18,6 +20,7 @@ class Hillclimber:
         self.name = f"_{name}"
         self.n = f"_{n}"
         self.lowest_costs = None
+        self.i = 0
 
     def run(self):
         """Keeps the Hillclimber algorithm running."""
@@ -105,6 +108,7 @@ class Hillclimber:
                     if self.grid.cost < best_costs:
                         self.lowest_costs = self.grid.cost
                         print(f"Improvement found: Reduced costs from {best_costs} to {self.grid.cost}")
+                        self.i+=1
                         best_path = deepcopy(new_path)
                         best_costs = deepcopy(self.grid.cost)
                         self.attempts_without_improvement = 0
