@@ -126,16 +126,16 @@ def visualize_three_dimensional(netlist, specific_file):
 if __name__ == "__main__": 
 
     # Number of solutions the function log_simulation will try to find
-    N = 2
+    N = 1
 
     # Number of improved solution an optimizing algorithm will produce per inputsolution
-    N_improvements = 2
+    N_improvements = 1
 
     # Each iteration attempts to improve all netlists until improvement is found or none it found after long time
     iterations = 10000
 
     # Netlist to be solved
-    netlist = 2
+    netlist = 1
 
     algorithm = "simulated_annealing"
 
