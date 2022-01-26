@@ -128,7 +128,7 @@ if __name__ == "__main__":
     N = 1
 
     # Each iteration attempts to improve all netlists until improvement is found or none it found after long time
-    iterations = 100
+    iterations = 10
 
     # Netlist to be solved
     netlist = 4
