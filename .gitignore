@@ -1,0 +1,9 @@
+.DS_Store
+__pycache__/
+output/
+output/visual.png
+code/__pycache__/
+code/algorithms/__pycache__/
+code/classes/__pycache__/
+test_space.py
+code/algorithms/level_walk.py
