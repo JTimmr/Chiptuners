@@ -5,6 +5,7 @@ from code.algorithms import baseline as base
 from code.algorithms import hillclimber as climber
 from code.algorithms import A_star as star
 from code.visualize import visualize as vis
+from code.algorithms import simulated_annealing as sim
 
 def to_csv(costs):
 
@@ -93,6 +94,10 @@ def improve(netlist, specific_file, update_csv_paths, make_csv_improvements, ite
             cost = hillclimber.run()
 
             costs.append(cost)
+
+            # simulated annealing
+            simanneal = sim.SimulatedAnnealing(chip, iterations, update_csv, i, j, temperature = 500)
+            costs = simanneal.run()
 
     return costs
 
