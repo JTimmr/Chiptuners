@@ -6,12 +6,13 @@ import csv
 
 
 class SimulatedAnnealing:
-    def __init__(self, grid, limit, update_csv, name, n, temperature):
+    def __init__(self, grid, limit, update_csv_paths, make_csv_improvements, name, n, temperature):
         self.grid = grid
         self.limit = limit
         self.iterations = 0
         self.attempts_without_improvement = 0
-        self.update_csv = update_csv
+        self.update_csv_paths = update_csv_paths
+        self.make_csv_improvements = make_csv_improvements
         self.iterationlist = []
         self.costs = []
         self.name = name
@@ -63,7 +64,8 @@ class SimulatedAnnealing:
 
         self.grid.to_csv(self.grid.cost)
 
-        self.to_csv()
+        if self.make_csv_improvements:
+            self.to_csv()
 
         return self.grid.cost
 
@@ -97,7 +99,7 @@ class SimulatedAnnealing:
                 best_path = deepcopy(new_path)
                 best_costs = deepcopy(self.grid.cost)
 
-                if self.update_csv:
+                if self.update_csv_paths:
                     self.grid.to_csv(self.grid.cost)
 
             else:

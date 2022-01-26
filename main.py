@@ -66,21 +66,21 @@ def log_simulation(runs, netlist):
             "simulation": "Avg costs", "cost": avgCosts
         })
 
-def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improvements, iterations, N):
+def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improvements, iterations, N, N_improvements):
     """Takes a csv containing previously generated paths, and tries to improve the costs of the solution using an iterative algorithm."""
 
     costs = []
 
     for i in range(1, N+1):
 
-        for j in range(1, N+1):
+        for j in range(1, N_improvements + 1):
 
             # Open specific set of paths if desired
             add_string = ""
             if specific_file:
                 add_string = f"_C_{specific_file}"
 
-            run = f"_1"
+            run = f"_{i}"
 
             # Open file
             inputfile = f"output/paths_netlist_{netlist}{run}{add_string}.csv"
@@ -97,7 +97,7 @@ def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improv
                 costs.append(cost)
 
             elif algorithm == "simulated_annealing":
-                simanneal = sim.SimulatedAnnealing(chip, iterations, update_csv_paths, i, j, temperature = 10000)
+                simanneal = sim.SimulatedAnnealing(chip, iterations, update_csv_paths, make_csv_improvements, i, j, temperature = 10000)
                 costs = simanneal.run()
 
     return costs
@@ -109,6 +109,8 @@ def visualize_three_dimensional(netlist, specific_file):
     add_string = ""
     if specific_file:
         add_string = f"_C_{specific_file}"
+    else:
+        add_string = f"_1"
 
     # Open file
     inputfile = f"output/paths_netlist_{netlist}{add_string}.csv"
@@ -124,7 +126,10 @@ def visualize_three_dimensional(netlist, specific_file):
 if __name__ == "__main__": 
 
     # Number of solutions the function log_simulation will try to find
-    N = 1
+    N = 2
+
+    # Number of improved solution an optimizing algorithm will produce per inputsolution
+    N_improvements = 2
 
     # Each iteration attempts to improve all netlists until improvement is found or none it found after long time
     iterations = 10000
@@ -148,7 +153,7 @@ if __name__ == "__main__":
     
     # visualize_three_dimensional(netlist, specific_file)
 
-    improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improvements, iterations, N)
+    improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improvements, iterations, N, N_improvements)
 
 
     # chip_nr = int((netlist - 1) / 3)
