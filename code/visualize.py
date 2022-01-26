@@ -26,5 +26,3 @@ def visualize(chip):
     ax.set_zlim(0, 7)
     ax.legend(chip.netlists.keys(), title = "Netlist", prop={'size': 7}, bbox_to_anchor=(1.15, 1),loc='upper left')
     plt.show()
-
-

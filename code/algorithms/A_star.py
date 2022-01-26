@@ -140,4 +140,5 @@ class A_Star_Solver:
                         
                         return self.path
                     # print(child.intersections)
-                    self.priorityQueue.put(((child.dist + int(2.5 * child.intersections)), count, child))
+                    #self.priorityQueue.put(((child.dist + int(2.5 * child.intersections)), count, child))
+                    self.priorityQueue.put(((child.dist), count, child))

@@ -23,12 +23,15 @@ class SimulatedAnnealing:
         self.Current_T = temperature
 
     def update_temperature(self):
-        # Check that ensures the temperature only updates when the iteration number has increased
-       if self.iterationlist:
+
+    # Check that ensures the temperature only updates when the iteration number has increased
+       if self.iterationlist and self.Current_T > 1:
             if self.iterationlist[-1] != self.iterations:
+
                 # Temperature decreases linearly with every iteration
-                self.Current_T = self.Current_T - (self.Starting_T / ((self.limit + 1) - self.iterations))
-                print(f" Temperature is: {self.Current_T}")
+                self.Current_T -= 20
+                if self.Current_T <= 0:
+                    self.Current_T = 1
                 return self.Current_T
 
                 #Exponential
@@ -36,12 +39,10 @@ class SimulatedAnnealing:
                 # self.Current_T = self.Current_T * alpha
                 # return self.Current_T
 
-
     def run(self):
         print("Searching for improvements...")
 
         while self.iterations < self.limit:
-            print(f"Iteration {self.iterations}")
 
             netlists = sort.sort_length(self.grid.netlists, descending=False)
 
@@ -83,15 +84,16 @@ class SimulatedAnnealing:
             self.grid.compute_costs()
 
             delta = best_costs - self.grid.cost
-            probability = math.exp(-delta / self.Current_T)
-            rand = random.random() 
 
-            print(f"probability {probability}")
-            print(f"random: {rand}")
+            if delta < 0:
+                probability = math.exp(delta/self.Current_T)
+            else:
+                probability = 1
+            rand = random.random() 
 
             if rand < probability:
                 self.lowest_costs = self.grid.cost
-                print(f"Improvement found: Reduced costs from {best_costs} to {self.grid.cost}")
+                print(f"Alternatice path found: new costs are {self.grid.cost}")
                 best_path = deepcopy(new_path)
                 best_costs = deepcopy(self.grid.cost)
 

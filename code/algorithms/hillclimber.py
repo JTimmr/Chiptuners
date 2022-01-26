@@ -35,7 +35,7 @@ class Hillclimber:
             print(f"Iteration {self.iterations}")
 
             # Sort netlist in desired order
-            netlists = sort.sort_exp_intersections(self.grid.netlists, descending=False)
+            netlists = sort.sort_length(self.grid.netlists, descending=True)
 
             for netlist in netlists:
 
