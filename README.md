@@ -11,6 +11,15 @@ De case kent ook enkele constraints; zo mogen stukken draad niet over hetzelfde 
 
 De kostenfunctie: TK = aantal segmenten + 300 * aantal intersecties
 
+> Ook hebben wij de grootte van onze state-space als volgt berekent:
+> 2^ N
+> N = l * [m(n - 1) + n(m - 1)] + mn(l − 1)
+> N =  totale aantal segmenten
+> l = aantal lagen
+> m = breedte grid
+> n = lengte grid
+
+
 ![visualisatie voorbeeld]()
 
 ### Usage
@@ -54,5 +63,3 @@ Om het programma werkend te laten draaien, zullen enkele dingen geïnstalleerd m
 ```bash
 pip install -r requirements.txt
 ```
-
-### State space
