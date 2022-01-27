@@ -262,4 +262,4 @@ class SimulatedAnnealing:
         plt.legend()
         plt.xlabel("Iterations")
         plt.ylabel("Costs")
-        plt.savefig(f"output/figs/N{self.grid.netlist}_T{self.Starting_T}_I{self.limit}_C{self.lowest_costs}.png")
+        plt.savefig(f"output/figs/annealing_N{self.grid.netlist}_T{self.Starting_T}_I{self.limit}_C{self.lowest_costs}.png")
