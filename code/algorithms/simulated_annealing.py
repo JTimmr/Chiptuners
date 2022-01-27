@@ -5,16 +5,18 @@ from copy import deepcopy
 import numpy
 import code.algorithms.sorting as sort
 import csv 
+import matplotlib.pyplot as plt
 
 
 class SimulatedAnnealing:
-    def __init__(self, grid, limit, update_csv_paths, make_csv_improvements, name, n, temperature):
+    def __init__(self, grid, limit, update_csv_paths, make_csv_improvements, make_sim_annealing_plot, name, n, temperature):
         self.grid = grid
         self.limit = limit
         self.iterations = 0
         self.attempts_without_improvement = 0
         self.update_csv_paths = update_csv_paths
         self.make_csv_improvements = make_csv_improvements
+        self.make_sim_annealing_plot = make_sim_annealing_plot
         self.iterationlist = []
         self.costs = []
         self.name = name
@@ -73,6 +75,9 @@ class SimulatedAnnealing:
 
         if self.make_csv_improvements:
             self.to_csv()
+        
+        if self.make_sim_annealing_plot:
+            self.plot()
 
         return self.grid.cost
 
@@ -111,12 +116,9 @@ class SimulatedAnnealing:
                 probability = 1
             rand = random.random() 
 
-            
-
-
             if rand < probability:
                 self.lowest_costs = self.grid.cost
-                print(f"Alternatice path found: new costs are {self.grid.cost}")
+                print(f"Alternate path found: new costs are {self.grid.cost}")
                 best_path = deepcopy(new_path)
                 best_costs = deepcopy(self.grid.cost)
 
@@ -240,7 +242,7 @@ class SimulatedAnnealing:
         return new_position
 
     def to_csv(self):
-        with open(f"output/results_annealing/hill_netlist_{self.grid.netlist}{self.name}{self.n}_length(a).csv", "w", newline="") as csvfile:
+        with open(f"output/results_annealing/annealing_netlist_{self.grid.netlist}{self.name}{self.n}_length(a).csv", "w", newline="") as csvfile:
             fieldnames = ["iteration", "cost"]
 
             # Set up wiriter and write the header
@@ -251,3 +253,13 @@ class SimulatedAnnealing:
                     writer.writerow({
                     "iteration": i + 1, "cost": self.costs[i]
                 })
+    
+
+    def plot(self):
+        """Plots simulated annealing with iterations on x-axis and costs on y-axis."""
+
+        plt.plot(self.iterationlist, self.costs, label = f"{self.Starting_T} \xb0 celcius")
+        plt.legend()
+        plt.xlabel("Iterations")
+        plt.ylabel("Costs")
+        plt.savefig(f"output/figs/N{self.grid.netlist}_T{self.Starting_T}_I{self.limit}_C{self.lowest_costs}.png")
