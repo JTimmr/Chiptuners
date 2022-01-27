@@ -10,7 +10,6 @@ class A_Star:
     def run(self):
         total = len(self.grid.netlists)
         completed = 0
-        print(f"{completed}/{total} done")
 
         for netlist in sorting.sort_length(self.grid.netlists, descending=False):
             
@@ -27,9 +26,7 @@ class A_Star:
             path = [x, y, z]
             netlist.path = path
             completed += 1
-            print(f"{completed}/{total} done")
         self.grid.update()
-        print(self.grid.cost)
 
 
 class State(object):
@@ -139,6 +136,6 @@ class A_Star_Solver:
                         self.grid.wire_segments.update(tmp_segments)
                         
                         return self.path
-                    # print(child.intersections)
+                        
                     #self.priorityQueue.put(((child.dist + int(2.5 * child.intersections)), count, child))
                     self.priorityQueue.put(((child.dist), count, child))
