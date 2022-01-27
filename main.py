@@ -95,7 +95,6 @@ def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improv
                 else:
                     add_string = f"_{specific_file}"
 
-
             # Open file
             inputfile = f"output/paths_netlist_{netlist}{add_string}.csv"
             chip_nr = int((netlist - 1) / 3)

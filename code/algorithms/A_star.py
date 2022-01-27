@@ -12,7 +12,7 @@ class A_Star:
         completed = 0
 
         for netlist in sorting.sort_length(self.grid.netlists, descending=False):
-            print(f"{completed}/{len(self.grid.netlists)}")
+            print(f"Finished {netlist.start} to {netlist.end}, {completed}/{len(self.grid.netlists)}")
 
             # Retrieve starting and ending point
             start = netlist.start
@@ -88,20 +88,24 @@ class A_Star_Solver:
     def __init__(self, grid, netlist, start, goal):
         self.path = []
         self.visitedQueue = set()
+        self.inQueue = set()
         self.priorityQueue = PriorityQueue(maxsize=0)
         self.start = start
         self.goal = goal
         self.grid = grid
         self.netlist = netlist
- 
+
     def Solve(self):
         startState = State_Path(self.grid, self.netlist, self.visitedQueue, 0, self.start, 0, self.goal, self.start)
         count = 0
 
         self.priorityQueue.put((0,count, startState, self.goal))
+        self.inQueue.add(startState.value)
 
         while(not self.path and self.priorityQueue.qsize()):
+
             closesetChild = self.priorityQueue.get()[2]
+            self.inQueue.remove(closesetChild.value)
             closesetChild.CreateChildren()
             self.visitedQueue.add(closesetChild.value)
             for child in closesetChild.children:
@@ -136,6 +140,9 @@ class A_Star_Solver:
                         self.grid.wire_segments.update(tmp_segments)
                         
                         return self.path
-                        
-                    # self.priorityQueue.put(((child.dist + int(2 * child.intersections)), count, child))
-                    self.priorityQueue.put(((child.dist), count, child))
+                    
+                    if child.value not in self.inQueue:
+                        self.priorityQueue.put(((child.dist + int(300 * child.intersections)), count, child))
+                        self.inQueue.add(child.value)
+                        print(self.priorityQueue.qsize())
+                    # self.priorityQueue.put(((child.dist), count, child))
