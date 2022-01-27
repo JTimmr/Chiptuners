@@ -32,15 +32,15 @@ class SimulatedAnnealing:
             if self.iterationlist[-1] != self.iterations:
 
                 # Temperature decreases linearly with every iteration
-                # self.Current_T -= 20
-                # if self.Current_T <= 0:
-                #     self.Current_T = 1
-                # return self.Current_T
+                self.Current_T -= 20
+                if self.Current_T <= 0:
+                    self.Current_T = 1
+                return self.Current_T
 
                 # Logarithmic decrease as described by Aarts and Korst in 1989
-                log_factor = 1 + numpy.log(1 + self.iterations)
-                self.Current_T = self.Current_T / log_factor
-                return self.Current_T
+                # log_factor = 1 + numpy.log(1 + self.iterations)
+                # self.Current_T = self.Current_T / log_factor
+                # return self.Current_T
 
                 #Exponential
                 # alpha = 0.999
