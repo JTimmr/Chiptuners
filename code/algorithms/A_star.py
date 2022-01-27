@@ -12,7 +12,8 @@ class A_Star:
         completed = 0
 
         for netlist in sorting.sort_length(self.grid.netlists, descending=False):
-            
+            print(f"{completed}/{len(self.grid.netlists)}")
+
             # Retrieve starting and ending point
             start = netlist.start
             end = netlist.end
@@ -103,13 +104,12 @@ class A_Star_Solver:
             closesetChild = self.priorityQueue.get()[2]
             closesetChild.CreateChildren()
             self.visitedQueue.add(closesetChild.value)
-
             for child in closesetChild.children:
 
                 # Chance of success is higher when gates aren't blocked unnessicarily
                 illegal = False
                 for gate in self.grid.gate_coordinates:
-                    if child.value[:2] == gate[:2] and gate != self.goal and gate != self.start and child.value[2] <= 1:
+                    if child.value[:2] == gate[:2] and gate != self.goal and gate != self.start and child.value[2] <= 2:
                         illegal = True
 
                 if illegal:
@@ -137,5 +137,5 @@ class A_Star_Solver:
                         
                         return self.path
                         
-                    #self.priorityQueue.put(((child.dist + int(2.5 * child.intersections)), count, child))
+                    # self.priorityQueue.put(((child.dist + int(2 * child.intersections)), count, child))
                     self.priorityQueue.put(((child.dist), count, child))

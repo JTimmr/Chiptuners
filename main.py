@@ -64,7 +64,11 @@ def log_simulation(runs, netlist, constructive_algorithm):
             writer.writerow({
                     "simulation": i, "cost": chip.cost, "attempts": chip.tot_attempts
                     })
-            print(f"Completed simulation {i}: C = {chip.cost}, found on attempt {chip.tot_attempts}")
+            add = ""
+            if chip.tot_attempts > 0: 
+                add = f", found on attempt {chip.tot_attempts}"
+                
+            print(f"Completed simulation {i}: C = {chip.cost}{add}")
 
         avgCosts = sum(costs)/runs
         writer.writerow({
@@ -82,12 +86,14 @@ def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improv
 
             # Open specific set of paths if desired
             add_string = ""
-            if int(specific_file):
+            try :
+                int(specific_file)
                 add_string = f"_{specific_file}"
-            elif N > 1:
-                add_string = f"_{i}"
-            else:
-                add_string = f"_C_{specific_file}"
+            except ValueError:
+                if N > 1:
+                    add_string = f"_{i}"
+                else:
+                    add_string = f"_{specific_file}"
 
 
             # Open file
@@ -140,7 +146,7 @@ if __name__ == "__main__":
 
     parser.add_argument("-n", type=int, default=1, dest="N", help="number of solutions generated")
     parser.add_argument("-m", type=int, default=1, dest="N_improvements", help="number of improved solutions made for every prefound solution")
-    parser.add_argument("-file", type=int, default=1, dest="specific_file", help="Specific file to be improved or plotted. If file is paths_netlist_4_C_19655, use -file C_19655. If file is paths_netlist_1_3, use -file 3.")
+    parser.add_argument("-file", type=str, default=1, dest="specific_file", help="Specific file to be improved or plotted. If file is paths_netlist_4_C_19655, use -file C_19655. If file is paths_netlist_1_3, use -file 3.")
 
     # Parse the command line arguments
     args = parser.parse_args()
@@ -152,7 +158,7 @@ if __name__ == "__main__":
     if args.improving_algorithm:
 
         # Each iteration attempts to improve all netlists until improvement is found or none it found after long tim
-        iterations = 20
+        iterations = 50
 
         # Makes a new csv file for each improvement made in costs by hillclimber or simulated annealing
         # Final form will always be saved
@@ -160,7 +166,8 @@ if __name__ == "__main__":
 
         # Makes CSV files after a hillclimber is done, storing the new costs per iteration
         make_csv_improvements = False
-        improve(args.netlist, args.specific_file, args.improving_algorithm, update_csv_paths, make_csv_improvements, iterations, args.N, args.N_improvements)
+        make_sim_annealing_plot = False
+        improve(args.netlist, args.specific_file, args.improving_algorithm, update_csv_paths, make_csv_improvements, make_sim_annealing_plot, iterations, args.N, args.N_improvements)
 
     if args.visualize:
         visualize_three_dimensional(args.netlist, args.specific_file)
