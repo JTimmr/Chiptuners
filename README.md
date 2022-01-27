@@ -44,7 +44,15 @@ mkdir results_hillclimber
 mkdir figs
 ```
 ### Structuur
+data/ - 
+code/ -
+    algorithms/ -
+    classes/ - 
 
 ### Requirements
+Om het programma werkend te laten draaien, zullen enkele dingen geïnstalleerd moeten zijn. Deze kun je automatisch installeren door: 
+```bash
+pip install -r requirements.txt
+```
 
 ### State space
