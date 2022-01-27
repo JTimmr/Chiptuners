@@ -43,6 +43,7 @@ mkdir results_hillclimber
 ```bash
 mkdir figs
 ```
+### Structuur
 
 ### Requirements
 
