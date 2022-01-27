@@ -1,15 +1,13 @@
 import csv
 import code.classes.grid as grid
 from code import algorithms
-from code.algorithms import representation as rep, simulated_annealing
+from code.algorithms import representation as rep
 from code.algorithms import baseline as base
 from code.algorithms import hillclimber as climber
 from code.algorithms import A_star as star
 from code.visualize import visualize as vis
 from code.algorithms import simulated_annealing as sim
 import argparse
-import os
-import sys
 
 def to_csv(costs):
 
@@ -73,7 +71,7 @@ def log_simulation(runs, netlist, constructive_algorithm):
             "simulation": "Avg costs", "cost": avgCosts
         })
 
-def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improvements, iterations, N, N_improvements):
+def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improvements, make_sim_annealing_plot, iterations, N, N_improvements):
     """Takes a csv containing previously generated paths, and tries to improve the costs of the solution using an iterative algorithm."""
 
     costs = []
@@ -107,7 +105,7 @@ def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improv
                 costs.append(cost)
 
             elif algorithm == "simulated_annealing":
-                simanneal = sim.SimulatedAnnealing(chip, iterations, update_csv_paths, make_csv_improvements, i, j, temperature = 3000)
+                simanneal = sim.SimulatedAnnealing(chip, iterations, update_csv_paths, make_csv_improvements, make_sim_annealing_plot, i, j, temperature = 3000)
                 costs = simanneal.run()
 
     return costs
