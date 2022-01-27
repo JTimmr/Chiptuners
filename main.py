@@ -66,7 +66,7 @@ def log_simulation(runs, netlist):
             "simulation": "Avg costs", "cost": avgCosts
         })
 
-def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improvements, iterations, N, N_improvements):
+def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improvements, make_sim_annealing_plot, iterations, N, N_improvements):
     """Takes a csv containing previously generated paths, and tries to improve the costs of the solution using an iterative algorithm."""
 
     costs = []
@@ -97,7 +97,7 @@ def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improv
                 costs.append(cost)
 
             elif algorithm == "simulated_annealing":
-                simanneal = sim.SimulatedAnnealing(chip, iterations, update_csv_paths, make_csv_improvements, i, j, temperature = 3000)
+                simanneal = sim.SimulatedAnnealing(chip, iterations, update_csv_paths, make_csv_improvements, make_sim_annealing_plot, i, j, temperature = 3000)
                 costs = simanneal.run()
 
     return costs
@@ -132,11 +132,10 @@ if __name__ == "__main__":
     N_improvements = 1
 
     # Each iteration attempts to improve all netlists until improvement is found or none it found after long time
-
     iterations = 10000
 
     # Netlist to be solved
-    netlist = 3
+    netlist = 2
 
     algorithm = "simulated_annealing"
 
@@ -150,12 +149,14 @@ if __name__ == "__main__":
     # Makes CSV files after a hillclimber is done, storing the new costs per iteration
     make_csv_improvements = False
 
-    log_simulation(N, netlist)
+    # Makes a plot of iterations and costs of simulated annealing algorithm
+    make_sim_annealing_plot = True
+
+    # log_simulation(N, netlist)
     
     # visualize_three_dimensional(netlist, specific_file)
 
-    improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improvements, iterations, N, N_improvements)
-
+    improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improvements, make_sim_annealing_plot, iterations, N, N_improvements)
 
     # chip_nr = int((netlist - 1) / 3)
     # chip = grid.Grid(chip_nr, netlist)
