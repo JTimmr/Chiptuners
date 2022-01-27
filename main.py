@@ -97,7 +97,7 @@ def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improv
                 costs.append(cost)
 
             elif algorithm == "simulated_annealing":
-                simanneal = sim.SimulatedAnnealing(chip, iterations, update_csv_paths, make_csv_improvements, i, j, temperature = 0.01)
+                simanneal = sim.SimulatedAnnealing(chip, iterations, update_csv_paths, make_csv_improvements, i, j, temperature = 3000)
                 costs = simanneal.run()
 
     return costs
