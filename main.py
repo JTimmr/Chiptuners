@@ -132,10 +132,10 @@ if __name__ == "__main__":
     N_improvements = 1
 
     # Each iteration attempts to improve all netlists until improvement is found or none it found after long time
-    iterations = 10000
+    iterations = 20000
 
     # Netlist to be solved
-    netlist = 1
+    netlist = 2
 
     algorithm = "simulated_annealing"
 
