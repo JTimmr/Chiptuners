@@ -111,14 +111,14 @@ def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improv
 
             elif algorithm == "simulated_annealing":
                 
-                # chip.compute_costs()
+                chip.compute_costs()
 
-                # max_delta = chip.cost
+                max_delta = chip.cost
 
-                # temperature = max_delta
-                # simanneal = sim.SimulatedAnnealing(chip, iterations, update_csv_paths, make_csv_improvements, i, j, temperature)
+                temperature = max_delta
+                simanneal = sim.SimulatedAnnealing(chip, iterations, update_csv_paths, make_csv_improvements, make_sim_annealing_plot, i, j, temperature)
 
-                simanneal = sim.SimulatedAnnealing(chip, iterations, update_csv_paths, make_csv_improvements, make_sim_annealing_plot, i, j, temperature = 3000)
+                # simanneal = sim.SimulatedAnnealing(chip, iterations, update_csv_paths, make_csv_improvements, make_sim_annealing_plot, i, j, temperature = 3000)
 
                 costs = simanneal.run()
 
@@ -166,7 +166,7 @@ if __name__ == "__main__":
     if args.improving_algorithm:
 
         # Each iteration attempts to improve all netlists until improvement is found or none it found after long tim
-        iterations = 50
+        iterations = 1000
 
         # Makes a new csv file for each improvement made in costs by hillclimber or simulated annealing
         # Final form will always be saved
