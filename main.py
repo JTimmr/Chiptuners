@@ -97,7 +97,7 @@ def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improv
                 costs.append(cost)
 
             elif algorithm == "simulated_annealing":
-                simanneal = sim.SimulatedAnnealing(chip, iterations, update_csv_paths, make_csv_improvements, i, j, temperature = 10000)
+                simanneal = sim.SimulatedAnnealing(chip, iterations, update_csv_paths, make_csv_improvements, i, j, temperature = 0.01)
                 costs = simanneal.run()
 
     return costs
@@ -133,10 +133,10 @@ if __name__ == "__main__":
 
     # Each iteration attempts to improve all netlists until improvement is found or none it found after long time
 
-    iterations = 1000000
+    iterations = 10000
 
     # Netlist to be solved
-    netlist = 1
+    netlist = 3
 
     algorithm = "simulated_annealing"
 

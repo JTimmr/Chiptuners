@@ -101,12 +101,14 @@ class SimulatedAnnealing:
             # rand = random.random() 
 
             delta = self.grid.cost - best_costs
-
-            if self.grid.cost > best_costs:
+            if self.Current_T == 0:
+                probability = 0
+            elif self.grid.cost > best_costs:
                 probability = math.exp(-delta/self.Current_T)
             else:
                 probability = 1
             rand = random.random() 
+
 
             if rand < probability:
                 self.lowest_costs = self.grid.cost
