@@ -10,10 +10,10 @@ class A_Star:
     def run(self):
         total = len(self.grid.netlists)
         completed = 0
-        print(f"{completed}/{total} done")
 
         for netlist in sorting.sort_length(self.grid.netlists, descending=False):
-            
+            print(f"Finished {netlist.start} to {netlist.end}, {completed}/{len(self.grid.netlists)}")
+
             # Retrieve starting and ending point
             start = netlist.start
             end = netlist.end
@@ -27,9 +27,7 @@ class A_Star:
             path = [x, y, z]
             netlist.path = path
             completed += 1
-            print(f"{completed}/{total} done")
         self.grid.update()
-        print(self.grid.cost)
 
 
 class State(object):
@@ -90,29 +88,32 @@ class A_Star_Solver:
     def __init__(self, grid, netlist, start, goal):
         self.path = []
         self.visitedQueue = set()
+        self.inQueue = set()
         self.priorityQueue = PriorityQueue(maxsize=0)
         self.start = start
         self.goal = goal
         self.grid = grid
         self.netlist = netlist
- 
+
     def Solve(self):
         startState = State_Path(self.grid, self.netlist, self.visitedQueue, 0, self.start, 0, self.goal, self.start)
         count = 0
 
         self.priorityQueue.put((0,count, startState, self.goal))
+        self.inQueue.add(startState.value)
 
         while(not self.path and self.priorityQueue.qsize()):
+
             closesetChild = self.priorityQueue.get()[2]
+            self.inQueue.remove(closesetChild.value)
             closesetChild.CreateChildren()
             self.visitedQueue.add(closesetChild.value)
-
             for child in closesetChild.children:
 
                 # Chance of success is higher when gates aren't blocked unnessicarily
                 illegal = False
                 for gate in self.grid.gate_coordinates:
-                    if child.value[:2] == gate[:2] and gate != self.goal and gate != self.start and child.value[2] <= 1:
+                    if child.value[:2] == gate[:2] and gate != self.goal and gate != self.start and child.value[2] <= 2:
                         illegal = True
 
                 if illegal:
@@ -139,6 +140,9 @@ class A_Star_Solver:
                         self.grid.wire_segments.update(tmp_segments)
                         
                         return self.path
-                    # print(child.intersections)
-                    #self.priorityQueue.put(((child.dist + int(2.5 * child.intersections)), count, child))
-                    self.priorityQueue.put(((child.dist), count, child))
+                    
+                    if child.value not in self.inQueue:
+                        self.priorityQueue.put(((child.dist + int(300 * child.intersections)), count, child))
+                        self.inQueue.add(child.value)
+                        print(self.priorityQueue.qsize())
+                    # self.priorityQueue.put(((child.dist), count, child))
