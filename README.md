@@ -62,8 +62,10 @@ mkdir figs
 data/ - 
 
 code/ -
-    algorithms/ -
-    classes/ - 
+
+    - algorithms/ -
+    - classes/ - 
+    - visualize.py
 
 ### Requirements
 Om het programma werkend te laten draaien, zullen enkele dingen geïnstalleerd moeten zijn. Deze kun je automatisch installeren door: 
