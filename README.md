@@ -43,7 +43,7 @@ In de commandline is het mogelijk om verschillende functies aan te roepen:
 | `-leg`of `--legend`    | Geeft een legenda bij de 3D visualisatie                            |
 | `-n`                   | hoeveel oplossingen moeten er worden gegenereerd?                   |
 | `-m`                   | hoeveel verbeterde oplossingen moeten er zijn voor elke oplossing?  |
-| `-m`                   | wanneer een al bestaand bestand gebruikt moet worden, voorbeeld: wanneer de bestandsnaam "paths_netlist_4_C_19655" is, gebruik dan "C_19655". |
+| `-file`                   | wanneer een al bestaand bestand gebruikt moet worden, voorbeeld: wanneer de bestandsnaam "paths_netlist_4_C_19655" is, gebruik dan "C_19655". |
 
 Om de gegenereerde output op de juiste plek te krijgen is het eerst nodig om bepaalde mappen aan te maken:
 
