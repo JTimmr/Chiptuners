@@ -124,7 +124,7 @@ def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improv
 
     return costs
 
-def visualize_three_dimensional(netlist, specific_file):
+def visualize_three_dimensional(netlist, specific_file, legend):
     """Takes a csv file containing previously generates paths, and create a 3-dimensional plot to visualize them."""
 
     # Open specific set of paths if desired
@@ -140,7 +140,7 @@ def visualize_three_dimensional(netlist, specific_file):
     chip = grid.Grid(chip_nr, netlist, inputfile)
 
     # Make visualization
-    vis(chip)
+    vis(chip, legend)
 
 
 if __name__ == "__main__": 
@@ -150,7 +150,8 @@ if __name__ == "__main__":
 
     parser.add_argument("-c", type=str, default=None, dest="algorithm", help="Algorithm to be used. Pick either baseline or a_star.")
     parser.add_argument("-i", type=str, default=None, dest="improving_algorithm", help="Algorithm to be used to improve existing solutions. Pick either hillclimber or simulated annealing.")
-    parser.add_argument("-vis", "--visualize", action='store_true', help="Renders a 3D plot of the grid with all its paths.")   
+    parser.add_argument("-vis", "--visualize", action='store_true', help="Renders a 3D plot of the grid with all its paths.")
+    parser.add_argument("-leg", "--legend", action='store_true', help="Renders a legend for 3D plot.") 
 
     parser.add_argument("-n", type=int, default=1, dest="N", help="number of solutions generated")
     parser.add_argument("-m", type=int, default=1, dest="N_improvements", help="number of improved solutions made for every prefound solution")
@@ -178,4 +179,7 @@ if __name__ == "__main__":
         improve(args.netlist, args.specific_file, args.improving_algorithm, update_csv_paths, make_csv_improvements, make_sim_annealing_plot, iterations, args.N, args.N_improvements)
 
     if args.visualize:
-        visualize_three_dimensional(args.netlist, args.specific_file)
+        if args.legend:
+           visualize_three_dimensional(args.netlist, args.specific_file, args.legend) 
+        else: 
+            visualize_three_dimensional(args.netlist, args.specific_file, args.legend)
