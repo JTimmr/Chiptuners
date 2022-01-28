@@ -30,7 +30,7 @@ De kostenfunctie: TK = aantal segmenten + 300 * aantal intersecties
 
 ### Usage
 ```bash
-python main.py netlistnummer (-h) (-c naam algoritme) (-i naam algoritme) (-vis) (-n N) (-m N verbeteringen) (-file bestandsnaam)
+python main.py netlistnummer (-h) (-c naam algoritme) (-i naam algoritme) (-vis) (-leg) (-n N) (-m N verbeteringen) (-file bestandsnaam)
 ```
 In de commandline is het mogelijk om verschillende functies aan te roepen:
 
@@ -39,7 +39,8 @@ In de commandline is het mogelijk om verschillende functies aan te roepen:
 | `-h` of `--help`       | laat informatie zien over de positionele en optionele argumenten.   |
 | `-c`                   | kiest algoritme om te gebruiken, opties: baseline, a_star.          |
 | `-i`                   | The parameter list elements from 10 to N.                           |
-| `-vis` of `--visualize`| plot een 3D visualizatie van een oplossing.                         |
+| `-vis` of `--visualize`| Plot een 3D visualizatie van een oplossing.                         |
+| `-leg`of `--legend`    | Geeft een legenda bij de 3D visualisatie                            |
 | `-n`                   | hoeveel oplossingen moeten er worden gegenereerd?                   |
 | `-m`                   | hoeveel verbeterde oplossingen moeten er zijn voor elke oplossing?  |
 | `-m`                   | wanneer een al bestaand bestand gebruikt moet worden, voorbeeld: wanneer de bestandsnaam "paths_netlist_4_C_19655" is, gebruik dan "C_19655". |
