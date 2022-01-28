@@ -60,8 +60,11 @@ mkdir figs
 ```
 ### Structuur
 data/ - 
+
 code/ -
+
     algorithms/ -
+    
     classes/ - 
 
 ### Requirements
