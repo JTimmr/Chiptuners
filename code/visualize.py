@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 
-def visualize(chip):
+def visualize(chip, legend):
     """Makes a 3D visualization of the chip object."""
 
     max_x = chip.size[0]
@@ -25,6 +25,9 @@ def visualize(chip):
     ax.set_xlim(0, max_x) 
     ax.set_ylim(0, max_y)
     ax.set_zlim(0, 7)
-    ax.legend(chip.netlists.keys(), title = "Netlist", prop={'size': 7}, bbox_to_anchor=(1.15, 1),loc='upper left')
-    plt.savefig("output/figs/fig.png")
+
+    if legend == True:
+        ax.legend(chip.netlists.keys(), title = "Netlist", prop={'size': 7}, bbox_to_anchor=(1.1, 1), ncol = 3, loc='upper left')
+    
+    plt.savefig("output/figs/fig.png", bbox_inches="tight")
     plt.show()
