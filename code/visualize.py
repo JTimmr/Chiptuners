@@ -1,8 +1,11 @@
 import matplotlib.pyplot as plt
+import re
+
 
 def visualize(chip, legend):
-    """Makes a 3D visualization of the chip object."""
+    """Makes a 3D visualization of the chip object instance."""
 
+    # Get maximum x,y values for x,y axis size
     max_x = chip.size[0]
     max_y = chip.size[1]
 
@@ -11,9 +14,11 @@ def visualize(chip, legend):
     
     ax.set_title("3D Visual Chips&Circuits")
     
+    # Get all gate coordinates and make them visible in plot
     for gate in chip.gates.values():
         ax.scatter3D(gate.coordinates[0], gate.coordinates[1], gate.coordinates[2], c = "black")
 
+    # Plot all netlist routes solutions of the chip object instance
     for netlist in chip.netlists.values():
         path = netlist.path
         x = path[0]
@@ -26,8 +31,19 @@ def visualize(chip, legend):
     ax.set_ylim(0, max_y)
     ax.set_zlim(0, 7)
 
+    # If user wants a legend, show it correctly
     if legend == True:
         ax.legend(chip.netlists.keys(), title = "Netlist", prop={'size': 7}, bbox_to_anchor=(1.1, 1), ncol = 3, loc='upper left')
     
-    plt.savefig("output/figs/fig.png", bbox_inches="tight")
+    # Filter inputfilename
+    pattern = "_(.*?).csv"
+    substring = re.search(pattern, chip.infile)
+
+    # If regex could filter the filename correctly use it for name, else use inputfilename to save
+    if substring:
+        substring = substring.group(1)
+        plt.savefig(f"output/figs/fig_{substring}.png", bbox_inches="tight")
+    else:
+        plt.savefig(f"output/figs/fig_{chip.infile}.png")
+
     plt.show()
