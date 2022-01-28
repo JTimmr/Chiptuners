@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 
 
 class SimulatedAnnealing:
-    def __init__(self, grid, limit, update_csv_paths, make_csv_improvements, make_sim_annealing_plot, name, n, temperature):
+    def __init__(self, grid, limit, update_csv_paths, make_csv_improvements, make_iterative_plot, name, n, temperature):
         self.grid = grid
         self.limit = limit
         self.iterations = 0
@@ -80,7 +80,7 @@ class SimulatedAnnealing:
             self.to_csv()
         
         # If user wants to see algorithm plotted, plot
-        if self.make_sim_annealing_plot:
+        if self.make_iterative_plot:
             self.plot()
 
         return self.grid.cost
