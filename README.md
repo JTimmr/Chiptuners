@@ -34,8 +34,8 @@ python main.py netlistnummer (-h) (-c naam algoritme) (-i naam algoritme) (-vis)
 ```
 In de commandline is het mogelijk om verschillende functies aan te roepen:
 
-| functies       | beschrijving                                                |
-| :------------- | :---------------------------------------------------------- |
+| functies               | beschrijving                                                |
+| :--------------------- | :---------------------------------------------------------- |
 | `-h` of `--help` | laat informatie zien over de positionele en optionele argumenten. |
 | `-c`           | kiest algoritme om te gebruiken, opties: baseline, a_star.          |
 | `-i`           | The parameter list elements from 10 to N.                           |
