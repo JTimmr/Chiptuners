@@ -8,7 +8,7 @@ from code.visualize import visualize
 
 
 class Hillclimber:
-    def __init__(self, grid, limit, update_csv_paths, make_csv_improvements, name, n):
+    def __init__(self, grid, limit, update_csv_paths, make_csv_improvements, make_iterative_plot, name, n):
         self.grid = grid
         self.limit = limit
         self.iterations = 0
@@ -58,9 +58,10 @@ class Hillclimber:
 
         if self.make_csv_improvements:
             self.to_csv()
-
-        self.plot()
         
+        if self.make_iterative_plot:
+            self.plot()
+
         return self.grid.cost
 
     def improve_connection(self, netlist):
