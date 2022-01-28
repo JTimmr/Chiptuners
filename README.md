@@ -26,7 +26,7 @@ De kostenfunctie: TK = aantal segmenten + 300 * aantal intersecties
 > n = lengte grid
 
 
-![visualisatie voorbeeld](output/figs/fig.png)
+![visualisatie voorbeeld](vis.png)
 
 ### Usage
 ```bash
