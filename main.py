@@ -75,7 +75,7 @@ def log_simulation(runs, netlist, constructive_algorithm):
             "simulation": "Avg costs", "cost": avgCosts
         })
 
-def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improvements, make_sim_annealing_plot, iterations, N, N_improvements):
+def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improvements, make_iterative_plot, iterations, N, N_improvements):
     """Takes a csv containing previously generated paths, and tries to improve the costs of the solution using an iterative algorithm."""
 
     costs = []
@@ -104,7 +104,7 @@ def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improv
 
             # Run hillclimber algorithm with a number of iterations
             if algorithm == "hillclimber":
-                hillclimber = climber.Hillclimber(chip, iterations, update_csv_paths, make_csv_improvements, i, j)
+                hillclimber = climber.Hillclimber(chip, iterations, update_csv_paths, make_csv_improvements, make_iterative_plot, i, j)
                 cost = hillclimber.run()
 
                 costs.append(cost)
@@ -116,7 +116,7 @@ def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improv
                 max_delta = chip.cost
 
                 temperature = max_delta
-                simanneal = sim.SimulatedAnnealing(chip, iterations, update_csv_paths, make_csv_improvements, make_sim_annealing_plot, i, j, temperature)
+                simanneal = sim.SimulatedAnnealing(chip, iterations, update_csv_paths, make_csv_improvements, make_iterative_plot, i, j, temperature)
 
                 # simanneal = sim.SimulatedAnnealing(chip, iterations, update_csv_paths, make_csv_improvements, make_sim_annealing_plot, i, j, temperature = 3000)
 
@@ -175,8 +175,8 @@ if __name__ == "__main__":
 
         # Makes CSV files after a hillclimber is done, storing the new costs per iteration
         make_csv_improvements = False
-        make_sim_annealing_plot = False
-        improve(args.netlist, args.specific_file, args.improving_algorithm, update_csv_paths, make_csv_improvements, make_sim_annealing_plot, iterations, args.N, args.N_improvements)
+        make_iterative_plot = False
+        improve(args.netlist, args.specific_file, args.improving_algorithm, update_csv_paths, make_csv_improvements, make_iterative_plot, iterations, args.N, args.N_improvements)
 
     if args.visualize:
         if args.legend:
