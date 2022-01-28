@@ -62,9 +62,7 @@ mkdir figs
 data/ - 
 
 code/ -
-
     algorithms/ -
-    
     classes/ - 
 
 ### Requirements
