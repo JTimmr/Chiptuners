@@ -144,5 +144,5 @@ class A_Star_Solver:
                     if child.value not in self.inQueue:
                         self.priorityQueue.put(((child.dist + int(300 * child.intersections)), count, child))
                         self.inQueue.add(child.value)
-                        print(self.priorityQueue.qsize())
+                        # print(self.priorityQueue.qsize())
                     # self.priorityQueue.put(((child.dist), count, child))
