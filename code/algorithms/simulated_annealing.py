@@ -257,8 +257,9 @@ class SimulatedAnnealing:
 
     def plot(self):
         """Plots simulated annealing with iterations on x-axis and costs on y-axis."""
-
-        plt.plot(self.iterationlist, self.costs, label = f"{self.Starting_T} \xb0 celcius")
+        
+        plt.figure()
+        plt.plot(self.iterationlist, self.costs, label = f"start temp: {self.Starting_T} \xb0C")
         plt.legend()
         plt.xlabel("Iterations")
         plt.ylabel("Costs")
