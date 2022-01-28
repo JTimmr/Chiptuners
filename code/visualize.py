@@ -6,6 +6,7 @@ def visualize(chip):
     max_x = chip.size[0]
     max_y = chip.size[1]
 
+    plt.figure()
     ax = plt.axes(projection = "3d")
     
     ax.set_title("3D Visual Chips&Circuits")
