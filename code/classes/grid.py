@@ -25,7 +25,7 @@ class Grid:
         # Set op gate points
         self.gate_coordinates = set()
 
-        # Dictionary containing all connections
+        # Dictionary containing all connections: {(startID, endID): Netlist}
         self.netlists = {}
 
         # Set boundaries such that the paths do not leave the grid
@@ -40,6 +40,8 @@ class Grid:
             self.load_configuration()
 
         self.cost = 0
+
+        self.theoretical_minimum = 0
 
     def load_configuration(self):
         """Load a previously generated set of netlists."""
@@ -196,6 +198,10 @@ class Grid:
 
         # Update cost
         self.cost = wire_amount + 300 * self.intersections
+
+    def compute_minimum(self):
+        for netlist in self.netlists.values():
+            self.theoretical_minimum += netlist.minimal_length
 
     def __str__(self) -> str:
         return (f"grid for chip {self.chip} with netlist {self.netlist} \n"
