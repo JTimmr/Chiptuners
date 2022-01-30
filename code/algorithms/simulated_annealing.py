@@ -15,7 +15,7 @@ class SimulatedAnnealing:
         self.iterations = 0
         self.update_csv_paths = update_csv_paths
         self.make_csv_improvements = make_csv_improvements
-        self.make_sim_annealing_plot = make_sim_annealing_plot
+        #self.make_sim_annealing_plot = make_sim_annealing_plot
         self.iterationlist = []
         self.costs = []
         self.name = name

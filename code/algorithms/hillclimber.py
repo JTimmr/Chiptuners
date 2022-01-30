@@ -86,8 +86,8 @@ class Hillclimber:
                 netlist.path = new_path
                 self.grid.compute_costs()
 
-                # Allow change of path with no benefit once every 25 attempts
-                if self.attempts_without_improvement % 25 == 0:
+                # Allow change of path with no benefit once every 5 attempts
+                if self.attempts_without_improvement % 5 == 0:
 
                     # Make change if costs are equal or lower
                     if self.grid.cost <= best_costs:
