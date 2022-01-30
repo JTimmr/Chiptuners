@@ -15,7 +15,7 @@ class SimulatedAnnealing:
         self.iterations = 0
         self.update_csv_paths = update_csv_paths
         self.make_csv_improvements = make_csv_improvements
-        self.make_sim_annealing_plot = make_sim_annealing_plot
+        self.make_sim_annealing_plot = make_iterative_plot
         self.iterationlist = []
         self.costs = []
         self.name = name
@@ -34,15 +34,15 @@ class SimulatedAnnealing:
             if self.iterationlist[-1] != self.iterations:
 
                 # Temperature decreases linearly with every iteration
-                # self.Current_T -= 20
-                # if self.Current_T <= 0:
-                #     self.Current_T = 1
-                # return self.Current_T
+                self.Current_T -= 20
+                if self.Current_T <= 0:
+                    self.Current_T = 1
+                return self.Current_T
 
                 # Logarithmic decrease as described by Aarts and Korst in 1989
-                log_factor = 1 + numpy.log(1 + self.iterations)
-                self.Current_T = self.Current_T / log_factor
-                return self.Current_T
+                # log_factor = 1 + numpy.log(1 + self.iterations)
+                # self.Current_T = self.Current_T / log_factor
+                # return self.Current_T
 
                 # Temperature decreases exponentially with every iteration
                 # alpha = 0.999
@@ -57,7 +57,7 @@ class SimulatedAnnealing:
         # While iteration limit not reached search for improvements with specific sort function
         while self.iterations < self.limit:
 
-            netlists = sort.sort_length(self.grid.netlists, descending=False)
+            netlists = sort.sort_length(self.grid.netlists, descending=True)
 
             for netlist in netlists:
                 self.improve_connection(netlist)
@@ -84,7 +84,6 @@ class SimulatedAnnealing:
             self.plot()
 
         return self.grid.cost
-
 
     def improve_connection(self, netlist):
         """Takes a netlist as an input, and tries to find a shorter path between its two gates.
@@ -136,7 +135,6 @@ class SimulatedAnnealing:
 
             else:
                 netlist.path = old_path
-
 
     def find_path(self, origin, destination, netlist):
         """Attempts to find a path between two coordinates in the grid."""
@@ -263,7 +261,6 @@ class SimulatedAnnealing:
                     "iteration": i + 1, "cost": self.costs[i]
                 })
     
-
     def plot(self):
         """Plots simulated annealing with iterations on x-axis and costs on y-axis."""
         

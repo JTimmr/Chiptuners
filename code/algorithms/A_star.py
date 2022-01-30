@@ -11,7 +11,7 @@ class A_Star:
         total = len(self.grid.netlists)
         completed = 0
 
-        for netlist in sorting.sort_length(self.grid.netlists, descending=False):
+        for netlist in sorting.sort_exp_intersections(self.grid.netlists, descending=False):
             print(f"Finished {netlist.start} to {netlist.end}, {completed}/{len(self.grid.netlists)}")
 
             # Retrieve starting and ending point
