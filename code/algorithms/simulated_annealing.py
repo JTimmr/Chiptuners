@@ -9,11 +9,10 @@ import matplotlib.pyplot as plt
 
 
 class SimulatedAnnealing:
-    def __init__(self, grid, limit, update_csv_paths, make_csv_improvements, make_sim_annealing_plot, name, n, temperature):
+    def __init__(self, grid, limit, update_csv_paths, make_csv_improvements, make_iterative_plot, name, n, temperature):
         self.grid = grid
         self.limit = limit
         self.iterations = 0
-        self.attempts_without_improvement = 0
         self.update_csv_paths = update_csv_paths
         self.make_csv_improvements = make_csv_improvements
         self.make_sim_annealing_plot = make_sim_annealing_plot
@@ -28,9 +27,10 @@ class SimulatedAnnealing:
         self.Current_T = temperature
 
     def update_temperature(self):
+        """Updates the current temperature."""
 
-    # Check that ensures the temperature only updates when the iteration number has increased
-       if self.iterationlist and self.Current_T > 1:
+        # Check that ensures the temperature only updates when the iteration number has increased
+        if self.iterationlist and self.Current_T > 1:
             if self.iterationlist[-1] != self.iterations:
 
                 # Temperature decreases linearly with every iteration
@@ -44,20 +44,22 @@ class SimulatedAnnealing:
                 self.Current_T = self.Current_T / log_factor
                 return self.Current_T
 
-                #Exponential
+                # Temperature decreases exponentially with every iteration
                 # alpha = 0.999
                 # self.Current_T = self.Current_T * alpha
                 # return self.Current_T
 
     def run(self):
+        """Keeps the simulated annealing algorithm running until all iteration limit reached."""
+
         print("Searching for improvements...")
 
+        # While iteration limit not reached search for improvements with specific sort function
         while self.iterations < self.limit:
 
             netlists = sort.sort_length(self.grid.netlists, descending=False)
 
             for netlist in netlists:
-
                 self.improve_connection(netlist)
 
             self.iterationlist.append(self.iterations)
@@ -71,26 +73,32 @@ class SimulatedAnnealing:
         self.grid.compute_costs()
         print(f"Reached max number of iterations. Costs are {self.grid.cost}")
 
+        # Write to csv
         self.grid.to_csv(self.grid.cost)
 
         if self.make_csv_improvements:
             self.to_csv()
         
-        if self.make_sim_annealing_plot:
+        # If user wants to see algorithm plotted, plot
+        if self.make_iterative_plot:
             self.plot()
 
         return self.grid.cost
 
 
     def improve_connection(self, netlist):
+        """Takes a netlist as an input, and tries to find a shorter path between its two gates.
+            While sometimes accepting worse solutions, to eventually find a better one."""
 
         origin = netlist.start
         destination = netlist.end
 
+        # Make copies so original values aren't lost
         best_path = deepcopy(netlist.path)
         self.grid.compute_costs()
         best_costs = deepcopy(self.grid.cost)
 
+        # If path is found, calculate new costs
         new_path = self.find_path(origin, destination, netlist)
         if new_path:
             old_path = deepcopy(netlist.path)
@@ -105,6 +113,7 @@ class SimulatedAnnealing:
             #     probability = 1
             # rand = random.random() 
 
+            # Calculate difference between 
             delta = self.grid.cost - best_costs
             
             if self.grid.cost > best_costs:
@@ -257,8 +266,9 @@ class SimulatedAnnealing:
 
     def plot(self):
         """Plots simulated annealing with iterations on x-axis and costs on y-axis."""
-
-        plt.plot(self.iterationlist, self.costs, label = f"{self.Starting_T} \xb0 celcius")
+        
+        plt.figure()
+        plt.plot(self.iterationlist, self.costs, label = f"start temp: {self.Starting_T} \xb0C")
         plt.legend()
         plt.xlabel("Iterations")
         plt.ylabel("Costs")

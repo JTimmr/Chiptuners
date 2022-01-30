@@ -8,7 +8,7 @@ from code.visualize import visualize
 
 
 class Hillclimber:
-    def __init__(self, grid, limit, update_csv_paths, make_csv_improvements, name, n):
+    def __init__(self, grid, limit, update_csv_paths, make_csv_improvements, make_iterative_plot, name, n):
         self.grid = grid
         self.limit = limit
         self.iterations = 0
@@ -39,7 +39,7 @@ class Hillclimber:
 
             for netlist in netlists:
 
-                # Try to make an inprovement
+                # Try to make an improvement
                 self.improve_connection(netlist)
 
                 # Quit when no improvement is made after a large amount of attempts
@@ -58,6 +58,9 @@ class Hillclimber:
 
         if self.make_csv_improvements:
             self.to_csv()
+        
+        if self.make_iterative_plot:
+            self.plot()
 
         return self.grid.cost
 
@@ -201,7 +204,7 @@ class Hillclimber:
                 self.grid.intersections += intersections_tmp
 
                 return [x, y, z]
-
+    
         # Return number of failed attempts if destination was not reached
         return 
 
@@ -251,3 +254,12 @@ class Hillclimber:
                  writer.writerow({
                     "iteration": i + 1, "cost": self.costs[i]
                     })
+
+    def plot(self):
+        """Plots hillclimber with iterations on x-axis and costs on y-axis."""
+        
+        plt.figure()
+        plt.plot(self.iterationlist, self.costs)
+        plt.xlabel("Iterations")
+        plt.ylabel("Costs")
+        plt.savefig(f"output/figs/hillclimber_N{self.grid.netlist}_I{self.limit}_C{self.lowest_costs}.png")

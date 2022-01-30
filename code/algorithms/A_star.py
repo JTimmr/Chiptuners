@@ -11,7 +11,7 @@ class A_Star:
         total = len(self.grid.netlists)
         completed = 0
 
-        for netlist in sorting.sort_length(self.grid.netlists, descending=False):
+        for netlist in sorting.sort_exp_intersections(self.grid.netlists, descending=True):
             print(f"Finished {netlist.start} to {netlist.end}, {completed}/{len(self.grid.netlists)}")
 
             # Retrieve starting and ending point
@@ -144,5 +144,5 @@ class A_Star_Solver:
                     if child.value not in self.inQueue:
                         self.priorityQueue.put(((child.dist + int(300 * child.intersections)), count, child))
                         self.inQueue.add(child.value)
-                        print(self.priorityQueue.qsize())
+                        # print(self.priorityQueue.qsize())
                     # self.priorityQueue.put(((child.dist), count, child))
