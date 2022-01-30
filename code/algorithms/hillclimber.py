@@ -59,8 +59,8 @@ class Hillclimber:
         if self.make_csv_improvements:
             self.to_csv()
         
-        if self.make_iterative_plot:
-            self.plot()
+        # if self.make_iterative_plot:
+        #     self.plot()
 
         return self.grid.cost
 

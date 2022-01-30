@@ -26,8 +26,6 @@ def to_csv(costs):
                     "simulation": i + 1, "cost": costs[i]
                     })
 
-
-
 def log_simulation(runs, netlist, constructive_algorithm):
     """Run the given algorithm a number of times, creating a set of solutions. Set N to 1 if a single solution suffices."""
     
@@ -113,7 +111,7 @@ def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improv
                 
                 chip.compute_costs()
 
-                max_delta = chip.cost
+                max_delta = chip.cost - chip.theoretical_minimum
 
                 temperature = max_delta
                 simanneal = sim.SimulatedAnnealing(chip, iterations, update_csv_paths, make_csv_improvements, make_iterative_plot, i, j, temperature)
@@ -142,6 +140,41 @@ def visualize_three_dimensional(netlist, specific_file, legend):
     # Make visualization
     vis(chip, legend)
 
+def quick_sort_test(constructive_algorithm):
+
+        with open(f"output/logging_sort_A*.csv", "a", newline="") as csvfile:
+
+            # Set up fieldnames 
+            fieldnames = ["netlist", "sorting type", "cost", "attempts"]
+
+            # Set up wiriter and write the header
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writeheader()        
+            costs = []
+
+            for netlist in range(1,10):
+
+                chip_nr = int((netlist - 1) / 3)
+                chip = grid.Grid(chip_nr, netlist)
+                if constructive_algorithm == "baseline":
+                    baseline = base.Baseline(chip)
+                    baseline.run()
+                elif constructive_algorithm == "a_star":
+                    a = star.A_Star(chip)
+                    a.run()
+
+                chip.compute_costs()
+                costs.append(chip.cost)
+
+                writer.writerow({
+                    "netlist": netlist, "sorting type": "exp_int(a)", "cost": chip.cost, "attempts": chip.tot_attempts
+                    })
+            
+            avgCosts = sum(costs)/9
+            writer.writerow({
+                "netlist": "Avg costs", "sorting type": "length(a)", "cost": avgCosts
+            })
+
 
 if __name__ == "__main__": 
 
@@ -164,6 +197,11 @@ if __name__ == "__main__":
     if args.algorithm:
         log_simulation(args.N, args.netlist, args.algorithm)
 
+        # quick_sort_test(args.algorithm)
+
+
+
+
     if args.improving_algorithm:
 
         # Each iteration attempts to improve all netlists until improvement is found or none it found after long tim
@@ -179,7 +217,4 @@ if __name__ == "__main__":
         improve(args.netlist, args.specific_file, args.improving_algorithm, update_csv_paths, make_csv_improvements, make_iterative_plot, iterations, args.N, args.N_improvements)
 
     if args.visualize:
-        if args.legend:
-           visualize_three_dimensional(args.netlist, args.specific_file, args.legend) 
-        else: 
-            visualize_three_dimensional(args.netlist, args.specific_file, args.legend)
+        visualize_three_dimensional(args.netlist, args.specific_file, args.legend) 
