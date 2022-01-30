@@ -27,10 +27,10 @@ class SimulatedAnnealing:
         self.Current_T = temperature
 
     def update_temperature(self):
-    """Updates the current temperature."""
+        """Updates the current temperature."""
 
-    # Check that ensures the temperature only updates when the iteration number has increased
-       if self.iterationlist and self.Current_T > 1:
+        # Check that ensures the temperature only updates when the iteration number has increased
+        if self.iterationlist and self.Current_T > 1:
             if self.iterationlist[-1] != self.iterations:
 
                 # Temperature decreases linearly with every iteration
