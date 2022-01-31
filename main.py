@@ -1,7 +1,6 @@
 from copy import deepcopy
 import csv
 import code.classes.grid as grid
-from code.algorithms import representation as rep
 from code.algorithms import baseline as base
 from code.algorithms import hillclimber as climber
 from code.algorithms import A_star as star
