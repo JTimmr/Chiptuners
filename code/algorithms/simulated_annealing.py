@@ -6,6 +6,7 @@ import numpy
 import code.algorithms.sorting as sort
 import csv 
 import matplotlib.pyplot as plt
+import code.algorithms.A_star as A_star
 
 
 class SimulatedAnnealing:
@@ -25,6 +26,22 @@ class SimulatedAnnealing:
         # Starting temperature and current temperature
         self.Starting_T = temperature
         self.Current_T = temperature
+
+    def run_per_paths(self, netlist):
+        # Retrieve starting and ending point
+        start = netlist.start
+        end = netlist.end
+        a = A_star.A_Star_Solver(self.grid, netlist, start, end)
+        a.Solve()
+
+        x, y, z = [], [], []
+        for coordinate in range(len(a.path)):
+            x.append(a.path[coordinate][0])
+            y.append(a.path[coordinate][1])
+            z.append(a.path[coordinate][2])
+        path = [x, y, z]
+
+        return path
 
     def update_temperature(self):
         """Updates the current temperature."""
@@ -56,7 +73,7 @@ class SimulatedAnnealing:
 
                 # VCF model
                 Tmax = self.Starting_T
-                Tmin = 50
+                Tmin = 10
                 beta = (Tmax - Tmin)/(self.iterations * Tmax * Tmin)
                 self.Current_T = self.Current_T / (1 + beta * self.Current_T)
                 return self.Current_T
@@ -74,7 +91,7 @@ class SimulatedAnnealing:
         # While iteration limit not reached search for improvements with specific sort function
         while self.iterations < self.limit:
 
-            netlists = sort.sort_length(self.grid.netlists, descending=True)
+            netlists = sort.random_sort(self.grid.netlists)
 
             for netlist in netlists:
                 self.improve_connection(netlist)
@@ -82,7 +99,7 @@ class SimulatedAnnealing:
             self.iterationlist.append(self.iterations)
             self.iterations += 1
 
-            self.update_temperature()
+            # self.update_temperature()
 
             while len(self.costs) < len(self.iterationlist):
                 self.costs.append(self.lowest_costs)
@@ -115,7 +132,9 @@ class SimulatedAnnealing:
         best_costs = deepcopy(self.grid.cost)
 
         # If path is found, calculate new costs
-        new_path = self.find_path(origin, destination, netlist)
+        # new_path = self.find_path(origin, destination, netlist)
+
+        new_path = self.run_per_paths(netlist)
         if new_path:
             old_path = deepcopy(netlist.path)
             netlist.path = new_path
@@ -146,6 +165,8 @@ class SimulatedAnnealing:
                 print(f"Alternate path found: new costs are {self.grid.cost}")
                 best_path = deepcopy(new_path)
                 best_costs = deepcopy(self.grid.cost)
+
+                self.update_temperature()
 
                 if self.update_csv_paths:
                     self.grid.to_csv(self.grid.cost)

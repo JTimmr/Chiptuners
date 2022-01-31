@@ -29,7 +29,6 @@ class A_Star:
             completed += 1
         self.grid.update()
 
-
 class State(object):
     def __init__(self, value, parent, start = 0, goal = 0):
         self.children = []
