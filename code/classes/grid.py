@@ -19,6 +19,8 @@ class Grid:
         # All segments
         self.wire_segments = {}
 
+        self.coordinates = set()
+
         # Dictionary of coordinates gates
         self.gates = {}
 
@@ -106,6 +108,8 @@ class Grid:
                 # Add segment to dictionary
                 segment = (start, end)
                 self.wire_segments[segment] = netlist
+                self.coordinates.add(segment[0])
+                self.coordinates.add(segment[1])
 
     def load_gates(self):
         """Reads requested file containing the location of the gates, and extracts their id's and coordinates. Creates gate object for each row"""

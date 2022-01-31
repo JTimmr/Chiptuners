@@ -59,8 +59,8 @@ class Hillclimber:
         if self.make_csv_improvements:
             self.to_csv()
         
-        if self.make_iterative_plot:
-            self.plot()
+        # if self.make_iterative_plot:
+        #     self.plot()
 
         return self.grid.cost
 
@@ -86,8 +86,8 @@ class Hillclimber:
                 netlist.path = new_path
                 self.grid.compute_costs()
 
-                # Allow change of path with no benefit once every 25 attempts
-                if self.attempts_without_improvement % 25 == 0:
+                # Allow change of path with no benefit once every 5 attempts
+                if self.attempts_without_improvement % 5 == 0:
 
                     # Make change if costs are equal or lower
                     if self.grid.cost <= best_costs:
@@ -119,6 +119,8 @@ class Hillclimber:
                         # Keep csv updated if update_csv is set to True in main function
                         if self.update_csv_paths:
                             self.grid.to_csv(self.grid.cost)
+                        print("next")
+                        return
 
                     # Reset if new path is denied
                     else:
@@ -187,7 +189,7 @@ class Hillclimber:
                 if new_origin not in self.grid.gate_coordinates:
 
                     # Check if current segment makes an interection
-                    if [segment for segment in self.grid.wire_segments if new_origin in segment]:
+                    if new_origin in self.grid.coordinates:
                         intersections_tmp += 1
                     
                 # Set new temporary origin
@@ -201,6 +203,9 @@ class Hillclimber:
 
                 # Make everything up to date
                 self.grid.wire_segments.update(wire_segments_tmp)
+                for segment in wire_segments_tmp:
+                    self.grid.coordinates.add(segment[0])
+                    self.grid.coordinates.add(segment[1])
                 self.grid.intersections += intersections_tmp
 
                 return [x, y, z]
