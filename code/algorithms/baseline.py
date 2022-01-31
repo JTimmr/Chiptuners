@@ -1,5 +1,4 @@
 from copy import deepcopy
-import code.algorithms.sorting as sorting
 import random
 import math
 
