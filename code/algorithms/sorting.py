@@ -11,7 +11,7 @@ def sort_length(netlists, descending=False):
     return (sorted(netlists.values(),key=operator.attrgetter('minimal_length'),reverse=descending))
 
 
-def random_sort(netlists):
+def random_sort(netlists, descending = "None"):
     value_list = list(netlists.values())
     random.shuffle(value_list)
     return (value_list)
