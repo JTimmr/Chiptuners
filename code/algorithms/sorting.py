@@ -52,14 +52,20 @@ def sort_middle_first(netlists, descending=False):
 
     # Give every netlist object instance ranking position attribute to sort on
     for key in netlists:
-        ranking = abs(middle_x - value.start[0]) + abs(middle_y - value.start[1])
+        ranking = abs(
+            middle_x - value.start[0]) + abs(middle_y - value.start[1])
         netlists[key].ranking = ranking
 
-    return (sorted(netlists.values(),key=operator.attrgetter('ranking'),reverse=descending))
+    return (sorted(netlists.values(),
+            key=operator.attrgetter('ranking'),
+            reverse=descending))
 
 
 def sort_gate(grid, descending=True):
-    """Sorts netlist object instances on how many connections a gate has with other gates."""
+    """
+    Sorts netlist object instances on how many connections a gate has
+    with other gates.
+    """
     gate_occupation = {}
     netlist_neighbors = {}
 
@@ -75,13 +81,20 @@ def sort_gate(grid, descending=True):
 
     # TODO: add comment.
     for netlist in grid.netlists.values():
-        netlist_neighbors[netlist] += gate_occupation[netlist.start] + gate_occupation[netlist.end] - 2
+        netlist_neighbors[netlist] \
+            += gate_occupation[netlist.start] \
+            + gate_occupation[netlist.end] - 2
 
-    return sorted(netlist_neighbors, key=netlist_neighbors.get, reverse=descending)
+    return sorted(netlist_neighbors,
+                  key=netlist_neighbors.get,
+                  reverse=descending)
 
 
 def sort_exp_intersections(netlists, descending=False):
-    """Sorts netlist object instances based on how many intersections are expected."""
+    """
+    Sorts netlist object instances based on
+    how many intersections are expected.
+    """
 
     # For every netlist object copy the start- and end coordinates
     for netlist in netlists.values():
@@ -92,18 +105,24 @@ def sort_exp_intersections(netlists, descending=False):
         for other_netlist in netlists.values():
 
             segment2 = [other_netlist.start[:2], other_netlist.end[:2]]
-            
+
             dx1 = segment1[1][0]-segment1[0][0]
             dy1 = segment1[1][1]-segment1[0][1]
             dx2 = segment2[1][0]-segment2[0][0]
             dy2 = segment2[1][1]-segment2[0][1]
 
-            p1 = dy2*(segment2[1][0]-segment1[0][0]) - dx2*(segment2[1][1]-segment1[0][1])
-            p2 = dy2*(segment2[1][0]-segment1[1][0]) - dx2*(segment2[1][1]-segment1[1][1])
-            p3 = dy1*(segment1[1][0]-segment2[0][0]) - dx1*(segment1[1][1]-segment2[0][1])
-            p4 = dy1*(segment1[1][0]-segment2[1][0]) - dx1*(segment1[1][1]-segment2[1][1])
+            p1 = dy2*(segment2[1][0]-segment1[0][0]) \
+                - dx2*(segment2[1][1]-segment1[0][1])
+            p2 = dy2*(segment2[1][0]-segment1[1][0]) \
+                - dx2*(segment2[1][1]-segment1[1][1])
+            p3 = dy1*(segment1[1][0]-segment2[0][0]) \
+                - dx1*(segment1[1][1]-segment2[0][1])
+            p4 = dy1*(segment1[1][0]-segment2[1][0]) \
+                - dx1*(segment1[1][1]-segment2[1][1])
 
-            if (p1*p2<=0) & (p3*p4<=0):
+            if (p1 * p2 <= 0) & (p3 * p4 <= 0):
                 netlist.exp_intersections += 1
-    
-    return (sorted(netlists.values(),key=operator.attrgetter('exp_intersections'),reverse=descending))
+
+    return (sorted(netlists.values(),
+            key=operator.attrgetter('exp_intersections'),
+            reverse=descending))
