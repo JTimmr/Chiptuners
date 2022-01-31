@@ -27,7 +27,7 @@ class A_Star:
             path = [x, y, z]
             netlist.path = path
             completed += 1
-            print(f"Finished {netlist.start} to {netlist.end}, {completed}/{total}")
+            # print(f"Finished {netlist.start} to {netlist.end}, {completed}/{total}")
 
         self.grid.update()
 
