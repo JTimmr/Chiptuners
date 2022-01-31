@@ -76,7 +76,7 @@ class Hillclimber:
         best_costs = deepcopy(self.grid.cost)
         
         # Try a number of times before succes becomes unlikely
-        for attempt in range(1000):
+        for attempt in range(100):
 
             new_path = self.find_path(origin, destination, netlist)
 
