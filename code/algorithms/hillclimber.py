@@ -68,7 +68,7 @@ class Hillclimber:
         destination = netlist.end
 
         # Make copies so original values aren't lost
-        best_path = deepcopy(netlist.path)
+        # best_path = deepcopy(netlist.path)
         self.grid.compute_costs()
         best_costs = deepcopy(self.grid.cost)
         

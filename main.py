@@ -1,6 +1,6 @@
+from copy import deepcopy
 import csv
 import code.classes.grid as grid
-from code import algorithms
 from code.algorithms import representation as rep
 from code.algorithms import baseline as base
 from code.algorithms import hillclimber as climber
@@ -114,13 +114,14 @@ def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improv
 
                 max_delta = chip.cost - chip.theoretical_minimum
 
-                temperature = max_delta
-
+                temperature = 0
+                start_cost = deepcopy(chip.cost)
                 simanneal = sim.SimulatedAnnealing(chip, iterations, update_csv_paths, make_csv_improvements, make_iterative_plot, i, j, temperature, sorting_method)
 
                 # simanneal = sim.SimulatedAnnealing(chip, iterations, update_csv_paths, make_csv_improvements, make_sim_annealing_plot, i, j, temperature = 3000)
 
                 costs = simanneal.run()
+                print(f"{start_cost}")
 
     return costs
 
