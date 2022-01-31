@@ -10,13 +10,16 @@ def visualize(chip, legend):
     max_y = chip.size[1]
 
     plt.figure()
-    ax = plt.axes(projection = "3d")
-    
+    ax = plt.axes(projection="3d")
+
     ax.set_title("3D Visual Chips&Circuits")
-    
+
     # Get all gate coordinates and make them visible in plot
     for gate in chip.gates.values():
-        ax.scatter3D(gate.coordinates[0], gate.coordinates[1], gate.coordinates[2], c = "black")
+        ax.scatter3D(gate.coordinates[0],
+                     gate.coordinates[1],
+                     gate.coordinates[2],
+                     c="black")
 
     # Plot all netlist routes solutions of the chip object instance
     for netlist in chip.netlists.values():
@@ -25,21 +28,26 @@ def visualize(chip, legend):
         y = path[1]
         z = path[2]
 
-        ax.plot(x, y, z, label = netlist)
-    
-    ax.set_xlim(0, max_x) 
+        ax.plot(x, y, z, label=netlist)
+
+    ax.set_xlim(0, max_x)
     ax.set_ylim(0, max_y)
     ax.set_zlim(0, 7)
 
     # If user wants a legend, show it correctly
-    if legend == True:
-        ax.legend(chip.netlists.keys(), title = "Netlist", prop={'size': 7}, bbox_to_anchor=(1.1, 1), ncol = 3, loc='upper left')
-    
+    if legend is True:
+        ax.legend(chip.netlists.keys(),
+                  title='Netlist',
+                  prop={'size': 7},
+                  bbox_to_anchor=(1.1, 1),
+                  ncol=3,
+                  loc='upper left')
+
     # Filter inputfilename
     pattern = "_(.*?).csv"
     substring = re.search(pattern, chip.infile)
 
-    # If regex could filter the filename correctly use it for name, else use inputfilename to save
+    # If regex could filter the filename correctly use, else use inputfilename
     if substring:
         substring = substring.group(1)
         plt.savefig(f"output/figs/fig_{substring}.png", bbox_inches="tight")
