@@ -70,18 +70,22 @@ class Grid:
             gate_destination = (x[i][-1], y[i][-1], 0)
 
             # Extract corresponding netlist from dictionary
-            for netlist in self.netlists.values():
-                if netlist.start == gate_origin and netlist.end == gate_destination:
+            for netlist_object in self.netlists.values():
+                if (netlist_object.start == gate_origin and
+                        netlist_object.end == gate_destination):
 
                     # Save path to correct netlist
-                    netlist.path = [x[i], y[i], z[i]]
+                    netlist_object.path = [x[i], y[i], z[i]]
 
         # Update grid
         self.update()
 
     def update(self):
-        """Ensure dictionary of segments and number of intersections are up to date when a change in the configuration of the grid has been made."""
-        
+        """
+        Ensure dictionary of segments and number of intersections are up
+        to date when a change in the configuration of the grid has been made.
+        """
+
         # Reset dictionary wire segments and number of intersections
         self.wire_segments = {}
         self.intersections = 0
@@ -91,7 +95,9 @@ class Grid:
             netlist_object.current_length = 0
 
             # Extract path
-            x, y, z = netlist_object.path[0], netlist_object.path[1], netlist_object.path[2]
+            x, y, z = (netlist_object.path[0],
+                       netlist_object.path[1],
+                       netlist_object.path[2])
             for coordinate in range(len(x) - 1):
 
                 # Keep count of actual length
@@ -102,7 +108,8 @@ class Grid:
                 end = (x[coordinate + 1], y[coordinate + 1], z[coordinate + 1])
 
                 # Check for intersections
-                if [segment for segment in self.wire_segments if end in segment and end not in self.gate_coordinates]:
+                if [segment for segment in self.wire_segments if end in segment
+                        and end not in self.gate_coordinates]:
                     self.intersections += 1
 
                 # Add segment to dictionary
@@ -112,9 +119,13 @@ class Grid:
                 self.coordinates.add(segment[1])
 
     def load_gates(self):
-        """Reads requested file containing the location of the gates, and extracts their id's and coordinates. Creates gate object for each row"""
+        """
+        Reads requested file containing the location of the gates,
+        and extracts their id's and coordinates.
+        Creates gate object for each row.
+        """
 
-        with open (f"data/chip_{self.chip}/print_{self.chip}.csv", 'r') as file:
+        with open(f"data/chip_{self.chip}/print_{self.chip}.csv", 'r') as file:
             reader = csv.DictReader(file)
             for row in reader:
 
@@ -129,27 +140,34 @@ class Grid:
 
                 if y > self.size[1]:
                     self.size[1] = y + 1
-                    
+
                 # Make object and add to dictionary
                 gate_object = gate.Gate(uid, x, y, 0)
                 self.gates[uid] = gate_object
 
     def load_netlists(self):
-        """Reads requested file containing the requested netlists, and extracts their starting and ending coordinates. Creates gate object for each row"""
+        """
+        Reads requested file containing the requested netlists,
+        and extracts their starting and ending coordinates.
+        Creates gate object for each row.
+        """
 
-        with open (f"data/chip_{self.chip}/netlist_{self.netlist}.csv") as file:
+        with open(f"data/chip_{self.chip}/netlist_{self.netlist}.csv") as file:
             reader = csv.DictReader(file)
             for row in reader:
 
                 # Extract coordinates
-                start_gate_id, end_gate_id = int(row['chip_a']), int(row['chip_b'])
+                start_gate_id, end_gate_id = (int(row['chip_a']),
+                                              int(row['chip_b']))
 
                 # Retrieve gate objects corresponding with coordinates
                 start_gate = self.gates[start_gate_id]
                 end_gate = self.gates[end_gate_id]
 
                 # Make netlist object
-                netlist_object = netlist.Netlist(start_gate.coordinates, end_gate.coordinates, self)
+                netlist_object = netlist.Netlist(start_gate.coordinates,
+                                                 end_gate.coordinates,
+                                                 self)
 
                 # Create unique key per netlist
                 key = (start_gate_id, end_gate_id)
@@ -190,10 +208,11 @@ class Grid:
             name = f"_{name}"
         else:
             name = ""
-        
+
         # Save dataframe to csv
         df = pd.DataFrame({'netlist': netlists, 'x': x, 'y': y, 'z': z})
-        df.to_csv(f"output/paths_netlist_{self.netlist}{name}{string}.csv", index=False)
+        df.to_csv(f"output/paths_netlist_{self.netlist}{name}{string}.csv",
+                  index=False)
 
     def compute_costs(self):
         """Calculate total cost of the current configuration"""
@@ -205,8 +224,8 @@ class Grid:
         self.cost = wire_amount + 300 * self.intersections
 
     def compute_minimum(self):
-        for netlist in self.netlists.values():
-            self.theoretical_minimum += netlist.minimal_length
+        for netlist_object in self.netlists.values():
+            self.theoretical_minimum += netlist_object.minimal_length
 
     def __str__(self) -> str:
         return (f"grid for chip {self.chip} with netlist {self.netlist} \n"
