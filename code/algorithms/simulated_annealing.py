@@ -23,7 +23,7 @@ class SimulatedAnnealing:
         self.name = name
         self.n = n
         self.lowest_costs = None
-        self.sort = sorting_method
+        self.sorting = sorting_method
         
         # Starting temperature and current temperature
         self.Starting_T = temperature
