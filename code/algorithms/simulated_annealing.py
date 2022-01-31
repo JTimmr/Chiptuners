@@ -30,7 +30,7 @@ class SimulatedAnnealing:
         """Updates the current temperature."""
 
         # Check that ensures the temperature only updates when the iteration number has increased
-        if self.iterationlist and self.Current_T > 1:
+        if self.iterationlist and self.Current_T > 0:
             if self.iterationlist[-1] != self.iterations:
 
                 # Temperature decreases linearly with every iteration
@@ -45,8 +45,20 @@ class SimulatedAnnealing:
                 # return self.Current_T
 
                 # Geomtric cooling schedule
-                beta = 0.87
-                self.Current_T = pow(beta, self.iterations) * self.Current_T
+                # beta = 0.87
+                # self.Current_T = pow(beta, self.iterations) * self.Current_T
+                # return self.Current_T
+
+                # As Proposed by Lundy And Mees
+                # beta = 0.7
+                # self.Current_T = self.Current_T / (1 + beta * self.Current_T)
+                # return self.Current_T
+
+                # VCF model
+                Tmax = self.Starting_T
+                Tmin = 50
+                beta = (Tmax - Tmin)/(self.iterations * Tmax * Tmin)
+                self.Current_T = self.Current_T / (1 + beta * self.Current_T)
                 return self.Current_T
 
                 # Temperature decreases exponentially with every iteration
@@ -129,7 +141,7 @@ class SimulatedAnnealing:
                 probability = 1
             rand = random.random() 
 
-            if rand < probability:
+            if probability > rand:
                 self.lowest_costs = self.grid.cost
                 print(f"Alternate path found: new costs are {self.grid.cost}")
                 best_path = deepcopy(new_path)
