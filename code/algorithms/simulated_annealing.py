@@ -3,13 +3,13 @@ import math
 from copy import deepcopy
 
 import numpy
-import code.algorithms.sorting as sort
 import csv 
 import matplotlib.pyplot as plt
+import code.algorithms.A_star as A_star
 
 
 class SimulatedAnnealing:
-    def __init__(self, grid, limit, update_csv_paths, make_csv_improvements, make_iterative_plot, name, n, temperature):
+    def __init__(self, grid, limit, update_csv_paths, make_csv_improvements, make_iterative_plot, name, n, temperature, sorting_method):
         self.grid = grid
         self.limit = limit
         self.iterations = 0
@@ -23,10 +23,27 @@ class SimulatedAnnealing:
         self.name = name
         self.n = n
         self.lowest_costs = None
+        self.sorting = sorting_method
         
         # Starting temperature and current temperature
         self.Starting_T = temperature
         self.Current_T = temperature
+
+    def run_per_paths(self, netlist):
+        # Retrieve starting and ending point
+        start = netlist.start
+        end = netlist.end
+        a = A_star.A_Star_Solver(self.grid, netlist, start, end)
+        a.Solve()
+
+        x, y, z = [], [], []
+        for coordinate in range(len(a.path)):
+            x.append(a.path[coordinate][0])
+            y.append(a.path[coordinate][1])
+            z.append(a.path[coordinate][2])
+        path = [x, y, z]
+
+        return path
 
     def update_temperature(self):
         """Updates the current temperature."""
@@ -83,7 +100,7 @@ class SimulatedAnnealing:
 
             print(self.iterations, self.Current_T)
 
-            netlists = sort.sort_length(self.grid.netlists, descending=True)
+            netlists = self.sorting[0](self.grid.netlists, descending=self.sorting[1])
 
             for netlist in netlists:
                 self.improve_connection(netlist)

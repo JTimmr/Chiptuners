@@ -1,14 +1,13 @@
 import random
 from copy import deepcopy
 import math
-import code.algorithms.sorting as sort
 import csv
 
 from code.visualize import visualize 
 
 
 class Hillclimber:
-    def __init__(self, grid, limit, update_csv_paths, make_csv_improvements, make_iterative_plot, name, n):
+    def __init__(self, grid, limit, update_csv_paths, make_csv_improvements, make_iterative_plot, name, n, sorting_method):
         self.grid = grid
         self.limit = limit
         self.iterations = 0
@@ -21,21 +20,19 @@ class Hillclimber:
         self.n = f"_{n}"
         self.lowest_costs = None
         self.i = 0
+        self.sorting = sorting_method
 
     def run(self):
         """Keeps the Hillclimber algorithm running."""
 
         print("Searching for improvements...")
 
-        # Sort netlist in desired order
-        netlists = sort.sort_length(self.grid.netlists, descending=True)
-
         # Run a number of iterations
         while self.iterations < self.limit:
             print(f"Iteration {self.iterations}")
 
             # Sort netlist in desired order
-            netlists = sort.sort_length(self.grid.netlists, descending=True)
+            netlists = self.sorting[0](self.grid.netlists, descending=self.sorting[1])
 
             for netlist in netlists:
 

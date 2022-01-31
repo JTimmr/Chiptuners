@@ -1,15 +1,17 @@
 import code.algorithms.sorting as sorting
+
 import math
 from copy import deepcopy
 
 class A_Star:
-    def __init__(self, grid):
+    def __init__(self, grid, sorting_method):
         self.grid = grid
+        self.sorting = sorting_method
+
 
     def run(self):
         total = len(self.grid.netlists)
         completed = 0
-
         for netlist in sorting.sort_length(self.grid.netlists, descending=False):
             
             # Retrieve starting and ending point
@@ -28,7 +30,6 @@ class A_Star:
             print(f"Finished {netlist.start} to {netlist.end}, {completed}/{total}")
 
         self.grid.update()
-
 
 class PriorityQueue:
     def __init__(self):
