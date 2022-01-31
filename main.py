@@ -205,7 +205,7 @@ if __name__ == "__main__":
     if args.improving_algorithm:
 
         # Each iteration attempts to improve all netlists until improvement is found or none it found after long tim
-        iterations = 50
+        iterations = 10
 
         # Makes a new csv file for each improvement made in costs by hillclimber or simulated annealing
         # Final form will always be saved

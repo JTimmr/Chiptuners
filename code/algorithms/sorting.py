@@ -90,8 +90,8 @@ def sort_exp_intersections(netlists, descending=False):
     # return (sorted(netlists.values(),key=operator.attrgetter('exp_intersections'),reverse=descending))
 
     for netlist in netlists.values():
+        segment1 = [netlist.start[:2], netlist.end[:2]]
         for other_netlist in netlists.values():
-            segment1 = [netlist.start[:2], netlist.end[:2]]
             segment2 = [other_netlist.start[:2], other_netlist.end[:2]]
             
             dx1 = segment1[1][0]-segment1[0][0]

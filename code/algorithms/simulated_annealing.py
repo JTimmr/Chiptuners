@@ -16,7 +16,7 @@ class SimulatedAnnealing:
         self.update_csv_paths = update_csv_paths
         self.make_csv_improvements = make_csv_improvements
 
-        self.make_sim_annealing_plot = make_iterative_plot
+        self.make_iterative_plot = make_iterative_plot
         self.iterationlist = []
         self.costs = []
         self.name = name
@@ -34,16 +34,21 @@ class SimulatedAnnealing:
         if self.iterationlist and self.Current_T > 1:
             if self.iterationlist[-1] != self.iterations:
 
-                # Temperature decreases linearly with every iteration
-                self.Current_T -= 20
-                if self.Current_T <= 0:
-                    self.Current_T = 1
-                return self.Current_T
+                # # Temperature decreases linearly with every iteration
+                # self.Current_T -= 20
+                # if self.Current_T <= 0:
+                #     self.Current_T = 1
+                # return self.Current_T
 
                 # Logarithmic decrease as described by Aarts and Korst in 1989
                 # log_factor = 1 + numpy.log(1 + self.iterations)
                 # self.Current_T = self.Current_T / log_factor
                 # return self.Current_T
+
+                # Geomtric cooling schedule
+                beta = 0.95
+                self.Current_T = pow(beta, self.iterations) * self.Current_T
+                return self.Current_T
 
                 # Temperature decreases exponentially with every iteration
                 # alpha = 0.999
@@ -57,7 +62,7 @@ class SimulatedAnnealing:
 
         # While iteration limit not reached search for improvements with specific sort function
         while self.iterations < self.limit:
-
+            print(self.iterations, self.Current_T)
             netlists = sort.sort_length(self.grid.netlists, descending=True)
 
             for netlist in netlists:
@@ -65,8 +70,6 @@ class SimulatedAnnealing:
 
             self.iterationlist.append(self.iterations)
             self.iterations += 1
-
-            self.update_temperature()
 
             while len(self.costs) < len(self.iterationlist):
                 self.costs.append(self.lowest_costs)
@@ -130,6 +133,7 @@ class SimulatedAnnealing:
                 print(f"Alternate path found: new costs are {self.grid.cost}")
                 best_path = deepcopy(new_path)
                 best_costs = deepcopy(self.grid.cost)
+                self.update_temperature()
 
                 if self.update_csv_paths:
                     self.grid.to_csv(self.grid.cost)
