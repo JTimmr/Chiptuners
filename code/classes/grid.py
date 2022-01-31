@@ -11,20 +11,17 @@ class Grid:
         self.infile = infile
         self.size = [0, 0, 7]
 
-        # All intersections
         self.intersections = 0
 
         self.tot_attempts = 0
 
-        # All segments
         self.wire_segments = {}
 
         self.coordinates = set()
 
-        # Dictionary of coordinates gates
+        # Dictionary containing all gates {gate_number: Gate}
         self.gates = {}
 
-        # Set op gate points
         self.gate_coordinates = set()
 
         # Dictionary containing all connections: {(startID, endID): Netlist}
@@ -54,10 +51,9 @@ class Grid:
         y = pd.Series.tolist(data['y'].str.split(';'))
         z = pd.Series.tolist(data['z'].str.split(';'))
 
-        # Run over all imported netlists
+        # Run over all imported netlists and change to list of ints
         for i in range(len(x)):
 
-            # Change to list of integers
             for j in range(len(x[i])):
                 x[i][j] = int(x[i][j])
             for j in range(len(y[i])):
@@ -90,14 +86,14 @@ class Grid:
         self.wire_segments = {}
         self.intersections = 0
 
-        # Run over netlists
+        # Run over netlists to extract their paths
         for netlist_object in self.netlists.values():
             netlist_object.current_length = 0
 
-            # Extract path
             x, y, z = (netlist_object.path[0],
                        netlist_object.path[1],
                        netlist_object.path[2])
+                       
             for coordinate in range(len(x) - 1):
 
                 # Keep count of actual length
