@@ -1,5 +1,3 @@
-import code.algorithms.sorting as sorting
-
 import math
 from copy import deepcopy
 
@@ -12,7 +10,7 @@ class A_Star:
     def run(self):
         total = len(self.grid.netlists)
         completed = 0
-        for netlist in sorting.sort_length(self.grid.netlists, descending=False):
+        for netlist in self.sorting[0](self.grid.netlists, descending=self.sorting[1]):
             
             # Retrieve starting and ending point
             start = netlist.start
