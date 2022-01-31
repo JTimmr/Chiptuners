@@ -8,6 +8,7 @@ class Netlist:
         self.path = []
         self.ranking = 0
         self.exp_intersections = 0
+        self.key = ()
 
     def __str__(self) -> str:
         return ("\n\t\t")

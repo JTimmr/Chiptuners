@@ -153,6 +153,7 @@ class Grid:
 
                 # Create unique key per netlist
                 key = (start_gate_id, end_gate_id)
+                netlist_object.key = key
 
                 # Store netlist in dictionary with unique key
                 self.netlists[key] = netlist_object
