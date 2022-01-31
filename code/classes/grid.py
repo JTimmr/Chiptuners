@@ -31,7 +31,7 @@ class Grid:
         self.netlists = {}
 
         # Set boundaries such that the paths do not leave the grid
-        self.layers= ()
+        self.layers = ()
 
         # Create gate objects
         self.load_gates()
@@ -53,7 +53,7 @@ class Grid:
         x = pd.Series.tolist((data['x'].str.split(';')))
         y = pd.Series.tolist(data['y'].str.split(';'))
         z = pd.Series.tolist(data['z'].str.split(';'))
-        
+
         # Run over all imported netlists
         for i in range(len(x)):
 
@@ -69,7 +69,7 @@ class Grid:
             gate_origin = (x[i][0], y[i][0], 0)
             gate_destination = (x[i][-1], y[i][-1], 0)
 
-            # Extract corresponding netlist from dictionry
+            # Extract corresponding netlist from dictionary
             for netlist in self.netlists.values():
                 if netlist.start == gate_origin and netlist.end == gate_destination:
 
@@ -87,15 +87,15 @@ class Grid:
         self.intersections = 0
 
         # Run over netlists
-        for netlist in self.netlists.values():
-            netlist.current_length = 0
+        for netlist_object in self.netlists.values():
+            netlist_object.current_length = 0
 
             # Extract path
-            x, y, z = netlist.path[0], netlist.path[1], netlist.path[2]
+            x, y, z = netlist_object.path[0], netlist_object.path[1], netlist_object.path[2]
             for coordinate in range(len(x) - 1):
 
                 # Keep count of actual length
-                netlist.current_length += 1
+                netlist_object.current_length += 1
 
                 # Temporarily save coordinates of each segment
                 start = (x[coordinate], y[coordinate], z[coordinate])
@@ -107,7 +107,7 @@ class Grid:
 
                 # Add segment to dictionary
                 segment = (start, end)
-                self.wire_segments[segment] = netlist
+                self.wire_segments[segment] = netlist_object
                 self.coordinates.add(segment[0])
                 self.coordinates.add(segment[1])
 
