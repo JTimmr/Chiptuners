@@ -9,6 +9,7 @@ class Netlist:
         self.ranking = 0
         self.exp_intersections = 0
         self.key = ()
+        self.intersection = 0
 
     def __str__(self) -> str:
         return ("\n\t\t")
