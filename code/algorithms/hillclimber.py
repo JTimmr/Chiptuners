@@ -119,6 +119,8 @@ class Hillclimber:
                         # Keep csv updated if update_csv is set to True in main function
                         if self.update_csv_paths:
                             self.grid.to_csv(self.grid.cost)
+                        print("next")
+                        return
 
                     # Reset if new path is denied
                     else:
@@ -187,7 +189,7 @@ class Hillclimber:
                 if new_origin not in self.grid.gate_coordinates:
 
                     # Check if current segment makes an interection
-                    if [segment for segment in self.grid.wire_segments if new_origin in segment]:
+                    if new_origin in self.grid.coordinates:
                         intersections_tmp += 1
                     
                 # Set new temporary origin
@@ -201,6 +203,9 @@ class Hillclimber:
 
                 # Make everything up to date
                 self.grid.wire_segments.update(wire_segments_tmp)
+                for segment in wire_segments_tmp:
+                    self.grid.coordinates.add(segment[0])
+                    self.grid.coordinates.add(segment[1])
                 self.grid.intersections += intersections_tmp
 
                 return [x, y, z]

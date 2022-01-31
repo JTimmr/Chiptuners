@@ -116,6 +116,9 @@ class Baseline:
 
                 # Make everything up to date
                 self.grid.wire_segments.update(wire_segments_tmp)
+                for segment in wire_segments_tmp:
+                    self.grid.coordinates.add(segment[0])
+                    self.grid.coordinates.add(segment[1])
                 self.grid.intersections += intersections_tmp
                 path = path_tmp
 

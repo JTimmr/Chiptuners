@@ -17,6 +17,7 @@ class SimulatedAnnealing:
         self.make_csv_improvements = make_csv_improvements
 
         self.make_iterative_plot = make_iterative_plot
+
         self.iterationlist = []
         self.costs = []
         self.name = name
@@ -31,7 +32,7 @@ class SimulatedAnnealing:
         """Updates the current temperature."""
 
         # Check that ensures the temperature only updates when the iteration number has increased
-        if self.iterationlist and self.Current_T > 1:
+        if self.iterationlist and self.Current_T > 0:
             if self.iterationlist[-1] != self.iterations:
 
                 # # Temperature decreases linearly with every iteration
@@ -46,9 +47,26 @@ class SimulatedAnnealing:
                 # return self.Current_T
 
                 # Geomtric cooling schedule
-                beta = 0.95
+
+                beta = 0.9
                 self.Current_T = pow(beta, self.iterations) * self.Current_T
+
+                # beta = 0.87
+                # self.Current_T = pow(beta, self.iterations) * self.Current_T
                 return self.Current_T
+
+                # As Proposed by Lundy And Mees
+                # beta = 0.7
+                # self.Current_T = self.Current_T / (1 + beta * self.Current_T)
+                # return self.Current_T
+
+                # # VCF model
+                # Tmax = self.Starting_T
+                # Tmin = 50
+                # beta = (Tmax - Tmin)/(self.iterations * Tmax * Tmin)
+                # self.Current_T = self.Current_T / (1 + beta * self.Current_T)
+
+                # return self.Current_T
 
                 # Temperature decreases exponentially with every iteration
                 # alpha = 0.999
@@ -62,7 +80,9 @@ class SimulatedAnnealing:
 
         # While iteration limit not reached search for improvements with specific sort function
         while self.iterations < self.limit:
+
             print(self.iterations, self.Current_T)
+
             netlists = sort.sort_length(self.grid.netlists, descending=True)
 
             for netlist in netlists:
@@ -101,45 +121,48 @@ class SimulatedAnnealing:
         self.grid.compute_costs()
         best_costs = deepcopy(self.grid.cost)
 
-        # If path is found, calculate new costs
-        new_path = self.find_path(origin, destination, netlist)
-        if new_path:
-            old_path = deepcopy(netlist.path)
-            netlist.path = new_path
-            self.grid.compute_costs()
+        for attempt in range(10):
+            # If path is found, calculate new costs
+            new_path = self.find_path(origin, destination, netlist)
+            if new_path:
+                old_path = deepcopy(netlist.path)
+                netlist.path = new_path
+                self.grid.compute_costs()
 
-            # delta = best_costs - self.grid.cost
+                # delta = best_costs - self.grid.cost
 
-            # if delta < 0:
-            #     probability = math.exp(delta/self.Current_T)
-            # else:
-            #     probability = 1
-            # rand = random.random() 
+                # if delta < 0:
+                #     probability = math.exp(delta/self.Current_T)
+                # else:
+                #     probability = 1
+                # rand = random.random() 
 
-            # Calculate difference between 
-            delta = self.grid.cost - best_costs
-            
-            if self.grid.cost > best_costs:
-                if self.Current_T == 0:
-                    probability = 0
+                # Calculate difference between 
+                delta = self.grid.cost - best_costs
+                
+                if self.grid.cost > best_costs:
+                    if self.Current_T == 0:
+                        probability = 0
+                    else:
+                        probability = math.exp(-delta/self.Current_T)
+                        print(probability)
                 else:
-                    probability = math.exp(-delta/self.Current_T)
-            else:
-                probability = 1
-            rand = random.random() 
+                    print("improvement")
+                    probability = 1
+                rand = random.random() 
 
-            if rand < probability:
-                self.lowest_costs = self.grid.cost
-                print(f"Alternate path found: new costs are {self.grid.cost}")
-                best_path = deepcopy(new_path)
-                best_costs = deepcopy(self.grid.cost)
-                self.update_temperature()
+                if probability > rand:
+                    self.lowest_costs = self.grid.cost
+                    print(f"Alternate path found: new costs are {self.grid.cost}")
+                    best_path = deepcopy(new_path)
+                    best_costs = deepcopy(self.grid.cost)
+                    self.update_temperature()
 
-                if self.update_csv_paths:
-                    self.grid.to_csv(self.grid.cost)
-
-            else:
-                netlist.path = old_path
+                    if self.update_csv_paths:
+                        self.grid.to_csv(self.grid.cost)
+                    return
+                else:
+                    netlist.path = old_path
 
     def find_path(self, origin, destination, netlist):
         """Attempts to find a path between two coordinates in the grid."""
@@ -199,7 +222,7 @@ class SimulatedAnnealing:
                 if new_origin not in self.grid.gate_coordinates:
 
                     # Check if current segment makes an interection
-                    if [segment for segment in self.grid.wire_segments if new_origin in segment]:
+                    if new_origin in self.grid.coordinates:
                         intersections_tmp += 1
                     
                 # Set new temporary origin
@@ -213,6 +236,9 @@ class SimulatedAnnealing:
 
                 # Make everything up to date
                 self.grid.wire_segments.update(wire_segments_tmp)
+                for segment in wire_segments_tmp:
+                    self.grid.coordinates.add(segment[0])
+                    self.grid.coordinates.add(segment[1])
                 self.grid.intersections += intersections_tmp
 
                 return [x, y, z]
