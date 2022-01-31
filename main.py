@@ -196,8 +196,8 @@ if __name__ == "__main__":
 
     parser.add_argument("-c", type=str, default=None, dest="algorithm", help="Algorithm to be used. Pick either baseline or a_star.")
     parser.add_argument("-i", type=str, default=None, dest="improving_algorithm", help="Algorithm to be used to improve existing solutions. Pick either hillclimber or simulated annealing.")
-    parser.add_argument("-sort_c", type = str, default="length d", dest="sorting_c", help="In which order must the netlists be ordered for the basis algorithm? Options: random, length a, length d, middle, outside, gate a, gate d, intersections a, intersections d")
-    parser.add_argument("-sort_i", type= str, default="length d", dest="sorting_i", help="In which order must the netlists be ordered for the iterative algorithm?")
+    parser.add_argument("-sort_c", type = str, default="length d", dest="sorting_c", help="In which order must the netlists be ordered for the basis algorithm? Options: random, length_a, length_d, middle, outside, gate_a, gate_d, intersections_a, intersections_d")
+    parser.add_argument("-sort_i", type= str, default="length d", dest="sorting_i", help="In which order must the netlists be ordered for the iterative algorithm? Options: random, length_a, length_d, middle, outside, gate_a, gate_d, intersections_a, intersections_d")
     
     parser.add_argument("-vis", "--visualize", action='store_true', help="Renders a 3D plot of the grid with all its paths.")
     parser.add_argument("-leg", "--legend", action='store_true', help="Renders a legend for 3D plot.") 
