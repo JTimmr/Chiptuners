@@ -100,7 +100,7 @@ class SimulatedAnnealing:
 
             print(self.iterations, self.Current_T)
 
-            netlists = self.sorting[0](self.grid.netlists, descending=self.sorting[1]):
+            netlists = self.sorting[0](self.grid.netlists, descending=self.sorting[1])
 
             for netlist in netlists:
                 self.improve_connection(netlist)
