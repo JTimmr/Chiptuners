@@ -7,6 +7,7 @@ from code.algorithms import hillclimber as climber
 from code.algorithms import A_star as star
 from code.visualize import visualize as vis
 from code.algorithms import simulated_annealing as sim
+from code.algorithms.sorting import *
 import argparse
 
 def to_csv(costs):
@@ -26,7 +27,7 @@ def to_csv(costs):
                     "simulation": i + 1, "cost": costs[i]
                     })
 
-def log_simulation(runs, netlist, constructive_algorithm):
+def log_simulation(runs, netlist, constructive_algorithm, sorting_method):
     """Run the given algorithm a number of times, creating a set of solutions. Set N to 1 if a single solution suffices."""
     
     # Calculate chip number from netlist number
@@ -47,10 +48,10 @@ def log_simulation(runs, netlist, constructive_algorithm):
         for i in range(1, runs + 1):
             chip = grid.Grid(chip_nr, netlist)
             if constructive_algorithm == "baseline":
-                baseline = base.Baseline(chip)
+                baseline = base.Baseline(chip, sorting_method)
                 baseline.run()
             elif constructive_algorithm == "a_star":
-                a = star.A_Star(chip)
+                a = star.A_Star(chip, sorting_method)
                 a.run()
 
             chip.compute_costs()
@@ -73,7 +74,7 @@ def log_simulation(runs, netlist, constructive_algorithm):
             "simulation": "Avg costs", "cost": avgCosts
         })
 
-def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improvements, make_iterative_plot, iterations, N, N_improvements):
+def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improvements, make_iterative_plot, iterations, N, N_improvements, sorting_method):
     """Takes a csv containing previously generated paths, and tries to improve the costs of the solution using an iterative algorithm."""
 
     costs = []
@@ -102,7 +103,7 @@ def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improv
 
             # Run hillclimber algorithm with a number of iterations
             if algorithm == "hillclimber":
-                hillclimber = climber.Hillclimber(chip, iterations, update_csv_paths, make_csv_improvements, make_iterative_plot, i, j)
+                hillclimber = climber.Hillclimber(chip, iterations, update_csv_paths, make_csv_improvements, make_iterative_plot, i, j, sorting_method)
                 cost = hillclimber.run()
 
                 costs.append(cost)
@@ -115,7 +116,7 @@ def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improv
 
                 temperature = max_delta
 
-                simanneal = sim.SimulatedAnnealing(chip, iterations, update_csv_paths, make_csv_improvements, make_iterative_plot, i, j, temperature)
+                simanneal = sim.SimulatedAnnealing(chip, iterations, update_csv_paths, make_csv_improvements, make_iterative_plot, i, j, temperature, sorting_method)
 
                 # simanneal = sim.SimulatedAnnealing(chip, iterations, update_csv_paths, make_csv_improvements, make_sim_annealing_plot, i, j, temperature = 3000)
 
@@ -179,11 +180,26 @@ def quick_sort_test(constructive_algorithm):
 
 if __name__ == "__main__": 
 
+    function_map = {
+        'random' : [random_sort, None],
+        'length_d' : [sort_length, True],
+        'length_a' : [sort_length, False],
+        'middle' : [sort_middle_first, True],
+        'outside' : [sort_middle_first, False],
+        'gate_d' : [sort_gate, True],
+        'gate_a' : [sort_gate, False],
+        'intersections_d' : [sort_exp_intersections, True],
+        'intersections_a' : [sort_exp_intersections, False],
+    }
+    
     parser = argparse.ArgumentParser(description='Find the most efficient solution for a network of points to be connected without collisions')
     parser.add_argument("netlist", type=int, help="Netlist to be solved")
 
     parser.add_argument("-c", type=str, default=None, dest="algorithm", help="Algorithm to be used. Pick either baseline or a_star.")
     parser.add_argument("-i", type=str, default=None, dest="improving_algorithm", help="Algorithm to be used to improve existing solutions. Pick either hillclimber or simulated annealing.")
+    parser.add_argument("-sort_c", type = str, default="length_d", dest="sorting_c", help="In which order must the netlists be ordered for the basis algorithm? Options: random, length_a, length_d, middle, outside, gate_a, gate_d, intersections_a, intersections_d")
+    parser.add_argument("-sort_i", type= str, default="length_d", dest="sorting_i", help="In which order must the netlists be ordered for the iterative algorithm? Options: random, length_a, length_d, middle, outside, gate_a, gate_d, intersections_a, intersections_d")
+    
     parser.add_argument("-vis", "--visualize", action='store_true', help="Renders a 3D plot of the grid with all its paths.")
     parser.add_argument("-leg", "--legend", action='store_true', help="Renders a legend for 3D plot.") 
 
@@ -196,17 +212,15 @@ if __name__ == "__main__":
 
 
     if args.algorithm:
-        log_simulation(args.N, args.netlist, args.algorithm)
+        log_simulation(args.N, args.netlist, args.algorithm, function_map[args.sorting_c])
 
         # quick_sort_test(args.algorithm)
-
-
 
 
     if args.improving_algorithm:
 
         # Each iteration attempts to improve all netlists until improvement is found or none it found after long tim
-        iterations = 100
+        iterations = 5000
 
         # Makes a new csv file for each improvement made in costs by hillclimber or simulated annealing
         # Final form will always be saved
@@ -215,7 +229,7 @@ if __name__ == "__main__":
         # Makes CSV files after a hillclimber is done, storing the new costs per iteration
         make_csv_improvements = False
         make_iterative_plot = False
-        improve(args.netlist, args.specific_file, args.improving_algorithm, update_csv_paths, make_csv_improvements, make_iterative_plot, iterations, args.N, args.N_improvements)
+        improve(args.netlist, args.specific_file, args.improving_algorithm, update_csv_paths, make_csv_improvements, make_iterative_plot, iterations, args.N, args.N_improvements, function_map[args.sorting_i])
 
     if args.visualize:
         visualize_three_dimensional(args.netlist, args.specific_file, args.legend) 

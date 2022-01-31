@@ -3,7 +3,6 @@ import math
 from copy import deepcopy
 
 import numpy
-import code.algorithms.sorting as sort
 import csv 
 import matplotlib.pyplot as plt
 import code.algorithms.A_star as A_star
@@ -73,7 +72,7 @@ def exponential_cooling(temprature, alpha = 0.98):
 
 
 class SimulatedAnnealing:
-    def __init__(self, grid, limit, update_csv_paths, make_csv_improvements, make_iterative_plot, name, n, temperature):
+    def __init__(self, grid, limit, update_csv_paths, make_csv_improvements, make_iterative_plot, name, n, temperature, sorting_method):
         self.grid = grid
         self.limit = limit
         self.iterations = 0
@@ -87,6 +86,7 @@ class SimulatedAnnealing:
         self.name = name
         self.n = n
         self.lowest_costs = None
+        self.sorting = sorting_method
         
         # Starting temperature and current temperature
         self.Starting_T = temperature
@@ -127,7 +127,8 @@ class SimulatedAnnealing:
 
             print(f"iteration: {self.iterations} and Temprature: {self.Current_T}")
 
-            netlists = sort.random_sort(self.grid.netlists)
+
+            netlists = self.sorting[0](self.grid.netlists, descending=self.sorting[1])
 
             for netlist in netlists:
                 self.improve_connection(netlist)
