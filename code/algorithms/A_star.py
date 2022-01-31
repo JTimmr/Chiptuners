@@ -4,14 +4,16 @@ import math
 from copy import deepcopy
 
 class A_Star:
-    def __init__(self, grid):
+    def __init__(self, grid, sorting_method):
         self.grid = grid
+        self.sorting = sorting_method
+
 
     def run(self):
         total = len(self.grid.netlists)
         completed = 0
 
-        for netlist in sorting.sort_exp_intersections(self.grid.netlists, descending=False):
+        for netlist in self.sorting[0](self.grid.netlists, descending=self.sorting[1]):
             print(f"Finished {netlist.start} to {netlist.end}, {completed}/{len(self.grid.netlists)}")
 
             # Retrieve starting and ending point
