@@ -25,7 +25,7 @@ class A_Star:
             path = [x, y, z]
             netlist.path = path
             completed += 1
-            print(f"Finished {netlist.start} to {netlist.end}, {completed}/{total}")
+            # print(f"Finished {netlist.start} to {netlist.end}, {completed}/{total}")
 
         self.grid.update()
 
@@ -171,6 +171,8 @@ class A_Star_Solver:
                         for segment in tmp_segments:
                             self.grid.coordinates.add(segment[0])
                             self.grid.coordinates.add(segment[1])
+                        self.netlist.intersections = child.costs // 300
+                        print(self.netlist.intersections, self.netlist.start)
                         return self.path
                     
                     priority = child.dist

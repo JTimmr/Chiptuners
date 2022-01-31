@@ -125,7 +125,7 @@ class SimulatedAnnealing:
         # While iteration limit not reached search for improvements with specific sort function
         while self.iterations < self.limit:
 
-            print(f"iteration: {self.iterations} and Temprature: {self.Current_T}")
+            # print(f"iteration: {self.iterations} and Temprature: {self.Current_T}")
 
 
             netlists = self.sorting[0](self.grid.netlists, descending=self.sorting[1])
@@ -133,11 +133,11 @@ class SimulatedAnnealing:
             for netlist in netlists:
                 self.improve_connection(netlist)
 
-            self.iterationlist.append(self.iterations)
-            self.iterations += 1
+                self.iterationlist.append(self.iterations)
+                self.iterations += 1
 
-            while len(self.costs) < len(self.iterationlist):
-                self.costs.append(self.lowest_costs)
+                while len(self.costs) < len(self.iterationlist):
+                    self.costs.append(self.lowest_costs)
 
         self.grid.compute_costs()
         print(f"Reached max number of iterations. Costs are {self.grid.cost}")
@@ -202,14 +202,14 @@ class SimulatedAnnealing:
 
                 delta = self.grid.cost - best_costs
                 
-                if self.grid.cost > best_costs:
+                if self.grid.cost >= best_costs:
                     if self.Current_T == 0:
                         probability = 0
                     else:
                         probability = math.exp(-delta/self.Current_T)
-                        print(f"probability = {probability}")
+                        # print(f"probability = {probability}")
                 else:
-                    print("not worse")
+                    # print("not worse")
                     probability = 1
                 rand = random.random() 
 

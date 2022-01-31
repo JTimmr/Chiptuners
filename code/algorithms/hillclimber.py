@@ -2,7 +2,7 @@ import random
 from copy import deepcopy
 import math
 import csv
-
+import matplotlib.pyplot as plt
 from code.visualize import visualize 
 
 
@@ -68,7 +68,7 @@ class Hillclimber:
         destination = netlist.end
 
         # Make copies so original values aren't lost
-        best_path = deepcopy(netlist.path)
+        # best_path = deepcopy(netlist.path)
         self.grid.compute_costs()
         best_costs = deepcopy(self.grid.cost)
         
@@ -116,7 +116,6 @@ class Hillclimber:
                         # Keep csv updated if update_csv is set to True in main function
                         if self.update_csv_paths:
                             self.grid.to_csv(self.grid.cost)
-                        print("next")
                         return
 
                     # Reset if new path is denied
