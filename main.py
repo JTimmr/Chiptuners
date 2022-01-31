@@ -1,7 +1,5 @@
 import csv
 import code.classes.grid as grid
-from code import algorithms
-from code.algorithms import representation as rep
 from code.algorithms import baseline as base
 from code.algorithms import hillclimber as climber
 from code.algorithms import A_star as star
@@ -184,8 +182,8 @@ if __name__ == "__main__":
         'random' : [random_sort, None],
         'length_d' : [sort_length, True],
         'length_a' : [sort_length, False],
-        'middle' : [sort_middle_first, True],
-        'outside' : [sort_middle_first, False],
+        'middle_d' : [sort_middle_first, True],
+        'outside_a' : [sort_middle_first, False],
         'gate_d' : [sort_gate, True],
         'gate_a' : [sort_gate, False],
         'intersections_d' : [sort_exp_intersections, True],
