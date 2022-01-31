@@ -27,7 +27,7 @@ def to_csv(costs):
                     "simulation": i + 1, "cost": costs[i]
                     })
 
-def log_simulation(runs, netlist, constructive_algorithm):
+def log_simulation(runs, netlist, constructive_algorithm, sorting_method):
     """Run the given algorithm a number of times, creating a set of solutions. Set N to 1 if a single solution suffices."""
     
     # Calculate chip number from netlist number
@@ -48,10 +48,10 @@ def log_simulation(runs, netlist, constructive_algorithm):
         for i in range(1, runs + 1):
             chip = grid.Grid(chip_nr, netlist)
             if constructive_algorithm == "baseline":
-                baseline = base.Baseline(chip)
+                baseline = base.Baseline(chip, sorting_method)
                 baseline.run()
             elif constructive_algorithm == "a_star":
-                a = star.A_Star(chip)
+                a = star.A_Star(chip, sorting_method)
                 a.run()
 
             chip.compute_costs()
@@ -179,7 +179,7 @@ def quick_sort_test(constructive_algorithm):
 
 if __name__ == "__main__": 
 
-        function_map = {
+    function_map = {
         'random' : [random_sort, None],
         'length_d' : [sort_length, True],
         'length_a' : [sort_length, False],
@@ -190,14 +190,14 @@ if __name__ == "__main__":
         'intersections_d' : [sort_exp_intersections, True],
         'intersections_a' : [sort_exp_intersections, False],
     }
-
+    
     parser = argparse.ArgumentParser(description='Find the most efficient solution for a network of points to be connected without collisions')
     parser.add_argument("netlist", type=int, help="Netlist to be solved")
 
     parser.add_argument("-c", type=str, default=None, dest="algorithm", help="Algorithm to be used. Pick either baseline or a_star.")
     parser.add_argument("-i", type=str, default=None, dest="improving_algorithm", help="Algorithm to be used to improve existing solutions. Pick either hillclimber or simulated annealing.")
-    parser.add_argument("-sort_c", type = str, default="length d", dest="sorting_c", help="In which order must the netlists be ordered for the basis algorithm? Options: random, length_a, length_d, middle, outside, gate_a, gate_d, intersections_a, intersections_d")
-    parser.add_argument("-sort_i", type= str, default="length d", dest="sorting_i", help="In which order must the netlists be ordered for the iterative algorithm? Options: random, length_a, length_d, middle, outside, gate_a, gate_d, intersections_a, intersections_d")
+    parser.add_argument("-sort_c", type = str, default="length_d", dest="sorting_c", help="In which order must the netlists be ordered for the basis algorithm? Options: random, length_a, length_d, middle, outside, gate_a, gate_d, intersections_a, intersections_d")
+    parser.add_argument("-sort_i", type= str, default="length_d", dest="sorting_i", help="In which order must the netlists be ordered for the iterative algorithm? Options: random, length_a, length_d, middle, outside, gate_a, gate_d, intersections_a, intersections_d")
     
     parser.add_argument("-vis", "--visualize", action='store_true', help="Renders a 3D plot of the grid with all its paths.")
     parser.add_argument("-leg", "--legend", action='store_true', help="Renders a legend for 3D plot.") 
