@@ -7,6 +7,69 @@ import code.algorithms.sorting as sort
 import csv 
 import matplotlib.pyplot as plt
 import code.algorithms.A_star as A_star
+import code.algorithms.sorting as sorting
+
+def linear_cooling(temprature, cooling_speed = 20, t_lower = 1):
+    """
+    Linear decreasing temprature
+    """
+    temprature -= cooling_speed
+
+    if temprature <= t_lower:
+        temprature = t_lower
+
+    return temprature
+
+
+def log_cooling(temprature, iteration):
+    """
+    Logarithmic decrease as described by Aarts and Korst in 1989
+    """
+    log_factor = 1 + numpy.log(1 + iteration)
+    temprature = temprature / log_factor
+
+    return temprature
+   
+
+def geomtric_cooling(temprature, iteration, beta = 0.9):
+    """
+    Geomtric cooling schedule
+    """
+    new_temprature = pow(beta, iteration) * temprature
+
+    return new_temprature
+
+
+def LundyMees_cooling(temprature, beta = 0.9):
+    """
+    As proposed by Lundy And Mees
+    """
+    temprature = temprature / (1 + beta * temprature)
+
+    return temprature
+
+
+def VCF_cooling(temprature, iteration, starting_temprature, t_lower = 1):
+    """
+    Cooling schedule following a VCF model
+    """
+    beta = (starting_temprature - t_lower)/(iteration * starting_temprature * t_lower)
+    temprature = temprature / (1 + beta * temprature)
+
+    return temprature
+
+
+def exponential_cooling(temprature, alpha = 0.98):
+    """
+    Cooling schedule based on exponential decrease
+    """
+    if alpha > 1 or alpha < 0:
+        raise Exception("Please enter values for alpha between 0-1")
+
+    temprature = temprature * alpha
+
+    return temprature
+ 
 
 
 class SimulatedAnnealing:
@@ -47,48 +110,12 @@ class SimulatedAnnealing:
 
     def update_temperature(self):
         """Updates the current temperature."""
-
+        
         # Check that ensures the temperature only updates when the iteration number has increased
         if self.iterationlist and self.Current_T > 0:
             if self.iterationlist[-1] != self.iterations:
-
-                # # Temperature decreases linearly with every iteration
-                # self.Current_T -= 20
-                # if self.Current_T <= 0:
-                #     self.Current_T = 1
-                # return self.Current_T
-
-                # Logarithmic decrease as described by Aarts and Korst in 1989
-                # log_factor = 1 + numpy.log(1 + self.iterations)
-                # self.Current_T = self.Current_T / log_factor
-                # return self.Current_T
-
-                # Geomtric cooling schedule
-
-                beta = 0.9
-                self.Current_T = pow(beta, self.iterations) * self.Current_T
-
-                # beta = 0.87
-                # self.Current_T = pow(beta, self.iterations) * self.Current_T
+                self.Current_T = geomtric_cooling(self.Current_T, self.iterations ,beta = 0.8)
                 return self.Current_T
-
-                # As Proposed by Lundy And Mees
-                # beta = 0.7
-                # self.Current_T = self.Current_T / (1 + beta * self.Current_T)
-                # return self.Current_T
-
-                # # VCF model
-                # Tmax = self.Starting_T
-                # Tmin = 50
-                # beta = (Tmax - Tmin)/(self.iterations * Tmax * Tmin)
-                # self.Current_T = self.Current_T / (1 + beta * self.Current_T)
-
-                # return self.Current_T
-
-                # Temperature decreases exponentially with every iteration
-                # alpha = 0.999
-                # self.Current_T = self.Current_T * alpha
-                # return self.Current_T
 
     def run(self):
         """Keeps the simulated annealing algorithm running until all iteration limit reached."""
@@ -98,9 +125,9 @@ class SimulatedAnnealing:
         # While iteration limit not reached search for improvements with specific sort function
         while self.iterations < self.limit:
 
-            print(self.iterations, self.Current_T)
+            print(f"iteration: {self.iterations} and Temprature: {self.Current_T}")
 
-            netlists = sort.sort_length(self.grid.netlists, descending=True)
+            netlists = sort.random_sort(self.grid.netlists)
 
             for netlist in netlists:
                 self.improve_connection(netlist)
@@ -138,23 +165,40 @@ class SimulatedAnnealing:
         self.grid.compute_costs()
         best_costs = deepcopy(self.grid.cost)
 
-        for attempt in range(10):
+        for attempt in range(50):
             # If path is found, calculate new costs
             new_path = self.find_path(origin, destination, netlist)
+
+            # new_path = self.run_per_paths(netlist)
             if new_path:
+                old_grid = deepcopy(self.grid)
                 old_path = deepcopy(netlist.path)
+
                 netlist.path = new_path
                 self.grid.compute_costs()
 
-                # delta = best_costs - self.grid.cost
+# # --------------------------------------- update all other paths via A* --------------------------------------- #
+#                 deepcopy_netlists = deepcopy(self.grid.netlists)
+#                 deepcopy_netlists.pop(netlist.key)
+#                 other_netlists = deepcopy_netlists
 
-                # if delta < 0:
-                #     probability = math.exp(delta/self.Current_T)
-                # else:
-                #     probability = 1
-                # rand = random.random() 
+#                 for netlist in sorting.sort_exp_intersections(other_netlists, descending=False):
 
-                # Calculate difference between 
+#                     # Retrieve starting and ending point
+#                     start = netlist.start
+#                     end = netlist.end
+#                     a = A_star.A_Star_Solver(self.grid, netlist, start, end)
+#                     a.Solve()
+#                     x, y, z = [], [], []
+#                     for coordinate in range(len(a.path)):
+#                         x.append(a.path[coordinate][0])
+#                         y.append(a.path[coordinate][1])
+#                         z.append(a.path[coordinate][2])
+#                     path = [x, y, z]
+#                     netlist.path = path
+#                 self.grid.update()
+# # --------------------------------------- update all other paths via A* --------------------------------------- #
+
                 delta = self.grid.cost - best_costs
                 
                 if self.grid.cost > best_costs:
@@ -162,9 +206,9 @@ class SimulatedAnnealing:
                         probability = 0
                     else:
                         probability = math.exp(-delta/self.Current_T)
-                        print(probability)
+                        print(f"probability = {probability}")
                 else:
-                    print("improvement")
+                    print("not worse")
                     probability = 1
                 rand = random.random() 
 
@@ -181,6 +225,8 @@ class SimulatedAnnealing:
                 else:
                     netlist.path = old_path
 
+                return
+
     def find_path(self, origin, destination, netlist):
         """Attempts to find a path between two coordinates in the grid."""
 
@@ -190,7 +236,8 @@ class SimulatedAnnealing:
         z = []
 
         #  Set limit for pathlength
-        max_pathlength = netlist.minimal_length * 2 + 10
+        # max_pathlength = netlist.minimal_length * 2 + 10
+        max_pathlength = netlist.current_length + 10
 
         current_attempt = 0
 

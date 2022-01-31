@@ -114,6 +114,7 @@ def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improv
                 max_delta = chip.cost - chip.theoretical_minimum
 
                 temperature = max_delta
+
                 simanneal = sim.SimulatedAnnealing(chip, iterations, update_csv_paths, make_csv_improvements, make_iterative_plot, i, j, temperature)
 
                 # simanneal = sim.SimulatedAnnealing(chip, iterations, update_csv_paths, make_csv_improvements, make_sim_annealing_plot, i, j, temperature = 3000)
