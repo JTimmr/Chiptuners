@@ -1,5 +1,4 @@
 from queue import PriorityQueue
-import code.algorithms.sorting as sorting
 import math
 from copy import deepcopy
 
