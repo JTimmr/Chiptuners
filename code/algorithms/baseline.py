@@ -8,8 +8,9 @@ Defines/ contains the algorithm for random (uniformly distributed) movements as 
 """
 
 class Baseline:
-    def __init__(self, grid):
+    def __init__(self, grid, sorting_method):
         self.grid = grid
+        self.sorting = sorting_method
         
     def run(self):
         """Runs the algorithm until a solution is found"""
@@ -25,7 +26,7 @@ class Baseline:
         """Connects two points on the grid, and plots the result"""
 
         # Run over netlists
-        for netlist in sorting.sort_length(self.grid.netlists, descending=True):
+        for netlist in self.sorting[0](self.grid.netlists, descending=self.sorting[1]):
             current_attempt = 0
 
             # Retrieve starting and ending point
