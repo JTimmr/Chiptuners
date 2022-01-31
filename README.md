@@ -39,17 +39,7 @@ In de commandline is het mogelijk om verschillende functies aan te roepen:
 | `-h` of `--help`       | laat informatie zien over de positionele en optionele argumenten.   |
 | `-c`                   | kiest algoritme om te gebruiken, opties: baseline, a_star.          |
 | `-i`                   | The parameter list elements from 10 to N.                           |
-| `-sort_c`              | Kiest sorteermethode voor basis algoritme, keuze uit: 
-- random
-- length_a
-- length_d
-- middle
-- outside
-- gate_a
-- gate_d
-- intersections_a
-- intersections_d
-                         |
+| `-sort_c`              | Kiest sorteermethode voor basis algoritme, keuze uit: random, length_a, length_d, middle, outside, gate_a, gate_d, intersections_a, intersections_d. |
 | `-sort_i`              | Kiest sorteermethode voor basis algoritme, keuze uit bovenstaande.  |
 | `-vis` of `--visualize`| Plot een 3D visualizatie van een oplossing.                         |
 | `-leg`of `--legend`    | Geeft een legenda bij de 3D visualisatie                            |
