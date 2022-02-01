@@ -11,7 +11,7 @@ import argparse
 import sys
 
 
-def log_simulation(N, netlist, constructive_algorithm, sorting_method):
+def log_simulation(N, netlist, constructive_algorithm, sorting_method, randomized):
     """
     Takes the amount of runs, netlist number, type of algorithm and sorting algorithm as input.
     Runs the given algorithm a number of times, creating a set of solutions. Set N to 1 if a single solution suffices.
@@ -22,8 +22,13 @@ def log_simulation(N, netlist, constructive_algorithm, sorting_method):
     # Calculate chip number from netlist number
     chip_nr = int((netlist - 1) / 3)
 
+    if randomized:
+        add = "random_"
+    else:
+        add = ""
+
     # Open file where results will be stored
-    with open(f"output/netlist_{netlist}_{N}x.csv", "w", newline="") as csvfile:
+    with open(f"output/{add}netlist_{netlist}_{N}x.csv", "w", newline="") as csvfile:
 
         # Set up fieldnames
         fieldnames = ["simulation", "cost"]
@@ -37,7 +42,7 @@ def log_simulation(N, netlist, constructive_algorithm, sorting_method):
         for n in range(1, N + 1):
 
             # Make grid
-            chip = grid.Grid(chip_nr, netlist)
+            chip = grid.Grid(chip_nr, netlist, randomized=randomized)
 
             # Run desired algorithm
             if constructive_algorithm == "baseline":
@@ -70,7 +75,7 @@ def log_simulation(N, netlist, constructive_algorithm, sorting_method):
         })
 
 
-def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improvements, make_iterative_plot, iterations, N, N_improvements, sorting_method):
+def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improvements, make_iterative_plot, iterations, N, N_improvements, sorting_method, randomized):
     """
     Loads N previously generated solutions, and tries to make improvements during a given number of iterations.
     There is also the option to start over after the algorithm is finished, since the algorithm could
@@ -93,6 +98,11 @@ def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improv
     Returns a list of costs.
     """
 
+    if randomized:
+        add = "random_"
+    else:
+        add = ""
+
     for i in range(1, N+1):
 
         for j in range(1, N_improvements + 1):
@@ -109,11 +119,11 @@ def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improv
                     add_string = f"_{specific_file}"
 
             # Open file
-            inputfile = f"output/paths_netlist_{netlist}{add_string}.csv"
+            inputfile = f"output/{add}paths_netlist_{netlist}{add_string}.csv"
             chip_nr = int((netlist - 1) / 3)
 
             # Load paths into grid
-            chip = grid.Grid(chip_nr, netlist, inputfile)
+            chip = grid.Grid(chip_nr, netlist, infile=inputfile, randomized=randomized)
 
             # Run hillclimber algorithm with a number of iterations
             if algorithm == "hillclimber":
@@ -134,18 +144,23 @@ def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improv
                 print(f"{start_cost}")
 
 
-def visualize_three_dimensional(netlist, specific_file, legend):
+def visualize_three_dimensional(netlist, specific_file, legend, randomized):
     """
     Takes a csv file containing previously generates paths of a given netlist,
     and create a 3-dimensional plot to visualize them.
     """
 
+    if randomized:
+        add = "random_"
+    else:
+        add = ""
+
     # Open file
-    inputfile = f"output/paths_netlist_{netlist}_{specific_file}.csv"
+    inputfile = f"output/{add}paths_netlist_{netlist}_{specific_file}.csv"
     chip_nr = int((netlist - 1) / 3)
 
     # Load paths into grid
-    chip = grid.Grid(chip_nr, netlist, inputfile)
+    chip = grid.Grid(chip_nr, netlist, inputfile, randomized)
 
     # Make visualization
     vis(chip, legend)
@@ -211,6 +226,8 @@ if __name__ == "__main__":
     parser.add_argument("-m", type=int, default=1, dest="N_improvements", help="number of improved solutions made for every prefound solution")
     parser.add_argument("-file", type=str, default="1", dest="specific_file", help="Specific file to be improved or plotted. If file is paths_netlist_4_C_19655, use -file C_19655. If file is paths_netlist_1_3, use -file 3.")
 
+    parser.add_argument("-random", "--randomized", action='store_true', help="Load random netlists instead of the originals.")
+
     # Parse the command line arguments
     args = parser.parse_args()
 
@@ -231,7 +248,7 @@ if __name__ == "__main__":
         args.algorithm.lower()
         args.sorting_c.lower()
 
-        log_simulation(args.N, args.netlist, possible_entries[args.algorithm], function_map[args.sorting_c])
+        log_simulation(args.N, args.netlist, possible_entries[args.algorithm], function_map[args.sorting_c], args.randomized)
 
     if args.improving_algorithm:
 
@@ -253,7 +270,7 @@ if __name__ == "__main__":
         # Makes CSV files after a hillclimber is done, storing the new costs per iteration
         make_csv_improvements = False
         make_iterative_plot = False
-        improve(args.netlist, args.specific_file, possible_entries[args.improving_algorithm], update_csv_paths, make_csv_improvements, make_iterative_plot, iterations, args.N, args.N_improvements, function_map[args.sorting_i])
+        improve(args.netlist, args.specific_file, possible_entries[args.improving_algorithm], update_csv_paths, make_csv_improvements, make_iterative_plot, iterations, args.N, args.N_improvements, function_map[args.sorting_i], args.randomized)
 
     if args.visualize:
         visualize_three_dimensional(args.netlist, args.specific_file, args.legend)

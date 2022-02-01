@@ -5,12 +5,13 @@ import math
 
 
 class Grid:
-    def __init__(self, chip, netlist, infile=None):
+    def __init__(self, chip, netlist, infile=None, randomized=False):
 
         self.chip = chip
         self.netlist = netlist
         self.infile = infile
         self.size = [0, 0, 7]
+        self.randomized = randomized
 
         self.intersections = 0
 
@@ -158,8 +159,14 @@ class Grid:
         Creates gate object for each row.
         """
 
-        with open(f"data/chip_{self.chip}/netlist_{self.netlist}.csv") as file:
+        if self.randomized:
+            add = "random/"
+        else:
+            add = ""
+
+        with open(f"data/chip_{self.chip}/{add}netlist_{self.netlist}.csv") as file:
             reader = csv.DictReader(file)
+
             for row in reader:
 
                 # Extract coordinates
@@ -213,10 +220,14 @@ class Grid:
         else:
             name = ""
 
+        if self.randomized:
+            add = "random_"
+        else:
+            add = ""
+
         # Save dataframe to csv
         df = pd.DataFrame({'net': nets, 'x': x, 'y': y, 'z': z})
-        df.to_csv(f"output/paths_netlist_{self.netlist}{name}{string}.csv",
-                  index=False)
+        df.to_csv(f"output/{add}paths_netlist_{self.netlist}{name}{string}.csv", index=False)
 
     def compute_costs(self):
         """Calculates total cost of the current configuration."""
