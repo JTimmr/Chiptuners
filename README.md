@@ -39,8 +39,8 @@ In de commandline is het mogelijk om verschillende functies aan te roepen:
 | `-h` of `--help`       | laat informatie zien over de positionele en optionele argumenten.   |
 | `-c`                   | kiest algoritme om te gebruiken, opties: baseline, a_star.          |
 | `-i`                   | kiest iteratief algoritme, keuze uit: hillclimber of simulated_annealing.                           |
-| `-sort_c`              | kiest sorteermethode voor basis algoritme, keuze uit: random, length_a, length_d, middle, outside, gate_a, gate_d, intersections_a, intersections_d. |
-| `-sort_i`              | kiest sorteermethode voor iteratief algoritme, keuze uit bovenstaande.  |
+| `-sort_c`              | kiest sorteermethode voor basis algoritme, keuze uit: random, length_a, length_d, middle, outside, gate_a, gate_d, intersections_a, intersections_d. Wanneer er geen methode is gekozen wordt automatisch lengte oplopend gekozen. Wanneer er geen vologrde is gekozen, wordt er automatisch gekozen voor oplopend. |
+| `-sort_i`              | kiest sorteermethode voor iteratief algoritme, keuze uit bovenstaande. Wanneer er geen methode is gekozen wordt automatisch lengte oplopend gekozen. Wanneer er geen vologrde is gekozen, wordt er automatisch gekozen voor oplopend. |
 | `-vis` of `--visualize`| plot een 3D visualizatie van een oplossing.                         |
 | `-leg`of `--legend`    | geeft een legenda bij de 3D visualisatie                            |
 | `-n`                   | hoeveel oplossingen moeten er worden gegenereerd?                   |
