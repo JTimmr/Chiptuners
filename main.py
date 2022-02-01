@@ -4,7 +4,7 @@ import code.classes.grid as grid
 from code.algorithms import baseline as base
 from code.algorithms import hillclimber as climber
 from code.algorithms import A_star as star
-from code.visualize import visualize as vis
+from code.visualize import *
 from code.algorithms import simulated_annealing as sim
 from code.algorithms.sorting import *
 import argparse
@@ -145,7 +145,7 @@ def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improv
                 print(f"{start_cost}")
 
 
-def visualize_three_dimensional(netlist, specific_file, legend, randomized):
+def visualize_three_dimensional(netlist, specific_file, legend, randomized, matplotlib, plotly):
     """
     Takes a csv file containing previously generates paths of a given netlist,
     and create a 3-dimensional plot to visualize them.
@@ -164,7 +164,11 @@ def visualize_three_dimensional(netlist, specific_file, legend, randomized):
     chip = grid.Grid(chip_nr, netlist, inputfile, randomized)
 
     # Make visualization
-    vis(chip, legend)
+    if matplotlib is True:
+        visualize_matplotlib(chip, legend)
+
+    if plotly is True:
+        visualize_plotly(chip)
 
 
 if __name__ == "__main__":
@@ -222,6 +226,7 @@ if __name__ == "__main__":
 
     parser.add_argument("-vis", "--visualize", action='store_true', help="Renders a 3D plot of the grid with all its paths.")
     parser.add_argument("-leg", "--legend", action='store_true', help="Renders a legend for 3D plot.")
+    parser.add_argument("-plotly", action='store_true', help="Renders a 3D plot of the grid with all its paths in your browser with plotly.")
 
     parser.add_argument("-n", type=int, default=1, dest="N", help="number of solutions generated")
     parser.add_argument("-m", type=int, default=1, dest="N_improvements", help="number of improved solutions made for every prefound solution")
@@ -273,5 +278,6 @@ if __name__ == "__main__":
         make_iterative_plot = False
         improve(args.netlist, args.specific_file, possible_entries[args.improving_algorithm], update_csv_paths, make_csv_improvements, make_iterative_plot, iterations, args.N, args.N_improvements, function_map[args.sorting_i], args.randomized)
 
-    if args.visualize:
-        visualize_three_dimensional(args.netlist, args.specific_file, args.legend, args.randomized)
+    if args.visualize or args.plotly:
+        visualize_three_dimensional(args.netlist, args.specific_file, args.legend, args.randomized, args.visualize, args.plotly)
+

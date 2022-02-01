@@ -88,14 +88,34 @@ def check_intersections(net_coordinates):
 
 
 def check_density(net_coordinates):
+    size = [0, 0]
+
     minimal_lengths = []
     for net in net_coordinates.values():
-        delta_x = abs(net[0][0] - net[1][0])
-        delta_y = abs(net[0][0] - net[1][0])
+        x1 = net[0][0]
+        x2 = net[1][0]
+        y1 = net[0][1]
+        y2 = net[1][1]
+        delta_x = abs(x1 - x2)
+        delta_y = abs(y1 - y2)
+
+        if x1 > size[0]:
+            size[0] = x1 + 1
+        elif x2 > size[0]:
+            size[0] = x2 + 1
+
+        if y1 > size[1]:
+            size[1] = y1 + 1
+        elif y2 > size[1]:
+            size[1] = y2 + 1
+
         minimal_lengths.append(delta_x + delta_y)
     minimal_lengths = np.array(minimal_lengths)
+    total_segments = np.sum(minimal_lengths)
+    density = total_segments / (size[0]*(size[1] - 1) + size[1]*(size[0] - 1))
 
     print(f"The average distance between the two gates a net connects is {round(np.average(minimal_lengths), 2)} +/- {round(np.std(minimal_lengths), 2)}")
+    print(f"In total, at least {total_segments} are required. This results in {round(100 * density, 2)} % of the grid to be filled assuming only 1 layer.")
 
 
 def main(netlist, randomized):
