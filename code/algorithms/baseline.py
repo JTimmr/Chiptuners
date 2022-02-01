@@ -2,15 +2,16 @@ from copy import deepcopy
 import random
 import math
 
-"""
-Defines/ contains the algorithm for random (uniformly distributed) movements as used in our base case.
-"""
 
 class Baseline:
+    """
+    Defines/contains the algorithm for random (uniformly distributed) movements
+    as used in our base case.
+    """
     def __init__(self, grid, sorting_method):
         self.grid = grid
         self.sorting = sorting_method
-        
+
     def run(self):
         """Runs the algorithm until a solution is found"""
 
@@ -24,8 +25,8 @@ class Baseline:
     def make_connections(self):
         """Connects two points on the grid, and plots the result"""
 
-        # Run over netlists
-        for netlist in self.sorting[0](self.grid.netlists, descending=self.sorting[1]):
+        for netlist in self.sorting[0](self.grid.netlists,
+                                       descending=self.sorting[1]):
             current_attempt = 0
 
             # Retrieve starting and ending point
@@ -33,7 +34,11 @@ class Baseline:
             end = netlist.end
 
             # Search for path until a valid path is found
-            while isinstance((path_data := self.find_path(start, end, netlist, current_attempt)), int):
+            while isinstance((path_data := self.find_path(start,
+                                                          end,
+                                                          netlist,
+                                                          current_attempt)),
+                             int):
                 current_attempt += path_data
 
                 # Give up if it takes too long
@@ -41,7 +46,7 @@ class Baseline:
                     self.grid.tot_attempts += current_attempt
                     return False
 
-            # If a path is found, update number of attempts and retrieve coordinates
+            # If a path is found, update attempts and retrieve coordinates
             self.grid.tot_attempts += current_attempt
             x, y, z = path_data[:3]
             netlist.path = [x, y, z]
@@ -75,7 +80,10 @@ class Baseline:
             path_tmp.append(origin_tmp)
 
             # Try random moves until a legal one is found
-            while not (new_origin := self.find_smartest_step(origin, origin_tmp, destination, path_tmp)):
+            while not (new_origin := self.find_smartest_step(origin,
+                                                             origin_tmp,
+                                                             destination,
+                                                             path_tmp)):
                 new_attempts += 1
 
                 # Give up after 10 failed attempts to make a single step
@@ -85,14 +93,16 @@ class Baseline:
             # If destination is not reached, make step
             if new_origin != "reached":
 
-                # Save step as segment, and ensure two identical segments are never stored in reverse order (a, b VS b, a)
-                if ((math.sqrt(sum(i**2 for i in origin_tmp))) >= (math.sqrt(sum(i**2 for i in new_origin)))):
+                # Save identical segments in right order
+                if ((math.sqrt(sum(i**2 for i in origin_tmp))) >=
+                        (math.sqrt(sum(i**2 for i in new_origin)))):
                     segment = (new_origin, origin_tmp)
                 else:
                     segment = (origin_tmp, new_origin)
 
                 # Check if segment already in use, try again otherwise
-                if segment in self.grid.wire_segments or segment in wire_segments_tmp:
+                if segment in self.grid.wire_segments or \
+                        segment in wire_segments_tmp:
                     return new_attempts
 
                 # Add segment to dictionary if it was new
@@ -102,9 +112,10 @@ class Baseline:
                 if new_origin not in self.grid.gate_coordinates:
 
                     # Check if current segment makes an interection
-                    if [segment for segment in self.grid.wire_segments if new_origin in segment]:
+                    if [segment for segment in self.grid.wire_segments
+                            if new_origin in segment]:
                         intersections_tmp += 1
-                    
+
                 # Set new temporary origin
                 origin_tmp = new_origin
 
@@ -128,36 +139,46 @@ class Baseline:
         return new_attempts + 1
 
     def find_smartest_step(self, origin, position, destination, path_tmp):
-            """Calculate step to follow random path from current position to any location. If origin equals destination, return None"""
+        """
+        Calculate step to follow random path from current position
+        to any location. If origin equals destination, return None.
+        """
 
-            # No new position is required when destination is already reached
-            if position == destination:
-                return "reached"
+        # No new position is required when destination is already reached
+        if position == destination:
+            return "reached"
 
-            direction = (destination[0] - position[0], destination[1] - position[1], destination[2] - position[2])
+        direction = (destination[0] - position[0],
+                     destination[1] - position[1],
+                     destination[2] - position[2])
 
-            step_in_dimension = random.choices([0, 1, 2], weights=[(abs(i) + 1) for i in direction])[0]
-            if step_in_dimension == 2 and position[2] == 0:
-                step_in_direction = 1
-            else:
-                weights = [1, 1]
-                prefered = 0
+        step_in_dimension = random.choices([0, 1, 2],
+                                           weights=[(abs(i) + 1)
+                                           for i in direction])[0]
 
-                if direction[step_in_dimension] < 0:
-                    prefered = 1
+        if step_in_dimension == 2 and position[2] == 0:
+            step_in_direction = 1
+        else:
+            weights = [1, 1]
+            prefered = 0
 
-                weights[prefered] = abs(direction[step_in_dimension]) + 1
-                step_in_direction = random.choices([1, -1], weights=weights)[0]
+            if direction[step_in_dimension] < 0:
+                prefered = 1
 
-            new_position = list(position)
+            weights[prefered] = abs(direction[step_in_dimension]) + 1
+            step_in_direction = random.choices([1, -1], weights=weights)[0]
 
-            # Make single step in random direction
-            new_position[step_in_dimension] += step_in_direction
-        
-            new_position = tuple(new_position)
+        new_position = list(position)
 
-            # Check if step is legal
-            if new_position in path_tmp or (new_position in self.grid.gate_coordinates and new_position != destination):
-                return
+        # Make single step in random direction
+        new_position[step_in_dimension] += step_in_direction
 
-            return new_position
+        new_position = tuple(new_position)
+
+        # Check if step is legal
+        if new_position in path_tmp or (
+            new_position in self.grid.gate_coordinates and
+                new_position != destination):
+            return
+
+        return new_position
