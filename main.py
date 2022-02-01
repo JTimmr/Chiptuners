@@ -253,10 +253,10 @@ if __name__ == "__main__":
         # Make string and case insensitive 
         if isinstance(args.improving_algorithm, list):
             args.improving_algorithm = ' '.join(map(str, args.improving_algorithm))
-        if isinstance(args.sorting_c, list):
-            args.sorting_c = ' '.join(map(str, args.sorting_c))
+        if isinstance(args.sorting_i, list):
+            args.sorting_i = ' '.join(map(str, args.sorting_i))
         args.improving_algorithm.lower()
-        args.sorting_c.lower()
+        args.sorting_i.lower()
 
         # Each iteration attempts to improve all netlists until improvement is found or none it found after long tim
 
