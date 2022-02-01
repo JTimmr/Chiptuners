@@ -184,8 +184,8 @@ if __name__ == "__main__":
         'random' : [random_sort, None],
         'length_d' : [sort_length, True],
         'length_a' : [sort_length, False],
-        'middle' : [sort_middle_first, True],
-        'outside' : [sort_middle_first, False],
+        'middle' : [sort_middle_first, False],
+        'outside' : [sort_middle_first, True],
         'gate_d' : [sort_gate, True],
         'gate_a' : [sort_gate, False],
         'intersections_d' : [sort_exp_intersections, True],
@@ -220,14 +220,14 @@ if __name__ == "__main__":
     if args.improving_algorithm:
 
         # Each iteration attempts to improve all netlists until improvement is found or none it found after long tim
-        iterations = 5000 
+        iterations = 4000
 
         # Makes a new csv file for each improvement made in costs by hillclimber or simulated annealing
         # Final form will always be saved
         update_csv_paths = True
 
         # Makes CSV files after a hillclimber is done, storing the new costs per iteration
-        make_csv_improvements = False
+        make_csv_improvements = True
         make_iterative_plot = False
         improve(args.netlist, args.specific_file, args.improving_algorithm, update_csv_paths, make_csv_improvements, make_iterative_plot, iterations, args.N, args.N_improvements, function_map[args.sorting_i])
 

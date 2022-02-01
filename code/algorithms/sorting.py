@@ -14,9 +14,12 @@ def sort_length(netlists, descending=False):
 
 def random_sort(netlists, descending="None"):
     """Sorts netlist object instances in a random order."""
+
+    # Load the netlist values and randomly shuffle its order
     value_list = list(netlists.values())
     random.shuffle(value_list)
-    return (value_list)
+
+    return value_list
 
 
 def sort_middle_first(netlists, descending=False):
@@ -24,41 +27,84 @@ def sort_middle_first(netlists, descending=False):
     Sorts netlist object instances on their position in the grid;
     in the middle or on the outside.
     """
-    x_champion = 0
-    y_champion = 0
-    x_loser = 1000
-    y_loser = 1000
 
-    # Search for the gates with the highest x or y value
-    for value in netlists.values():
-        x_contestent = value.start[0]
-        y_contestent = value.start[1]
+    # Find the size of the grid and compute its middle
+    a_netlist = list(netlists.values())[0]
+    size = a_netlist.grid.size[:2]
 
-        if x_contestent > x_champion:
-            x_champion = x_contestent
+    middle_x = round(size[0]/2)
+    middle_y = round(size[1]/2)
 
-        if y_contestent > y_champion:
-            y_champion = y_contestent
+    # Determine for every netlist its total summed distance to the middle of the grid
+    # for key in netlists:
+        
+    #     delta_middle_start = abs(middle_x - netlists[key].start[0]) + abs(middle_y - netlists[key].start[1])
+    #     delta_middle_end = abs(middle_x - netlists[key].end[0]) + abs(middle_y - netlists[key].end[1])
+    #     total_distance_middle = delta_middle_start + delta_middle_end
 
-        if x_contestent < x_loser:
-            x_loser = x_contestent
+    #     netlists[key].total_distance_middle = total_distance_middle
 
-        if y_contestent < y_loser:
-            y_loser = y_contestent
+    # # Sort the netlists 
+    # return (sorted(netlists.values(),
+    #         key=operator.attrgetter('total_distance_middle'),
+    #         reverse=descending))
 
-    # TODO: Misschien even je wiskunde uitleggen?
-    middle_x = round((x_champion + x_loser)/2)
-    middle_y = round((x_champion + x_loser)/2)
+    for netlist in netlists.values():
+        
+        delta_middle_start = abs(middle_x - netlist.start[0]) + abs(middle_y - netlist.start[1])
+        delta_middle_end = abs(middle_x - netlist.end[0]) + abs(middle_y - netlist.end[1])
+        total_distance_middle = delta_middle_start + delta_middle_end
 
-    # Give every netlist object instance ranking position attribute to sort on
-    for key in netlists:
-        ranking = abs(
-            middle_x - value.start[0]) + abs(middle_y - value.start[1])
-        netlists[key].ranking = ranking
+        netlist.total_distance_middle = total_distance_middle
 
+    # Sort the netlists 
     return (sorted(netlists.values(),
-            key=operator.attrgetter('ranking'),
+            key=operator.attrgetter('total_distance_middle'),
             reverse=descending))
+
+
+# ------------------------------------------------ OLD ------------------------------------------------ #
+
+    # # Set easy to improve upper (champion) and lower (loser) bounds for x and y 
+    # x_champion = 0
+    # y_champion = 0
+    # x_loser = 9999
+    # y_loser = 9999
+
+    # # Search for the highest + lowest x and y values found in the gates
+    # for value in netlists.values():
+    #     x_contestent = value.start[0]
+    #     y_contestent = value.start[1]
+
+    #     if x_contestent > x_champion:
+    #         x_champion = x_contestent
+
+    #     if y_contestent > y_champion:
+    #         y_champion = y_contestent
+
+    #     if x_contestent < x_loser:
+    #         x_loser = x_contestent
+
+    #     if y_contestent < y_loser:
+    #         y_loser = y_contestent
+
+    # # Determine the middle of the grid
+    # middle_x = round((x_champion + x_loser)/2)
+    # middle_y = round((x_champion + x_loser)/2)
+
+    # # Determine for every netlist its total summed distance to the middle of the grid
+    # for key in netlists:
+        
+    #     delta_middle_start = abs(middle_x - value.start[0]) + abs(middle_y - value.start[1])
+    #     delta_middle_end = abs(middle_x - value.end[0]) + abs(middle_y - value.end[1])
+    #     total_distance_middle = delta_middle_start + delta_middle_end
+
+    #     netlists[key].total_distance_middle = total_distance_middle
+
+    # # Sort the netlists 
+    # return (sorted(netlists.values(),
+    #         key=operator.attrgetter('total_distance_middle'),
+    #         reverse=descending))
 
 
 def sort_gate(grid, descending=True):

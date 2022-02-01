@@ -6,7 +6,7 @@ class Netlist:
         self.current_length = None
         self.grid = grid
         self.path = []
-        self.ranking = 0
+        self.total_distance_middle = 0
         self.exp_intersections = 0
         self.key = ()
         self.intersection = 0
