@@ -2,10 +2,9 @@ import csv
 import argparse
 from copy import deepcopy
 import numpy as np
-import make_netlists as make
 
 
-def load_nets(netlist, chip, randomized):
+def load_nets(netlist, n, chip, randomized):
     """
     Reads requested file containing the requested nets,
     and extracts their starting and ending coordinates.
@@ -18,7 +17,7 @@ def load_nets(netlist, chip, randomized):
         add = ""
 
     nets = set()
-    with open(f"data/chip_{chip}/{add}netlist_{netlist}.csv") as file:
+    with open(f"data/chip_{chip}/{add}netlist_{netlist}_{n}.csv") as file:
         reader = csv.DictReader(file)
         for row in reader:
             nets.add((row['chip_a'], row['chip_b']))
@@ -121,13 +120,19 @@ def check_density(net_coordinates):
     return(density)
 
 
-def main(netlist, randomized):
+def main(netlist, randomized, n):
     chip = int((netlist - 1) / 3)
     overflow = False
     solved = False
 
-    nets = load_nets(netlist, chip, randomized)
+    nets = load_nets(netlist, n, chip, randomized)
     gates, coordinates = load_gates(chip)
+
+    net_coordinates = {}
+    for net in nets:
+        start = coordinates[net[0]]
+        end = coordinates[net[1]]
+        net_coordinates[net] = (start, end)
 
     intersections = check_intersections(net_coordinates)
 
@@ -139,15 +144,10 @@ def main(netlist, randomized):
     else:
         print("No reason to conclude this netlilst is impossible (yet ...)")
 
-        net_coordinates = {}
-        for net in nets:
-            start = coordinates[net[0]]
-            end = coordinates[net[1]]
-            net_coordinates[net] = (start, end)
 
-    # run algortihm
-    if run:
-        solved = True
+    # # run algortihm
+    # if run:
+    #     solved = True
 
     return (density, intersections, overflow, solved)
 
@@ -156,6 +156,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Analyse a netlist')
     parser.add_argument("netlist", type=int, help="Netlist to be inspected")
     parser.add_argument("-random", "--randomized", action='store_true', help="Choose randomly generated netlists instead of the originals.")
+    parser.add_argument("-n", type=int, default=1, dest="N", help="number of solutions analyzed")
 
     # Parse the command line arguments
     args = parser.parse_args()
@@ -163,17 +164,16 @@ if __name__ == "__main__":
     with open(f"output/netlist_test.csv", "w", newline="") as csvfile:
         
         fieldnames = ["simulation", "density", "intersections", "occupation overflow", "failed"]
+        # Set up wiriter and write the header
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+        for n in range(1, args.N + 1):
+            answers = main(args.netlist, args.randomized, n)
 
-        for i in range(1, args.N):
-            make.main(args.netlist)
-            answers = main(args.netlist, args.randomized)
 
-            # Set up wiriter and write the header
-            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-            writer.writeheader()
 
             writer.writerow({
-                "simulation": i, 
+                "simulation": n, 
                 "density": answers[0], 
                 "intersections": answers[1], 
                 "occupation overflow": answers[2], 
