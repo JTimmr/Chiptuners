@@ -121,7 +121,10 @@ class Hillclimber:
                 self.attempts_without_improvement += 1
 
     def find_path(self, origin, destination, netlist):
-        """Attempts to find a path between two coordinates in the grid."""
+        """
+        Takes a starting and ending point, and tries to make a connection between them.
+        Returns the path if succeeded, otherwise nothing.
+        """
 
         # Store path so plot can be made
         x = []

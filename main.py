@@ -229,8 +229,8 @@ if __name__ == "__main__":
         update_csv_paths = True
 
         # Makes CSV files after a hillclimber is done, storing the new costs per iteration
-        make_csv_improvements = True
-        make_iterative_plot = True
+        make_csv_improvements = False
+        make_iterative_plot = False
         improve(args.netlist, args.specific_file, possible_entries[args.improving_algorithm], update_csv_paths, make_csv_improvements, make_iterative_plot, iterations, args.N, args.N_improvements, function_map[args.sorting_i])
 
     if args.visualize:
