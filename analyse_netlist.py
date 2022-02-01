@@ -2,6 +2,7 @@ import csv
 import argparse
 from copy import deepcopy
 import numpy as np
+import make_netlists as make
 
 
 def load_nets(netlist, chip, randomized):
@@ -117,15 +118,24 @@ def check_density(net_coordinates):
     print(f"The average distance between the two gates a net connects is {round(np.average(minimal_lengths), 2)} +/- {round(np.std(minimal_lengths), 2)}")
     print(f"In total, at least {total_segments} are required. This results in {round(100 * density, 2)} % of the grid to be filled assuming only 1 layer.")
 
+    return(density)
+
 
 def main(netlist, randomized):
     chip = int((netlist - 1) / 3)
+    overflow = False
+    solved = False
 
     nets = load_nets(netlist, chip, randomized)
     gates, coordinates = load_gates(chip)
 
+    intersections = check_intersections(net_coordinates)
+
+    density = check_density(net_coordinates)
+
     if check_gate_occupation(nets, gates) == "impossible":
-        return
+        overflow = True
+        return (density, intersections, overflow, solved)
     else:
         print("No reason to conclude this netlilst is impossible (yet ...)")
 
@@ -135,9 +145,13 @@ def main(netlist, randomized):
             end = coordinates[net[1]]
             net_coordinates[net] = (start, end)
 
-    check_intersections(net_coordinates)
+    # run algortihm
+    if run:
+        solved = True
 
-    check_density(net_coordinates)
+    return (density, intersections, overflow, solved)
+
+
 
 
 
@@ -149,4 +163,24 @@ if __name__ == "__main__":
     # Parse the command line arguments
     args = parser.parse_args()
 
-    main(args.netlist, args.randomized)
+    with open(f"output/netlist_test.csv", "w", newline="") as csvfile:
+        
+        fieldnames = ["simulation", "density", "intersections", "occupation overflow", "failed"]
+
+        for i in range(1, args.N):
+            make.main(args.netlist)
+            answers = main(args.netlist, args.randomized)
+
+            # Set up wiriter and write the header
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writeheader()
+
+            writer.writerow({
+                "simulation": i, 
+                "density": answers[0], 
+                "intersections": answers[1], 
+                "occupation overflow": answers[2], 
+                "failed": answers[3],
+                })
+
+
