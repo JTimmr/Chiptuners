@@ -194,15 +194,15 @@ def quick_sort_test(constructive_algorithm):
 if __name__ == "__main__": 
 
     function_map = {
-        'random' : [random_sort, None],
-        'length_d' : [sort_length, True],
-        'length_a' : [sort_length, False],
-        'middle' : [sort_middle_first, False],
+        'random' : [random_sort, None], "r" : [random_sort, None], "rand" : [random_sort, None], "willekeurig" : [random_sort, None],
+        'length_d' : [sort_length, True], 'length d': [sort_length, True], 'd length': [sort_length, True], 'length descending' : [sort_length, True], 'descending length': [sort_length, True], 'length_descending': [sort_length, True], "descending_length" : [sort_length, True],
+        'length_a' : [sort_length, False], 'length a' : [sort_length, False], 'a length': [sort_length, False], 'length ascending' : [sort_length, False], 'ascending length': [sort_length, False], 'length_ascending': [sort_length, False], "ascending_length": [sort_length, False], "length" : [sort_length, False],
+        'middle' : [sort_middle_first, False], 
         'outside' : [sort_middle_first, True],
-        'gate_d' : [sort_gate, True],
-        'gate_a' : [sort_gate, False],
-        'intersections_d' : [sort_exp_intersections, True],
-        'intersections_a' : [sort_exp_intersections, False],
+        'gate_d' : [sort_gate, True], 'gates_d' : [sort_gate, True], 'gates d' : [sort_gate, True], 'gate d' : [sort_gate, True], 'd_gate' : [sort_gate, True], 'd gate' : [sort_gate, True], 'gate_descending': [sort_gate, True], 'descending_gate' : [sort_gate, True], 'gate descending' : [sort_gate, True], 'descending gate' : [sort_gate, True],
+        'gate_a' : [sort_gate, False], 'gates_a' : [sort_gate, False], 'gates a' : [sort_gate, False], 'gate' : [sort_gate, False], 'gate a' : [sort_gate, False], 'a_gate' : [sort_gate, False], 'a gate' : [sort_gate, False], 'gate_ascending' : [sort_gate, False], 'ascending_gate' : [sort_gate, False], 'ascending gate' : [sort_gate, False], 'gate ascending' : [sort_gate, False], 'gates' : [sort_gate, False],
+        'intersections_d' : [sort_exp_intersections, True], 'intersections d' : [sort_exp_intersections, True], 'd intersections' : [sort_exp_intersections, True], 'd_intersections' : [sort_exp_intersections, True], 'intersections_descending' : [sort_exp_intersections, True], 'descending_intersections' : [sort_exp_intersections, True], 'intersection_d' : [sort_exp_intersections, True], 'intersection d' : [sort_exp_intersections, True],
+        'intersections_a' : [sort_exp_intersections, False], 'intersections a' : [sort_exp_intersections, False], 'a intersections' : [sort_exp_intersections, False], 'a_intersections' : [sort_exp_intersections, False], 'intersections_ascending' : [sort_exp_intersections, False], 'ascending_intersections' : [sort_exp_intersections, False], 'intersections' : [sort_exp_intersections, False], 'intersection' : [sort_exp_intersections, False], 'intersection a' : [sort_exp_intersections, False], 'intersection_a' : [sort_exp_intersections, False],
     }
 
     possible_entries = {
@@ -217,8 +217,8 @@ if __name__ == "__main__":
 
     parser.add_argument("-c", type=str, default=None, dest="algorithm", nargs = "+", help="Algorithm to be used. Pick either baseline or a_star.")
     parser.add_argument("-i", type=str, default=None, dest="improving_algorithm", nargs = "+", help="Algorithm to be used to improve existing solutions. Pick either hillclimber or simulated annealing.")
-    parser.add_argument("-sort_c", type = str, default="length_a", dest="sorting_c", help="In which order must the netlists be ordered for the basis algorithm? Options: random, length_a, length_d, middle, outside, gate_a, gate_d, intersections_a, intersections_d")
-    parser.add_argument("-sort_i", type= str, default="length_a", dest="sorting_i", help="In which order must the netlists be ordered for the iterative algorithm? Options: random, length_a, length_d, middle, outside, gate_a, gate_d, intersections_a, intersections_d")
+    parser.add_argument("-sort_c", type = str, default="length_a", dest="sorting_c", nargs = "+", help="In which order must the netlists be ordered for the basis algorithm? Options: random, length_a, length_d, middle, outside, gate_a, gate_d, intersections_a, intersections_d. When no order is given (ascending or descending), ascending is chosen.")
+    parser.add_argument("-sort_i", type= str, default="length_a", dest="sorting_i", nargs = "+", help="In which order must the netlists be ordered for the iterative algorithm? Options: random, length_a, length_d, middle, outside, gate_a, gate_d, intersections_a, intersections_d. When no order is given (ascending or descending), ascending is chosen.")
     
     parser.add_argument("-vis", "--visualize", action='store_true', help="Renders a 3D plot of the grid with all its paths.")
     parser.add_argument("-leg", "--legend", action='store_true', help="Renders a legend for 3D plot.") 
@@ -240,7 +240,10 @@ if __name__ == "__main__":
         # Make string and case insensitive 
         if isinstance(args.algorithm, list):
             args.algorithm = ' '.join(map(str, args.algorithm))
+        if isinstance(args.sorting_c, list):
+            args.sorting_c = ' '.join(map(str, args.sorting_c))
         args.algorithm.lower()
+        args.sorting_c.lower()
 
         log_simulation(args.N, args.netlist, possible_entries[args.algorithm], function_map[args.sorting_c])
 
@@ -250,7 +253,10 @@ if __name__ == "__main__":
         # Make string and case insensitive 
         if isinstance(args.improving_algorithm, list):
             args.improving_algorithm = ' '.join(map(str, args.improving_algorithm))
+        if isinstance(args.sorting_c, list):
+            args.sorting_c = ' '.join(map(str, args.sorting_c))
         args.improving_algorithm.lower()
+        args.sorting_c.lower()
 
         # Each iteration attempts to improve all netlists until improvement is found or none it found after long tim
 
