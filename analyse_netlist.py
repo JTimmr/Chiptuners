@@ -182,5 +182,3 @@ if __name__ == "__main__":
                 "occupation overflow": answers[2], 
                 "failed": answers[3],
                 })
-
-

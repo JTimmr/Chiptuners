@@ -51,7 +51,7 @@ def log_simulation(N, netlist, constructive_algorithm, sorting_method, randomize
                 baseline.run()
             elif constructive_algorithm == "a_star":
                 pop = 0
-                gate_space = 5
+                gate_space = 2
                 solver = star.A_Star(chip, sorting_method, pop, gate_space)
                 solver.run()
 
