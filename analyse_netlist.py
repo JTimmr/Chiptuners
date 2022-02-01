@@ -130,7 +130,7 @@ def check_density(net_coordinates):
 def main(netlist, randomized, n):
     chip = int((netlist - 1) / 3)
     overflow = False
-    solved = False
+    solved = True
 
     nets = load_nets(netlist, n, chip, randomized)
     gates, coordinates = load_gates(chip)
@@ -151,11 +151,11 @@ def main(netlist, randomized, n):
     else:
         print("No reason to conclude this netlilst is impossible (yet ...)")
 
-    solvegrid = grid.grid(chip, netlist)
+    solvegrid = grid.Grid(chip, netlist, randomized)
     solve = a_star.A_Star(solvegrid, [sort.sort_length, False], 0, solvegrid.size)
 
-    if solve:
-        solved = True
+    if not solve.run():
+        solved = False
 
 
     return (density, intersections, overflow, solved)

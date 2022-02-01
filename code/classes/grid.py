@@ -164,7 +164,8 @@ class Grid:
         else:
             add = ""
 
-        with open(f"data/chip_{self.chip}/{add}netlist_{self.netlist}.csv") as file:
+        with open(f"data/chip_{self.chip}/{add}netlist_{self.netlist}_1.csv") as file:
+        # with open(f"data/chip_{self.chip}/random/netlist_{self.netlist}_1.csv") as file:
             reader = csv.DictReader(file)
 
             for row in reader:
