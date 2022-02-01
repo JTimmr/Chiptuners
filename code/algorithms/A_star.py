@@ -6,7 +6,10 @@ class A_Star:
         self.sorting = sorting_method
 
     def run(self):
-        """Runs the A* algorithm to find solutions for the given netlist."""
+        """
+        Runs the A* algorithm to find solutions for the given netlist.
+        Stores all paths in the netlist objects, and makes sure the grid object is up to date.
+        """
 
         total = len(self.grid.netlists)
         completed = 0
@@ -61,7 +64,10 @@ class PriorityQueue:
             self.queue[priority + costs] = [item]
 
     def get(self):
-        """Retrieve item from queue with lowest sum of estimated remaining distance and current costs."""
+        """
+        Returns item from queue with lowest sum of estimated remaining distance and current costs.
+        Deletes item from list afterwards.
+        """
 
         # Ensure there is always a lower cost to be found
         lowest_costs = 999999
@@ -111,7 +117,7 @@ class State_Path(State):
         self.costs = costs
  
     def get_distance(self):
-        """Get estimated distance from current poit to goal."""
+        """Returns the estimated distance from current poit to goal."""
 
         if self.value == self.goal:
             return 0
@@ -164,7 +170,7 @@ class A_Star_Solver:
         self.netlist = netlist
 
     def Solve(self):
-        """Find solution for current path."""
+        """Finds and returns solution for current path."""
         
         # Make state object
         startState = State_Path(self.grid, self.netlist, self.visitedQueue, 0, self.start, 0, self.goal, self.start)
