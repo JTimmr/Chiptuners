@@ -223,6 +223,7 @@ if __name__ == "__main__":
         iterations = 100
 
 
+
         # Makes a new csv file for each improvement made in costs by hillclimber or simulated annealing
         # Final form will always be saved
         update_csv_paths = True
