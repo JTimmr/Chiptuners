@@ -85,7 +85,7 @@ class SimulatedAnnealing:
         self.costs = []
         self.name = name
         self.n = n
-        self.lowest_costs = None
+        self.lowest_costs = deepcopy(self.grid.cost)
         self.sorting = sorting_method
         
         # Starting temperature and current temperature

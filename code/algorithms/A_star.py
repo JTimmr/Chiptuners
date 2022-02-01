@@ -1,32 +1,41 @@
 import math
-from copy import deepcopy
 
 class A_Star:
     def __init__(self, grid, sorting_method):
         self.grid = grid
         self.sorting = sorting_method
 
-
     def run(self):
+        """Runs the A* algorithm to find solutions for the given netlist."""
+
         total = len(self.grid.netlists)
         completed = 0
+
+        # Sort the netlists in the given order
         for netlist in self.sorting[0](self.grid.netlists, descending=self.sorting[1]):
             
             # Retrieve starting and ending point
             start = netlist.start
             end = netlist.end
-            a = A_Star_Solver(self.grid, netlist, start, end)
-            a.Solve()
+
+            # Make solver object and run algorithm
+            solver = A_Star_Solver(self.grid, netlist, start, end)
+            solver.Solve()
+
+            # Extract path from solver
             x, y, z = [], [], []
-            for coordinate in range(len(a.path)):
-                x.append(a.path[coordinate][0])
-                y.append(a.path[coordinate][1])
-                z.append(a.path[coordinate][2])
+            for coordinate in range(len(solver.path)):
+                x.append(solver.path[coordinate][0])
+                y.append(solver.path[coordinate][1])
+                z.append(solver.path[coordinate][2])
+
+            # Store path in netlist object
             path = [x, y, z]
             netlist.path = path
             completed += 1
-            # print(f"Finished {netlist.start} to {netlist.end}, {completed}/{total}")
+            print(f"Finished {netlist.start} to {netlist.end}, {completed}/{total}")
 
+        # Update grid
         self.grid.update()
 
 class PriorityQueue:
@@ -35,24 +44,35 @@ class PriorityQueue:
         self.in_queue = set()
 
     def size(self):
+        """Returns the size of the queue."""
+
         return len(self.queue)
 
     def put(self, priority, costs, item):
+        """Puts an element in the queue."""
+
         self.in_queue.add(item.value)
+
+        # Add element to correct list or create list
         try:
             self.queue[priority + costs].append(item)
         except KeyError:
             self.queue[priority + costs] = [item]
 
     def get(self):
+        """Retrieve item from queue with lowest sum of estimated remaining distance and current costs."""
 
+        # Ensure there is always a lower cost to be found
         lowest_costs = 999999
+
+        # Find list with lowest priority value in dictionary
         for items in self.queue:
             if items < lowest_costs:
                 lowest_costs = items
-        best_choice = self.queue[lowest_costs][0]
+        
+        # 
+        best_choice = self.queue[lowest_costs].pop()
 
-        del self.queue[lowest_costs][0]
 
         if len(self.queue[lowest_costs]) == 0:
             del self.queue[lowest_costs]
@@ -172,7 +192,6 @@ class A_Star_Solver:
                             self.grid.coordinates.add(segment[0])
                             self.grid.coordinates.add(segment[1])
                         self.netlist.intersections = child.costs // 300
-                        print(self.netlist.intersections, self.netlist.start)
                         return self.path
                     
                     priority = child.dist
