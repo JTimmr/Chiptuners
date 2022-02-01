@@ -1,3 +1,4 @@
+
 class Netlist:
     def __init__(self, start, end, grid) -> None:
         self.start = start
@@ -13,4 +14,3 @@ class Netlist:
 
     def __str__(self) -> str:
         return ("\n\t\t")
-

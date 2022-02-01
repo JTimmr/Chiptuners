@@ -1,9 +1,11 @@
 import math
 
 class A_Star:
-    def __init__(self, grid, sorting_method):
+    def __init__(self, grid, sorting_method, pop, gate_space):
         self.grid = grid
         self.sorting = sorting_method
+        self.pop = pop
+        self.gate_space = gate_space
 
     def run(self):
         """
@@ -22,7 +24,7 @@ class A_Star:
             end = netlist.end
 
             # Make solver object and run algorithm
-            solver = A_Star_Solver(self.grid, netlist, start, end)
+            solver = A_Star_Solver(self.grid, netlist, start, end, self.pop, self.gate_space)
             solver.Solve()
 
             # Extract path from solver
@@ -63,7 +65,7 @@ class PriorityQueue:
         except KeyError:
             self.queue[priority + costs] = [item]
 
-    def get(self):
+    def get(self, pop):
         """
         Returns item from queue with lowest sum of estimated remaining distance and current costs.
         Deletes item from list afterwards.
@@ -78,7 +80,7 @@ class PriorityQueue:
                 lowest_costs = items
         
         # Retrieve and delete item from list
-        best_choice = self.queue[lowest_costs].pop()
+        best_choice = self.queue[lowest_costs].pop(pop)
 
         # Delete dictionary item if list is empty
         if len(self.queue[lowest_costs]) == 0:
@@ -160,7 +162,7 @@ class State_Path(State):
 
 
 class A_Star_Solver:
-    def __init__(self, grid, netlist, start, goal):
+    def __init__(self, grid, netlist, start, goal, pop, gate_space):
         self.path = []
         self.visitedQueue = set()
         self.queue = PriorityQueue()
@@ -168,6 +170,8 @@ class A_Star_Solver:
         self.goal = goal
         self.grid = grid
         self.netlist = netlist
+        self.pop = pop
+        self.gate_space = gate_space
 
     def Solve(self):
         """Finds and returns solution for current path."""
@@ -183,7 +187,7 @@ class A_Star_Solver:
         while(not self.path and self.queue.size()):
 
             # Get item from queue
-            current_state = self.queue.get()
+            current_state = self.queue.get(self.pop)
 
             # Make children
             current_state.create_children()
@@ -193,7 +197,7 @@ class A_Star_Solver:
                 # Chance of success is higher when gates aren't blocked unnessicarily
                 illegal = False
                 for gate in self.grid.gate_coordinates:
-                    if child.value[:2] == gate[:2] and gate != self.goal and gate != self.start and child.value[2] <= 2:
+                    if child.value[:2] == gate[:2] and gate != self.goal and gate != self.start and child.value[2] <= self.gate_space:
                         illegal = True
                         continue
 

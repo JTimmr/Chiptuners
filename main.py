@@ -44,7 +44,9 @@ def log_simulation(N, netlist, constructive_algorithm, sorting_method):
                 baseline = base.Baseline(chip, sorting_method)
                 baseline.run()
             elif constructive_algorithm == "a_star":
-                solver = star.A_Star(chip, sorting_method)
+                pop = 0
+                gate_space = 2
+                solver = star.A_Star(chip, sorting_method, pop, gate_space)
                 solver.run()
 
             # Compute costs of the grid
@@ -76,10 +78,8 @@ def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improv
     If update_csv_paths is set to True, every new solution will be saved into a CSV file.
     If make_csv_improvements is set to True, a CSV file will be created for all runs, storing the costs
     against the iteration so the development of the costs over time can be investigated.
-
     The algorithms to choose from are Hillclimber and Simulated Annealing,
     which both can use one of the following sorting algorithms:
-
     - Random
     - Decreasing path length
     - Increading path length
@@ -89,7 +89,6 @@ def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improv
     - From quiet gates to busy gates
     - Increading estimated number of intersections
     - Decreasing estimated number of intersections
-
     For further explanation of the algorithms, see simulated_annealing.py, hillclimber.py and sorting.py.
     Returns a list of costs.
     """
