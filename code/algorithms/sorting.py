@@ -64,13 +64,13 @@ def sort_gate(nets, descending=True):
     with other gates.
     """
 
-    # Retrieve the grid from the first net 
+    # Retrieve the grid from the first net
     grid = list(nets.values())[0].grid
 
     # Create dicts for storing occupation of the gates and the number of neighbors of the nets
     gate_occupation = {}
-    net_neighbors = {}  
-    
+    net_neighbors = {}
+
     # Set gate occupation to zero for all gate coordinates
     for gate in grid.gates.values():
         gate_occupation[gate.coordinates] = 0
@@ -91,8 +91,7 @@ def sort_gate(nets, descending=True):
 
 def sort_exp_intersections(nets, descending=False):
     """
-    Sorts net object instances based on
-    how many intersections are expected.
+    Sorts net object instances based on how many intersections are expected per net.
     """
 
     # For every net object copy the start- and end coordinates
@@ -100,7 +99,7 @@ def sort_exp_intersections(nets, descending=False):
 
         segment1 = [net.start[:2], net.end[:2]]
 
-        # TODO: add comment here
+        # Go over all other nets and compute the dot product with itself and the others one by one
         for other_net in nets.values():
 
             segment2 = [other_net.start[:2], other_net.end[:2]]
@@ -110,6 +109,7 @@ def sort_exp_intersections(nets, descending=False):
             dx2 = segment2[1][0]-segment2[0][0]
             dy2 = segment2[1][1]-segment2[0][1]
 
+            # Dot product
             p1 = dy2*(segment2[1][0]-segment1[0][0]) \
                 - dx2*(segment2[1][1]-segment1[0][1])
             p2 = dy2*(segment2[1][0]-segment1[1][0]) \
@@ -119,9 +119,11 @@ def sort_exp_intersections(nets, descending=False):
             p4 = dy1*(segment1[1][0]-segment2[1][0]) \
                 - dx1*(segment1[1][1]-segment2[1][1])
 
+            # Check for expected intersections
             if (p1 * p2 <= 0) & (p3 * p4 <= 0):
                 net.exp_intersections += 1
 
+    # Return sorted list
     return (sorted(nets.values(),
             key=operator.attrgetter('exp_intersections'),
             reverse=descending))
