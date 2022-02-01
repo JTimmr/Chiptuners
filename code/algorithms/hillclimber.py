@@ -3,33 +3,33 @@ from copy import deepcopy
 import math
 import csv
 import matplotlib.pyplot as plt
-from code.visualize import visualize 
 
 
 class Hillclimber:
-    def __init__(self, grid, limit, update_csv_paths, make_csv_improvements, make_iterative_plot, name, n, sorting_method):
+    def __init__(self, grid, iterations, update_csv_paths, make_csv_improvements, make_iterative_plot, n, m, sorting_method):
         self.grid = grid
-        self.limit = limit
-        self.iterations = 0
+        self.iterations = iterations
+        self.iteration = 0
         self.attempts_without_improvement = 0
         self.update_csv_paths = update_csv_paths
+        self.make_iterative_plot = make_iterative_plot
         self.make_csv_improvements = make_csv_improvements
-        self.iterationlist = []
         self.costs = []
-        self.name = f"_{name}"
+        self.m = f"_{m}"
         self.n = f"_{n}"
         self.lowest_costs = None
-        self.i = 0
         self.sorting = sorting_method
 
     def run(self):
         """Keeps the Hillclimber algorithm running."""
 
         print("Searching for improvements...")
+        self.grid.compute_costs
+        self.lowest_costs = self.grid.cost
 
         # Run a number of iterations
-        while self.iterations < self.limit:
-            print(f"Iteration {self.iterations}")
+        while self.iteration < self.iterations:
+            print(f"Iteration {self.iteration}")
 
             # Sort netlist in desired order
             netlists = self.sorting[0](self.grid.netlists, descending=self.sorting[1])
@@ -43,10 +43,9 @@ class Hillclimber:
                 if self.attempts_without_improvement > 500:
                     continue
 
-            self.iterationlist.append(self.iterations)
-            self.iterations += 1
+            self.iteration += 1
 
-            while len(self.costs) < len(self.iterationlist):
+            while len(self.costs) < self.iteration:
                 self.costs.append(self.lowest_costs)
 
         self.grid.compute_costs()
@@ -56,10 +55,8 @@ class Hillclimber:
         if self.make_csv_improvements:
             self.to_csv()
         
-        # if self.make_iterative_plot:
-        #     self.plot()
-
-        return self.grid.cost
+        if self.make_iterative_plot:
+            self.plot()
 
     def improve_connection(self, netlist):
         """Takes a netlist as an input, and tries to find a shorter path between its two gates."""
@@ -68,7 +65,6 @@ class Hillclimber:
         destination = netlist.end
 
         # Make copies so original values aren't lost
-        # best_path = deepcopy(netlist.path)
         self.grid.compute_costs()
         best_costs = deepcopy(self.grid.cost)
         
@@ -88,29 +84,26 @@ class Hillclimber:
 
                     # Make change if costs are equal or lower
                     if self.grid.cost <= best_costs:
-                        best_path = deepcopy(new_path)
-                        best_costs = deepcopy(self.grid.cost)
+                        best_costs = self.grid.cost
                         self.attempts_without_improvement = 0
 
                         # Keep csv updated if update_csv is set to True in main function
                         if self.update_csv_paths:
                             self.grid.to_csv(self.grid.cost)
 
-                    # Reset if new path is denied
+                    # Reset if new path is worse
                     else:
                         netlist.path = old_path
                         self.attempts_without_improvement += 1
 
-                # Only allow changes to decrease the cost 24/25 attempts
+                # Only allow changes to decrease the cost 4/5 attempts
                 else:
 
                     # Make change if costs are lower
                     if self.grid.cost < best_costs:
                         self.lowest_costs = self.grid.cost
                         print(f"Improvement found: Reduced costs from {best_costs} to {self.grid.cost}")
-                        self.i+=1
-                        best_path = deepcopy(new_path)
-                        best_costs = deepcopy(self.grid.cost)
+                        best_costs = self.grid.cost
                         self.attempts_without_improvement = 0
 
                         # Keep csv updated if update_csv is set to True in main function
@@ -244,14 +237,14 @@ class Hillclimber:
 
 
     def to_csv(self):
-        with open(f"output/results_hillclimber/hill_netlist_{self.grid.netlist}{self.name}{self.n}_intersections_ascending.csv", "w", newline="") as csvfile:
+        with open(f"output/results_hillclimber/hill_netlist_{self.grid.netlist}{self.n}{self.m}_intersections_ascending.csv", "w", newline="") as csvfile:
             fieldnames = ["iteration", "cost"]
 
             # Set up wiriter and write the header
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
 
-            for i in range(len(self.iterationlist)):
+            for i in range(self.iterations):
                  writer.writerow({
                     "iteration": i + 1, "cost": self.costs[i]
                     })
@@ -260,7 +253,7 @@ class Hillclimber:
         """Plots hillclimber with iterations on x-axis and costs on y-axis."""
         
         plt.figure()
-        plt.plot(self.iterationlist, self.costs)
+        plt.plot([i + 1 for i in range(self.iterations)], self.costs)
         plt.xlabel("Iterations")
         plt.ylabel("Costs")
-        plt.savefig(f"output/figs/hillclimber_N{self.grid.netlist}_I{self.limit}_C{self.lowest_costs}.png")
+        plt.savefig(f"output/figs/hillclimber_{self.grid.netlist}_I_{self.iterations}_C_{self.lowest_costs}.png")
