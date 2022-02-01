@@ -151,8 +151,8 @@ def main(netlist, randomized, n):
     else:
         print("No reason to conclude this netlilst is impossible (yet ...)")
 
-    solvegrid = grid.Grid(chip, netlist, randomized)
-    solve = a_star.A_Star(solvegrid, [sort.sort_length, False], 0, solvegrid.size)
+    solvegrid = grid.Grid(chip, netlist, randomized=randomized)
+    solve = a_star.A_Star(solvegrid, [sort.sort_length, False], 0, 2)
 
     if not solve.run():
         solved = False
