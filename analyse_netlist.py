@@ -130,7 +130,8 @@ def check_density(net_coordinates):
 def main(netlist, randomized, n):
     chip = int((netlist - 1) / 3)
     overflow = False
-    solved = True
+    solved = False
+    cost = 0
 
     nets = load_nets(netlist, n, chip, randomized)
     gates, coordinates = load_gates(chip)
@@ -147,18 +148,20 @@ def main(netlist, randomized, n):
 
     if check_gate_occupation(nets, gates) == "impossible":
         overflow = True
-        return (density, intersections, overflow, solved)
+        return (density, intersections, overflow, solved, cost)
     else:
         print("No reason to conclude this netlilst is impossible (yet ...)")
 
-    solvegrid = grid.Grid(chip, netlist, randomized)
-    solve = a_star.A_Star(solvegrid, [sort.sort_length, False], 0, solvegrid.size)
+    solvegrid = grid.Grid(chip, netlist, randomized=randomized)
+    solve = a_star.A_Star(solvegrid, [sort.sort_length, False], 0, 0)
 
-    if not solve.run():
-        solved = False
+    if solve.run():
+        print("cookie")
+        solved = True
+        solvegrid.compute_costs()
+        cost = solvegrid.cost
 
-
-    return (density, intersections, overflow, solved)
+    return (density, intersections, overflow, solved, cost)
 
 
 if __name__ == "__main__":
@@ -172,7 +175,7 @@ if __name__ == "__main__":
 
     with open(f"output/netlist_test.csv", "w", newline="") as csvfile:
         
-        fieldnames = ["simulation", "density", "intersections", "occupation overflow", "failed"]
+        fieldnames = ["simulation", "cost", "density", "intersections", "occupation overflow", "solved"]
 
         # Set up wiriter and write the header
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
@@ -180,11 +183,11 @@ if __name__ == "__main__":
         for n in range(1, args.N + 1):
             make.main(args.netlist, 1)
             answers = main(args.netlist, args.randomized, 1)
-
             writer.writerow({
                 "simulation": n, 
+                "cost": answers[4],
                 "density": answers[0], 
                 "intersections": answers[1], 
                 "occupation overflow": answers[2], 
-                "failed": answers[3],
+                "solved": answers[3],
                 })

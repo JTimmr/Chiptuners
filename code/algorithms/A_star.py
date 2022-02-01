@@ -41,7 +41,7 @@ class A_Star:
 
         # Update grid
         self.grid.update()
-
+        return True
 
 class PriorityQueue:
     def __init__(self):
