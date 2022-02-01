@@ -2,6 +2,10 @@ import csv
 import argparse
 from copy import deepcopy
 import numpy as np
+import make_netlists as make
+import code.algorithms.A_star as a_star
+import code.algorithms.sorting as sort
+import code.classes.grid as grid
 
 
 def load_nets(netlist, n, chip, randomized):
@@ -85,6 +89,7 @@ def check_intersections(net_coordinates):
                 exp_intersections += 1
 
     print(f"There are {exp_intersections} intersections expected, {round(exp_intersections / len(net_coordinates), 2)} per net on average.")
+    return exp_intersections
 
 
 def check_density(net_coordinates):
@@ -144,10 +149,12 @@ def main(netlist, randomized, n):
     else:
         print("No reason to conclude this netlilst is impossible (yet ...)")
 
+    solvegrid = grid.grid(chip, netlist)
+    solve = a_star.A_Star(solvegrid, [sort.sort_length, False], 0, solvegrid.size)
 
-    # # run algortihm
-    # if run:
-    #     solved = True
+    if solve:
+        solved = True
+
 
     return (density, intersections, overflow, solved)
 
@@ -168,9 +175,9 @@ if __name__ == "__main__":
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
         for n in range(1, args.N + 1):
-            answers = main(args.netlist, args.randomized, n)
-
-
+            
+            make.main(args.netlist, 1)
+            answers = main(args.netlist, args.randomized, 1)
 
             writer.writerow({
                 "simulation": n, 
