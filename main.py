@@ -51,7 +51,7 @@ def log_simulation(N, netlist, constructive_algorithm, sorting_method):
             chip.compute_costs()
 
             # Save path data to csv
-            chip.to_csv(n)
+            chip.to_csv(name=n)
 
             # Save row in CSV
             costs.append(chip.cost)
@@ -94,8 +94,6 @@ def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improv
     Returns a list of costs.
     """
 
-    costs = []
-
     for i in range(1, N+1):
 
         for j in range(1, N_improvements + 1):
@@ -121,9 +119,7 @@ def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improv
             # Run hillclimber algorithm with a number of iterations
             if algorithm == "hillclimber":
                 hillclimber = climber.Hillclimber(chip, iterations, update_csv_paths, make_csv_improvements, make_iterative_plot, i, j, sorting_method)
-                cost = hillclimber.run()
-
-                costs.append(cost)
+                hillclimber.run()
 
             elif algorithm == "simulated_annealing":
                 
@@ -137,10 +133,9 @@ def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improv
 
                 # simanneal = sim.SimulatedAnnealing(chip, iterations, update_csv_paths, make_csv_improvements, make_sim_annealing_plot, i, j, temperature = 3000)
 
-                costs = simanneal.run()
+                simanneal.run()
                 print(f"{start_cost}")
 
-    return costs
 
 def visualize_three_dimensional(netlist, specific_file, legend):
     """Takes a csv file containing previously generates paths of a given netlist, and create a 3-dimensional plot to visualize them."""
@@ -155,40 +150,6 @@ def visualize_three_dimensional(netlist, specific_file, legend):
     # Make visualization
     vis(chip, legend)
 
-def quick_sort_test(constructive_algorithm):
-
-        with open(f"output/logging_sort_A*.csv", "a", newline="") as csvfile:
-
-            # Set up fieldnames 
-            fieldnames = ["netlist", "sorting type", "cost", "attempts"]
-
-            # Set up wiriter and write the header
-            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-            writer.writeheader()        
-            costs = []
-
-            for netlist in range(1,10):
-
-                chip_nr = int((netlist - 1) / 3)
-                chip = grid.Grid(chip_nr, netlist)
-                if constructive_algorithm == "baseline":
-                    baseline = base.Baseline(chip)
-                    baseline.run()
-                elif constructive_algorithm == "a_star":
-                    a = star.A_Star(chip)
-                    a.run()
-
-                chip.compute_costs()
-                costs.append(chip.cost)
-
-                writer.writerow({
-                    "netlist": netlist, "sorting type": "exp_int(a)", "cost": chip.cost, "attempts": chip.tot_attempts
-                    })
-            
-            avgCosts = sum(costs)/9
-            writer.writerow({
-                "netlist": "Avg costs", "sorting type": "length(a)", "cost": avgCosts
-            })
 
 
 if __name__ == "__main__": 
@@ -253,7 +214,7 @@ if __name__ == "__main__":
         args.improving_algorithm.lower()
 
         # Each iteration attempts to improve all netlists until improvement is found or none it found after long tim
-        iterations = 10000
+        iterations = 100
 
         # Makes a new csv file for each improvement made in costs by hillclimber or simulated annealing
         # Final form will always be saved
@@ -261,7 +222,7 @@ if __name__ == "__main__":
 
         # Makes CSV files after a hillclimber is done, storing the new costs per iteration
         make_csv_improvements = True
-        make_iterative_plot = False
+        make_iterative_plot = True
         improve(args.netlist, args.specific_file, possible_entries[args.improving_algorithm], update_csv_paths, make_csv_improvements, make_iterative_plot, iterations, args.N, args.N_improvements, function_map[args.sorting_i])
 
     if args.visualize:

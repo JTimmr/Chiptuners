@@ -172,7 +172,7 @@ class Grid:
                 # Store netlist in dictionary with unique key
                 self.netlists[key] = netlist_object
 
-    def to_csv(self, number=None, n=""):
+    def to_csv(self, number=None, name=""):
         """Writes a csv file that contains an overview of the grid"""
 
         netlists = {}
@@ -200,14 +200,14 @@ class Grid:
         else:
             string = ""
 
-        if n:
-            add = f"_{n}"
+        if name:
+            name = f"_{name}"
         else:
-            add = ""
+            name = ""
 
         # Save dataframe to csv
         df = pd.DataFrame({'netlist': netlists, 'x': x, 'y': y, 'z': z})
-        df.to_csv(f"output/paths_netlist_{self.netlist}{add}{string}.csv",
+        df.to_csv(f"output/paths_netlist_{self.netlist}{name}{string}.csv",
                   index=False)
 
     def compute_costs(self):
