@@ -12,49 +12,43 @@ import pandas as pd
 def visualize(chip, legend):
     """Makes a 3D visualization of the chip object instance."""
 
-    df1 = pd.DataFrame(index = ['x', 'y', 'z'], )
-
-    i = 0
+    df_gates = pd.DataFrame(index = ['x', 'y', 'z'])
 
     for keys, values in chip.gates.items():
-        df1[keys] = values.coordinates[0], values.coordinates[1], values.coordinates[2]
+        df_gates[keys] = values.coordinates[0], values.coordinates[1], values.coordinates[2]
     
-    df1 = df1.transpose()
+    df_gates = df_gates.transpose()
 
-    dictionary = {}
+    path_df_dict = {}
 
     for keys in chip.nets.keys():
-        dictionary[keys] = pd.DataFrame(columns = ['x', 'y', 'z'])
+        path_df_dict[keys] = pd.DataFrame(columns = ['x', 'y', 'z'])
 
     for keys, values in chip.nets.items():
-        print(keys)
-        df = dictionary[keys]
+        df = path_df_dict[keys]
         for i in range(len(values.path[0])):
             df.loc[i] = [values.path[0][i], values.path[1][i], values.path[2][i]]
 
     fig = go.Figure()
 
     fig = go.Figure(data=[go.Scatter3d(
-        x=df1['x'],
-        y=df1['y'],
-        z=df1['z'],
+        x=df_gates['x'],
+        y=df_gates['y'],
+        z=df_gates['z'],
         mode = 'markers',
         showlegend=False
         )])
 
-    for i in dictionary:
+    for i in path_df_dict:
         label = str(i)
-        print(label)
-        fig = fig.add_trace(go.Scatter3d(x = dictionary[i]["x"],
-                                   y = dictionary[i]["y"], 
-                                   z = dictionary[i]['z'],
+        fig = fig.add_trace(go.Scatter3d(x = path_df_dict[i]["x"],
+                                   y = path_df_dict[i]["y"], 
+                                   z = path_df_dict[i]['z'],
                                    name = label,
                                    mode = 'lines'),)
-        # template = "plotly_dark"
-    
     fig.update_layout(scene = dict(zaxis = dict(nticks=7, range=[-1,7])))
     fig.show()
-    
+
     # # Get maximum x,y values for x,y axis size
     # max_x = chip.size[0]
     # max_y = chip.size[1]
