@@ -9,6 +9,7 @@ from code.algorithms import simulated_annealing as sim
 from code.algorithms.sorting import *
 import argparse
 import sys
+import make_netlists as make
 
 
 def log_simulation(N, netlist, constructive_algorithm, sorting_method, randomized):
