@@ -8,6 +8,7 @@ from code.visualize import visualize as vis
 from code.algorithms import simulated_annealing as sim
 from code.algorithms.sorting import *
 import argparse
+import sys
 
 def to_csv(costs):
 
@@ -217,6 +218,9 @@ if __name__ == "__main__":
     # Parse the command line arguments
     args = parser.parse_args()
 
+    if len(sys.argv) < 3: 
+        print("You are missing some required arguments. Did you specify which algorithm you wanted to use?")
+        
     if args.netlist < 1 or args.netlist > 9:
         print("Error message: See data directory: enter a netlist between 1 and 9.")
 
@@ -250,4 +254,3 @@ if __name__ == "__main__":
 
     if args.visualize:
         visualize_three_dimensional(args.netlist, args.specific_file, args.legend) 
-        
