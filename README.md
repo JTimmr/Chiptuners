@@ -26,7 +26,7 @@ De kostenfunctie: TK = aantal segmenten + 300 * aantal intersecties
 > n = lengte grid
 
 
-![visualisatie voorbeeld](photos/vis.png)
+![visualisatie voorbeeld](https://github.com/JappieeeT/Chiptuners/blob/main/photos/vis.png)
 
 ### Usage
 ```bash
@@ -47,25 +47,16 @@ In de commandline is het mogelijk om verschillende functies aan te roepen:
 | `-m`                   | Hoeveel verbeterde oplossingen moeten er zijn voor elke oplossing?  |
 | `-file`                | Wanneer een al bestaand bestand gebruikt moet worden, voorbeeld: wanneer de bestandsnaam "paths_netlist_4_C_19655" is, gebruik dan "C_19655". |
 
-Om de gegenereerde output op de juiste plek te krijgen is het eerst nodig om bepaalde mappen aan te maken:
 
-```bash
-mkdir output
-```
-```bash
-cd output
-```
-```bash
-mkdir results_annealing
-```
-```bash
-mkdir results_hillclimber
-```
-```bash
-mkdir figs
-```
 ### Structuur
 - data/ - 
+
+- results/
+    - figures_and_plots/
+    - results_a_star/
+    - results_annealing/
+    - results_baseline/
+    - results_hillclimber/
 
 - code/ -
 
