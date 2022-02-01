@@ -1,6 +1,7 @@
 import csv
 import argparse
 from copy import deepcopy
+import numpy as np
 
 
 def load_nets(netlist, chip, randomized):
@@ -83,13 +84,19 @@ def check_intersections(net_coordinates):
             if (p0 * p1 < 0) and (p2 * p3 < 0):
                 exp_intersections += 1
 
-    print(f"There are {exp_intersections} intersections expected, {exp_intersections / len(net_coordinates)} per net on average.")
+    print(f"There are {exp_intersections} intersections expected, {round(exp_intersections / len(net_coordinates), 2)} per net on average.")
 
 
 def check_density(net_coordinates):
+    minimal_lengths = []
     for net in net_coordinates.values():
         delta_x = abs(net[0][0] - net[1][0])
         delta_y = abs(net[0][0] - net[1][0])
+        minimal_lengths.append(delta_x + delta_y)
+    minimal_lengths = np.array(minimal_lengths)
+
+    print(f"The average distance between the two gates a net connects is {round(np.average(minimal_lengths), 2)} +/- {round(np.std(minimal_lengths), 2)}")
+
 
 def main(netlist, randomized):
     chip = int((netlist - 1) / 3)
