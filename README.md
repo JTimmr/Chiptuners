@@ -36,16 +36,16 @@ In de commandline is het mogelijk om verschillende functies aan te roepen:
 
 | functies               | beschrijving                                                        |
 | :--------------------- | :------------------------------------------------------------------ |
-| `-h` of `--help`       | laat informatie zien over de positionele en optionele argumenten.   |
-| `-c`                   | kiest algoritme om te gebruiken, opties: baseline, a_star.          |
-| `-i`                   | kiest iteratief algoritme, keuze uit: hillclimber of simulated_annealing.                           |
-| `-sort_c`              | kiest sorteermethode voor basis algoritme, keuze uit: random, length_a, length_d, middle, outside, gate_a, gate_d, intersections_a, intersections_d. Wanneer er geen methode is gekozen wordt automatisch lengte oplopend gekozen. Wanneer er geen vologrde is gekozen, wordt er automatisch gekozen voor oplopend. |
-| `-sort_i`              | kiest sorteermethode voor iteratief algoritme, keuze uit bovenstaande. Wanneer er geen methode is gekozen wordt automatisch lengte oplopend gekozen. Wanneer er geen vologrde is gekozen, wordt er automatisch gekozen voor oplopend. |
-| `-vis` of `--visualize`| plot een 3D visualizatie van een oplossing.                         |
-| `-leg`of `--legend`    | geeft een legenda bij de 3D visualisatie                            |
-| `-n`                   | hoeveel oplossingen moeten er worden gegenereerd?                   |
-| `-m`                   | hoeveel verbeterde oplossingen moeten er zijn voor elke oplossing?  |
-| `-file`                   | wanneer een al bestaand bestand gebruikt moet worden, voorbeeld: wanneer de bestandsnaam "paths_netlist_4_C_19655" is, gebruik dan "C_19655". |
+| `-h` of `--help`       | Laat informatie zien over de positionele en optionele argumenten.   |
+| `-c`                   | Kiest algoritme om te gebruiken, opties: baseline, a_star.          |
+| `-i`                   | Kiest iteratief algoritme, keuze uit: hillclimber of simulated_annealing.                           |
+| `-sort_c`              | Kiest sorteermethode voor basis algoritme, keuze uit: random, length_a, length_d, middle, outside, gate_a, gate_d, intersections_a, intersections_d. Wanneer er geen methode is gekozen wordt automatisch lengte oplopend gekozen. Wanneer er geen volgorde is gekozen, wordt er automatisch gekozen voor oplopend. |
+| `-sort_i`              | Kiest sorteermethode voor iteratief algoritme, keuze uit bovenstaande. Wanneer er geen methode is gekozen wordt automatisch lengte oplopend gekozen. Wanneer er geen volgorde is gekozen, wordt er automatisch gekozen voor oplopend. |
+| `-vis` of `--visualize`| Plot een 3D visualizatie van een oplossing.                         |
+| `-leg`of `--legend`    | Geeft een legenda bij de 3D visualisatie.                           |
+| `-n`                   | Hoeveel oplossingen moeten er worden gegenereerd?                   |
+| `-m`                   | Hoeveel verbeterde oplossingen moeten er zijn voor elke oplossing?  |
+| `-file`                | Wanneer een al bestaand bestand gebruikt moet worden, voorbeeld: wanneer de bestandsnaam "paths_netlist_4_C_19655" is, gebruik dan "C_19655". |
 
 Om de gegenereerde output op de juiste plek te krijgen is het eerst nodig om bepaalde mappen aan te maken:
 
