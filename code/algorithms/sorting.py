@@ -58,7 +58,7 @@ def sort_middle_first(nets, descending=False):
             reverse=descending))
 
 
-def sort_gate(grid, descending=True):
+def sort_gate(nets, descending=True):
     """
     Sorts net object instances on how many connections a gate has
     with other gates.
@@ -67,7 +67,7 @@ def sort_gate(grid, descending=True):
     # Retrieve the grid from the first net 
     grid = list(nets.values())[0].grid
 
-    # Create dicts for storing ...
+    # Create dicts for storing occupation of the gates and the number of neighbors of the nets
     gate_occupation = {}
     net_neighbors = {}  
     
@@ -81,15 +81,12 @@ def sort_gate(grid, descending=True):
         gate_occupation[net.start] += 1
         gate_occupation[net.end] += 1
 
-    # TODO: add comment.
+    # Count the number of neighbors of each net
     for net in nets.values():
-        net_neighbors[net] \
-            += gate_occupation[net.start] \
-            + gate_occupation[net.end] - 2
+        net_neighbors[net] += gate_occupation[net.start] + gate_occupation[net.end] - 2
 
-    return sorted(net_neighbors,
-                  key=net_neighbors.get,
-                  reverse=descending)
+    # Return sorted list
+    return sorted(net_neighbors, key=net_neighbors.get, reverse=descending)
 
 
 def sort_exp_intersections(nets, descending=False):
