@@ -103,7 +103,7 @@ def sort_exp_intersections(nets, descending=False):
 
         segment1 = [net.start[:2], net.end[:2]]
 
-        # TODO: add comment here
+        # Go over all other nets and compute the dot product with itself and the others one by one
         for other_net in nets.values():
 
             segment2 = [other_net.start[:2], other_net.end[:2]]
