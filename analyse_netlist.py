@@ -4,7 +4,7 @@ from copy import deepcopy
 import numpy as np
 
 
-def load_nets(netlist, chip, randomized):
+def load_nets(netlist, n, chip, randomized):
     """
     Reads requested file containing the requested nets,
     and extracts their starting and ending coordinates.
@@ -17,7 +17,7 @@ def load_nets(netlist, chip, randomized):
         add = ""
 
     nets = set()
-    with open(f"data/chip_{chip}/{add}netlist_{netlist}.csv") as file:
+    with open(f"data/chip_{chip}/{add}netlist_{netlist}_{n + 1}.csv") as file:
         reader = csv.DictReader(file)
         for row in reader:
             nets.add((row['chip_a'], row['chip_b']))
@@ -118,26 +118,27 @@ def check_density(net_coordinates):
     print(f"In total, at least {total_segments} are required. This results in {round(100 * density, 2)} % of the grid to be filled assuming only 1 layer.")
 
 
-def main(netlist, randomized):
+def main(netlist, randomized, N):
     chip = int((netlist - 1) / 3)
 
-    nets = load_nets(netlist, chip, randomized)
-    gates, coordinates = load_gates(chip)
+    for n in range(N):
+        nets = load_nets(netlist, n, chip, randomized)
+        gates, coordinates = load_gates(chip)
 
-    if check_gate_occupation(nets, gates) == "impossible":
-        return
-    else:
-        print("No reason to conclude this netlilst is impossible (yet ...)")
+        if check_gate_occupation(nets, gates) == "impossible":
+            return
+        else:
+            print("No reason to conclude this netlilst is impossible (yet ...)")
 
-        net_coordinates = {}
-        for net in nets:
-            start = coordinates[net[0]]
-            end = coordinates[net[1]]
-            net_coordinates[net] = (start, end)
+            net_coordinates = {}
+            for net in nets:
+                start = coordinates[net[0]]
+                end = coordinates[net[1]]
+                net_coordinates[net] = (start, end)
 
-    check_intersections(net_coordinates)
+        check_intersections(net_coordinates)
 
-    check_density(net_coordinates)
+        check_density(net_coordinates)
 
 
 
@@ -146,8 +147,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Analyse a netlist')
     parser.add_argument("netlist", type=int, help="Netlist to be inspected")
     parser.add_argument("-random", "--randomized", action='store_true', help="Choose randomly generated netlists instead of the originals.")
+    parser.add_argument("-n", type=int, default=1, dest="N", help="number of solutions analyzed")
 
     # Parse the command line arguments
     args = parser.parse_args()
 
-    main(args.netlist, args.randomized)
+    main(args.netlist, args.randomized, args.N)

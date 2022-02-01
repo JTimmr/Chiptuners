@@ -35,40 +35,42 @@ def load_nets(netlist, chip):
     return num_nets
 
 
-def main(netlist):
+def main(netlist, N):
     chip = int((netlist - 1) / 3)
 
     num_gates = load_gates(chip)
     num_nets = load_nets(netlist, chip)
-    nets = set()
 
-    while len(nets) < num_nets:
-        gates = [i + 1 for i in range(num_gates)]
-        start = random.choice(gates)
-        gates.remove(start)
-        end = random.choice(gates)
-        if (start, end) not in nets and (end, start) not in nets:
-            nets.add((start, end))
+    for n in range(N):
+        nets = set()
+        while len(nets) < num_nets:
+            gates = [i + 1 for i in range(num_gates)]
+            start = random.choice(gates)
+            gates.remove(start)
+            end = random.choice(gates)
+            if (start, end) not in nets and (end, start) not in nets:
+                nets.add((start, end))
 
-    with open(f"data/chip_{chip}/random/netlist_{netlist}.csv", "w", newline="") as csvfile:
+        with open(f"data/chip_{chip}/random/netlist_{netlist}_{n + 1}.csv", "w", newline="") as csvfile:
 
-        # Set up fieldnames
-        fieldnames = ["chip_a", "chip_b"]
+            # Set up fieldnames
+            fieldnames = ["chip_a", "chip_b"]
 
-        # Set up wiriter and write the header
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-        writer.writeheader()
-        for net in nets:
-            writer.writerow({
-                "chip_a": net[0], "chip_b": net[1]
-                })
+            # Set up wiriter and write the header
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writeheader()
+            for net in nets:
+                writer.writerow({
+                    "chip_a": net[0], "chip_b": net[1]
+                    })
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Make a new netlist')
     parser.add_argument("netlist", type=int, help="Netlist to be remade")
+    parser.add_argument("-n", type=int, default=1, dest="N", help="number of solutions generated")
 
     # Parse the command line arguments
     args = parser.parse_args()
 
-    main(args.netlist)
+    main(args.netlist, args.N)
