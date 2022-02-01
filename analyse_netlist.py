@@ -51,7 +51,7 @@ def check_gate_occupation(nets, gates):
         if gates[net[0]] > 5:
             print(f"Gate {net[0]} has to make {gates[net[0]]} connections, which is not possible. This netlist cannot be solved.")
             return "impossible"
-        if gates[net[0]] > 5:
+        if gates[net[1]] > 5:
             print(f"Gate {net[1]} has to make {gates[net[1]]} connections, which is not possible. This netlist cannot be solved.")
             return "impossible"
 
@@ -139,7 +139,6 @@ def main(netlist, randomized, N):
         check_intersections(net_coordinates)
 
         check_density(net_coordinates)
-
 
 
 
