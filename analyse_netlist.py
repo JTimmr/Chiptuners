@@ -152,9 +152,6 @@ def main(netlist, randomized):
     return (density, intersections, overflow, solved)
 
 
-
-
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Analyse a netlist')
     parser.add_argument("netlist", type=int, help="Netlist to be inspected")
