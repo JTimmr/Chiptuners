@@ -1,17 +1,13 @@
 import matplotlib.pyplot as plt
 import re
-
-#plotly
-import plotly.express as px
-import plotly.io as pio
 import plotly.graph_objects as go
-
 import pandas as pd
 
 
 def visualize(chip, legend):
     """Makes a 3D visualization of the chip object instance."""
 
+    # Make df out of gates to plot
     df_gates = pd.DataFrame(index = ['x', 'y', 'z'])
 
     for keys, values in chip.gates.items():
@@ -19,6 +15,7 @@ def visualize(chip, legend):
     
     df_gates = df_gates.transpose()
 
+    # Create a df for every path in the netlist and store it in a dict
     path_df_dict = {}
 
     for keys in chip.nets.keys():
@@ -29,6 +26,7 @@ def visualize(chip, legend):
         for i in range(len(values.path[0])):
             df.loc[i] = [values.path[0][i], values.path[1][i], values.path[2][i]]
 
+    # Plot gates and paths and show it in users browser
     fig = go.Figure()
 
     fig = go.Figure(data=[go.Scatter3d(
@@ -46,6 +44,9 @@ def visualize(chip, legend):
                                    z = path_df_dict[i]['z'],
                                    name = label,
                                    mode = 'lines'),)
+        fig.update_traces(
+            line=dict(
+                width=5
     fig.update_layout(scene = dict(zaxis = dict(nticks=7, range=[-1,7])))
     fig.show()
 
