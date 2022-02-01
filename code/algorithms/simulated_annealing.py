@@ -1,14 +1,13 @@
 import random
 import math
 from copy import deepcopy
-
 import numpy
-import csv 
+import csv
 import matplotlib.pyplot as plt
 import code.algorithms.A_star as A_star
-import code.algorithms.sorting as sorting
 
-def linear_cooling(temprature, cooling_speed = 20, t_lower = 1):
+
+def linear_cooling(temprature, cooling_speed=20, t_lower=1):
     """
     Linear decreasing temprature
     """
@@ -28,9 +27,9 @@ def log_cooling(temprature, iteration):
     temprature = temprature / log_factor
 
     return temprature
-   
 
-def geomtric_cooling(temprature, iteration, beta = 0.9):
+
+def geomtric_cooling(temprature, iteration, beta=0.9):
     """
     Geomtric cooling schedule
     """
@@ -39,7 +38,7 @@ def geomtric_cooling(temprature, iteration, beta = 0.9):
     return new_temprature
 
 
-def LundyMees_cooling(temprature, beta = 0.9):
+def LundyMees_cooling(temprature, beta=0.9):
     """
     As proposed by Lundy And Mees
     """
@@ -48,7 +47,7 @@ def LundyMees_cooling(temprature, beta = 0.9):
     return temprature
 
 
-def VCF_cooling(temprature, iteration, starting_temprature, t_lower = 1):
+def VCF_cooling(temprature, iteration, starting_temprature, t_lower=1):
     """
     Cooling schedule following a VCF model
     """
@@ -58,7 +57,7 @@ def VCF_cooling(temprature, iteration, starting_temprature, t_lower = 1):
     return temprature
 
 
-def exponential_cooling(temprature, alpha = 0.98):
+def exponential_cooling(temprature, alpha=0.98):
     """
     Cooling schedule based on exponential decrease
     """
@@ -68,7 +67,6 @@ def exponential_cooling(temprature, alpha = 0.98):
     temprature = temprature * alpha
 
     return temprature
- 
 
 
 class SimulatedAnnealing:
@@ -87,7 +85,7 @@ class SimulatedAnnealing:
         self.n = n
         self.lowest_costs = deepcopy(self.grid.cost)
         self.sorting = sorting_method
-        
+
         # Starting temperature and current temperature
         self.Starting_T = temperature
         self.Current_T = temperature
@@ -110,11 +108,11 @@ class SimulatedAnnealing:
 
     def update_temperature(self):
         """Updates the current temperature."""
-        
+
         # Check that ensures the temperature only updates when the iteration number has increased
         if self.iterationlist and self.Current_T > 0:
             if self.iterationlist[-1] != self.iterations:
-                self.Current_T = geomtric_cooling(self.Current_T, self.iterations ,beta = 0.8)
+                self.Current_T = geomtric_cooling(self.Current_T, self.iterations, beta=0.8)
                 return self.Current_T
 
     def run(self):
@@ -126,7 +124,6 @@ class SimulatedAnnealing:
         while self.iterations < self.limit:
 
             # print(f"iteration: {self.iterations} and Temprature: {self.Current_T}")
-
 
             nets = self.sorting[0](self.grid.nets, descending=self.sorting[1])
 
@@ -147,7 +144,7 @@ class SimulatedAnnealing:
 
         if self.make_csv_improvements:
             self.to_csv()
-        
+
         # If user wants to see algorithm plotted, plot
         if self.make_iterative_plot:
             self.plot()
@@ -162,7 +159,6 @@ class SimulatedAnnealing:
         destination = net.end
 
         # Make copies so original values aren't lost
-        best_path = deepcopy(net.path)
         self.grid.compute_costs()
         best_costs = deepcopy(self.grid.cost)
 
@@ -172,7 +168,6 @@ class SimulatedAnnealing:
 
             # new_path = self.run_per_paths(net)
             if new_path:
-                old_grid = deepcopy(self.grid)
                 old_path = deepcopy(net.path)
 
                 net.path = new_path
@@ -201,7 +196,7 @@ class SimulatedAnnealing:
 # # --------------------------------------- update all other paths via A* --------------------------------------- #
 
                 delta = self.grid.cost - best_costs
-                
+
                 if self.grid.cost >= best_costs:
                     if self.Current_T == 0:
                         probability = 0
@@ -211,12 +206,11 @@ class SimulatedAnnealing:
                 else:
                     # print("not worse")
                     probability = 1
-                rand = random.random() 
+                rand = random.random()
 
                 if probability > rand:
                     self.lowest_costs = self.grid.cost
                     print(f"Alternate path found: new costs are {self.grid.cost}")
-                    best_path = deepcopy(new_path)
                     best_costs = deepcopy(self.grid.cost)
                     self.update_temperature()
 
@@ -285,7 +279,7 @@ class SimulatedAnnealing:
                     # Check if current segment makes an interection
                     if new_origin in self.grid.coordinates:
                         intersections_tmp += 1
-                    
+
                 # Set new temporary origin
                 origin_tmp = new_origin
 
@@ -304,16 +298,18 @@ class SimulatedAnnealing:
 
                 return [x, y, z]
 
-        # Return number of failed attempts if destination was not reached
-        return 
+        return
 
     def find_smartest_step(self, position, destination, path_tmp):
-        """Calculate step to follow random path from current position to any location. If origin equals destination, return None"""
+        """
+        Calculate step to follow random path from current position to any location.
+        If origin equals destination, return None
+        """
 
         # No new position is required when destination is already reached
         if position == destination:
             return "reached"
-        
+
         # Cannot go down from the lowest layer
         if position[2] == 0:
             step_in_direction = random.choices([0, 1, 2], weights=[2, 2, 1])[0]
@@ -341,7 +337,8 @@ class SimulatedAnnealing:
         return new_position
 
     def to_csv(self):
-        with open(f"output/results_annealing/annealing_netlist_{self.grid.netlist}{self.name}{self.n}_length(a).csv", "w", newline="") as csvfile:
+        path = "output/results_annealing/annealing_netlist_"
+        with open(f"{path}{self.grid.netlist}{self.name}{self.n}_length(a).csv", "w", newline="") as csvfile:
             fieldnames = ["iteration", "cost"]
 
             # Set up wiriter and write the header
@@ -349,15 +346,15 @@ class SimulatedAnnealing:
             writer.writeheader()
 
             for i in range(len(self.iterationlist)):
-                    writer.writerow({
+                writer.writerow({
                     "iteration": i + 1, "cost": self.costs[i]
                 })
-    
+
     def plot(self):
         """Plots simulated annealing with iterations on x-axis and costs on y-axis."""
-        
+
         plt.figure()
-        plt.plot(self.iterationlist, self.costs, label = f"start temp: {self.Starting_T} \xb0C")
+        plt.plot(self.iterationlist, self.costs, label=f"start temp: {self.Starting_T} \xb0C")
         plt.legend()
         plt.xlabel("Iterations")
         plt.ylabel("Costs")

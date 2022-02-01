@@ -58,7 +58,7 @@ def sort_middle_first(nets, descending=False):
             reverse=descending))
 
 
-def sort_gate(nets, descending=True):
+def sort_gate(grid, descending=True):
     """
     Sorts net object instances on how many connections a gate has
     with other gates.
