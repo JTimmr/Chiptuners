@@ -25,15 +25,15 @@ class Baseline:
     def make_connections(self):
         """Connects two points on the grid, and plots the result"""
 
-        for netlist in self.sorting[0](self.grid.netlists, descending=self.sorting[1]):
+        for net in self.sorting[0](self.grid.nets, descending=self.sorting[1]):
             current_attempt = 0
 
             # Retrieve starting and ending point
-            start = netlist.start
-            end = netlist.end
+            start = net.start
+            end = net.end
 
             # Search for path until a valid path is found
-            while isinstance((path_data := self.find_path(start, end,netlist, current_attempt)), int):
+            while isinstance((path_data := self.find_path(start, end,net, current_attempt)), int):
                 current_attempt += path_data
 
                 # Give up if it takes too long
@@ -43,11 +43,11 @@ class Baseline:
 
             # If a path is found, retrieve coordinates
             x, y, z = path_data[:3]
-            netlist.path = [x, y, z]
+            net.path = [x, y, z]
 
         return True
 
-    def find_path(self, origin, destination, netlist, current_attempt):
+    def find_path(self, origin, destination, net, current_attempt):
         """
         Takes a starting and ending point, and tries to make a connection between them.
         Returns the path if succeeded, otherwise nothing.
@@ -57,7 +57,7 @@ class Baseline:
         x = []
         y = []
         z = []
-        max_pathlength = netlist.minimal_length * 2 + 6
+        max_pathlength = net.minimal_length * 2 + 6
 
         # Temporary values until path is confirmed
         origin_tmp = deepcopy(origin)
@@ -94,7 +94,7 @@ class Baseline:
                     return new_attempts
 
                 # Add segment to dictionary if it was new
-                wire_segments_tmp[segment] = netlist
+                wire_segments_tmp[segment] = net
 
                 # If the coordinate does not host a gate
                 if new_origin not in self.grid.gate_coordinates:

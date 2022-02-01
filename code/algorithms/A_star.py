@@ -11,18 +11,18 @@ class A_Star:
         Stores all paths in the netlist objects, and makes sure the grid object is up to date.
         """
 
-        total = len(self.grid.netlists)
+        total = len(self.grid.nets)
         completed = 0
 
-        # Sort the netlists in the given order
-        for netlist in self.sorting[0](self.grid.netlists, descending=self.sorting[1]):
+        # Sort the nets in the given order
+        for net in self.sorting[0](self.grid.nets, descending=self.sorting[1]):
             
             # Retrieve starting and ending point
-            start = netlist.start
-            end = netlist.end
+            start = net.start
+            end = net.end
 
             # Make solver object and run algorithm
-            solver = A_Star_Solver(self.grid, netlist, start, end, self.pop, self.gate_space)
+            solver = A_Star_Solver(self.grid, net, start, end, self.pop, self.gate_space)
             solver.Solve()
 
             # Extract path from solver
@@ -32,11 +32,11 @@ class A_Star:
                 y.append(coordinate[1])
                 z.append(coordinate[2])
 
-            # Store path in netlist object
+            # Store path in net object
             path = [x, y, z]
-            netlist.path = path
+            net.path = path
             completed += 1
-            print(f"Finished {netlist.start} to {netlist.end}, {completed}/{total}")
+            print(f"Finished {net.start} to {net.end}, {completed}/{total}")
 
         # Update grid
         self.grid.update()
@@ -107,12 +107,12 @@ class State(object):
  
  
 class State_Path(State):
-    def __init__(self, grid, netlist, visitedQueue, costs, value, parent, goal, start = 0):
+    def __init__(self, grid, net, visitedQueue, costs, value, parent, goal, start = 0):
         super(State_Path, self).__init__(value, parent, start, goal)
         self.heuristic = self.get_distance()
         self.goal = goal
         self.grid = grid
-        self.netlist = netlist
+        self.net = net
         self.visitedQueue = visitedQueue
         self.costs = costs
  
@@ -155,19 +155,19 @@ class State_Path(State):
                             costs_tmp += 300
                         
                         # Create child object
-                        child = State_Path(self.grid, self.netlist, self.visitedQueue, costs_tmp, val, self, self.goal)
+                        child = State_Path(self.grid, self.net, self.visitedQueue, costs_tmp, val, self, self.goal)
                         self.children.append(child)
 
 
 class A_Star_Solver:
-    def __init__(self, grid, netlist, start, goal, pop, gate_space):
+    def __init__(self, grid, net, start, goal, pop, gate_space):
         self.path = []
         self.visitedQueue = set()
         self.queue = PriorityQueue()
         self.start = start
         self.goal = goal
         self.grid = grid
-        self.netlist = netlist
+        self.net = net
         self.pop = pop
         self.gate_space = gate_space
 
@@ -175,7 +175,7 @@ class A_Star_Solver:
         """Finds and returns solution for current path."""
         
         # Make state object
-        startState = State_Path(self.grid, self.netlist, self.visitedQueue, 0, self.start, 0, self.goal, self.start)
+        startState = State_Path(self.grid, self.net, self.visitedQueue, 0, self.start, 0, self.goal, self.start)
         count = 0
 
         # Put object in queue
@@ -218,12 +218,12 @@ class A_Star_Solver:
 
                             segment = self.grid.make_segment(self.path[coordinate + 1], self.path[coordinate])
 
-                            self.grid.wire_segments[segment] = self.netlist
+                            self.grid.wire_segments[segment] = self.net
                             self.grid.coordinates.add(segment[0])
                             self.grid.coordinates.add(segment[1])
                         
                         # Calculate costs path, assuming no path has a length of >300.
-                        self.netlist.intersections = child.costs // 300
+                        self.net.intersections = child.costs // 300
                         return self.path
                     
                     # Put child in queue

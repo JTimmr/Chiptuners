@@ -1,5 +1,5 @@
 
-class Netlist:
+class Net:
     def __init__(self, start, end, grid) -> None:
         self.start = start
         self.end = end
