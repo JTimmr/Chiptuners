@@ -92,11 +92,11 @@ class SimulatedAnnealing:
         self.Starting_T = temperature
         self.Current_T = temperature
 
-    def run_per_paths(self, netlist):
+    def run_per_paths(self, net):
         # Retrieve starting and ending point
-        start = netlist.start
-        end = netlist.end
-        a = A_star.A_Star_Solver(self.grid, netlist, start, end)
+        start = net.start
+        end = net.end
+        a = A_star.A_Star_Solver(self.grid, net, start, end)
         a.Solve()
 
         x, y, z = [], [], []
@@ -128,10 +128,10 @@ class SimulatedAnnealing:
             # print(f"iteration: {self.iterations} and Temprature: {self.Current_T}")
 
 
-            netlists = self.sorting[0](self.grid.netlists, descending=self.sorting[1])
+            nets = self.sorting[0](self.grid.nets, descending=self.sorting[1])
 
-            for netlist in netlists:
-                self.improve_connection(netlist)
+            for net in nets:
+                self.improve_connection(net)
 
                 self.iterationlist.append(self.iterations)
                 self.iterations += 1
@@ -154,41 +154,41 @@ class SimulatedAnnealing:
 
         return self.grid.cost
 
-    def improve_connection(self, netlist):
+    def improve_connection(self, net):
         """Takes a netlist as an input, and tries to find a shorter path between its two gates.
             While sometimes accepting worse solutions, to eventually find a better one."""
 
-        origin = netlist.start
-        destination = netlist.end
+        origin = net.start
+        destination = net.end
 
         # Make copies so original values aren't lost
-        best_path = deepcopy(netlist.path)
+        best_path = deepcopy(net.path)
         self.grid.compute_costs()
         best_costs = deepcopy(self.grid.cost)
 
         for attempt in range(50):
             # If path is found, calculate new costs
-            new_path = self.find_path(origin, destination, netlist)
+            new_path = self.find_path(origin, destination, net)
 
-            # new_path = self.run_per_paths(netlist)
+            # new_path = self.run_per_paths(net)
             if new_path:
                 old_grid = deepcopy(self.grid)
-                old_path = deepcopy(netlist.path)
+                old_path = deepcopy(net.path)
 
-                netlist.path = new_path
+                net.path = new_path
                 self.grid.compute_costs()
 
 # # --------------------------------------- update all other paths via A* --------------------------------------- #
-#                 deepcopy_netlists = deepcopy(self.grid.netlists)
-#                 deepcopy_netlists.pop(netlist.key)
-#                 other_netlists = deepcopy_netlists
+#                 deepcopy_nets = deepcopy(self.grid.nets)
+#                 deepcopy_nets.pop(net.key)
+#                 other_nets = deepcopy_nets
 
-#                 for netlist in sorting.sort_exp_intersections(other_netlists, descending=False):
+#                 for net in sorting.sort_exp_intersections(other_nets, descending=False):
 
 #                     # Retrieve starting and ending point
-#                     start = netlist.start
-#                     end = netlist.end
-#                     a = A_star.A_Star_Solver(self.grid, netlist, start, end)
+#                     start = net.start
+#                     end = net.end
+#                     a = A_star.A_Star_Solver(self.grid, net, start, end)
 #                     a.Solve()
 #                     x, y, z = [], [], []
 #                     for coordinate in range(len(a.path)):
@@ -196,7 +196,7 @@ class SimulatedAnnealing:
 #                         y.append(a.path[coordinate][1])
 #                         z.append(a.path[coordinate][2])
 #                     path = [x, y, z]
-#                     netlist.path = path
+#                     net.path = path
 #                 self.grid.update()
 # # --------------------------------------- update all other paths via A* --------------------------------------- #
 
@@ -224,11 +224,11 @@ class SimulatedAnnealing:
                         self.grid.to_csv(self.grid.cost)
                     return
                 else:
-                    netlist.path = old_path
+                    net.path = old_path
 
                 return
 
-    def find_path(self, origin, destination, netlist):
+    def find_path(self, origin, destination, net):
         """Attempts to find a path between two coordinates in the grid."""
 
         # Store path so plot can be made
@@ -237,8 +237,8 @@ class SimulatedAnnealing:
         z = []
 
         #  Set limit for pathlength
-        # max_pathlength = netlist.minimal_length * 2 + 10
-        max_pathlength = netlist.current_length + 10
+        # max_pathlength = net.minimal_length * 2 + 10
+        max_pathlength = net.current_length + 10
 
         current_attempt = 0
 
@@ -270,18 +270,14 @@ class SimulatedAnnealing:
             # If destination is not reached, make step
             if new_origin != "reached":
 
-                # Save step as segment, and ensure two identical segments are never stored in reverse order (a, b VS b, a)
-                if ((math.sqrt(sum(i**2 for i in origin_tmp))) >= (math.sqrt(sum(i**2 for i in new_origin)))):
-                    segment = (new_origin, origin_tmp)
-                else:
-                    segment = (origin_tmp, new_origin)
+                segment = self.grid.make_segment(new_origin, origin_tmp)
 
                 # Check if segment already in use, try again otherwise
                 if segment in self.grid.wire_segments or segment in wire_segments_tmp:
                     return
 
                 # Add segment to dictionary if it was new
-                wire_segments_tmp[segment] = netlist
+                wire_segments_tmp[segment] = net
 
                 # If the coordinate does not host a gate
                 if new_origin not in self.grid.gate_coordinates:

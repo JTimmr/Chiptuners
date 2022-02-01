@@ -2,50 +2,63 @@ import random
 import operator
 
 
-def sort_length(netlists, descending=False):
+def sort_length(nets, descending=False):
     """
-    Sorts netlist object instances on their distance
+    Sorts net object instances on their distance
     between start- and end coordinates.
     """
-    return (sorted(netlists.values(),
+    return (sorted(nets.values(),
             key=operator.attrgetter('minimal_length'),
             reverse=descending))
 
 
-def random_sort(netlists, descending="None"):
-    """Sorts netlist object instances in a random order."""
+def random_sort(nets, descending="None"):
+    """Sorts net object instances in a random order."""
 
-    # Load the netlist values and randomly shuffle its order
-    value_list = list(netlists.values())
+    # Load the net values and randomly shuffle its order
+    value_list = list(nets.values())
     random.shuffle(value_list)
 
     return value_list
 
 
-def sort_middle_first(netlists, descending=False):
+def sort_middle_first(nets, descending=False):
     """
-    Sorts netlist object instances on their position in the grid;
+    Sorts net object instances on their position in the grid;
     in the middle or on the outside.
     """
 
     # Find the size of the grid and compute its middle
-    a_netlist = list(netlists.values())[0]
-    size = a_netlist.grid.size[:2]
+    a_net = list(nets.values())[0]
+    size = a_net.grid.size[:2]
 
     middle_x = round(size[0]/2)
     middle_y = round(size[1]/2)
 
-    # Determine for every netlist its total summed distance to the middle of the grid
-    for netlist in netlists.values():
+    # Determine for every net its total summed distance to the middle of the grid
+    # for key in nets:
         
-        delta_middle_start = abs(middle_x - netlist.start[0]) + abs(middle_y - netlist.start[1])
-        delta_middle_end = abs(middle_x - netlist.end[0]) + abs(middle_y - netlist.end[1])
+    #     delta_middle_start = abs(middle_x - nets[key].start[0]) + abs(middle_y - nets[key].start[1])
+    #     delta_middle_end = abs(middle_x - nets[key].end[0]) + abs(middle_y - nets[key].end[1])
+    #     total_distance_middle = delta_middle_start + delta_middle_end
+
+    #     nets[key].total_distance_middle = total_distance_middle
+
+    # # Sort the nets 
+    # return (sorted(nets.values(),
+    #         key=operator.attrgetter('total_distance_middle'),
+    #         reverse=descending))
+
+    for net in nets.values():
+        
+        delta_middle_start = abs(middle_x - net.start[0]) + abs(middle_y - net.start[1])
+        delta_middle_end = abs(middle_x - net.end[0]) + abs(middle_y - net.end[1])
         total_distance_middle = delta_middle_start + delta_middle_end
 
-        netlist.total_distance_middle = total_distance_middle
+        net.total_distance_middle = total_distance_middle
 
-    # Sort the netlists 
-    return (sorted(netlists.values(),
+    # Sort the nets 
+    return (sorted(nets.values(),
             key=operator.attrgetter('total_distance_middle'),
             reverse=descending))
 
@@ -59,7 +72,7 @@ def sort_middle_first(netlists, descending=False):
     # y_loser = 9999
 
     # # Search for the highest + lowest x and y values found in the gates
-    # for value in netlists.values():
+    # for value in nets.values():
     #     x_contestent = value.start[0]
     #     y_contestent = value.start[1]
 
@@ -79,65 +92,65 @@ def sort_middle_first(netlists, descending=False):
     # middle_x = round((x_champion + x_loser)/2)
     # middle_y = round((x_champion + x_loser)/2)
 
-    # # Determine for every netlist its total summed distance to the middle of the grid
-    # for key in netlists:
+    # # Determine for every net its total summed distance to the middle of the grid
+    # for key in nets:
         
     #     delta_middle_start = abs(middle_x - value.start[0]) + abs(middle_y - value.start[1])
     #     delta_middle_end = abs(middle_x - value.end[0]) + abs(middle_y - value.end[1])
     #     total_distance_middle = delta_middle_start + delta_middle_end
 
-    #     netlists[key].total_distance_middle = total_distance_middle
+    #     nets[key].total_distance_middle = total_distance_middle
 
-    # # Sort the netlists 
-    # return (sorted(netlists.values(),
+    # # Sort the nets 
+    # return (sorted(nets.values(),
     #         key=operator.attrgetter('total_distance_middle'),
     #         reverse=descending))
 
 
 def sort_gate(grid, descending=True):
     """
-    Sorts netlist object instances on how many connections a gate has
+    Sorts net object instances on how many connections a gate has
     with other gates.
     """
     gate_occupation = {}
-    netlist_neighbors = {}
+    net_neighbors = {}
 
     # Set gate occupation to zero for all gate coordinates
     for gate in grid.gates.values():
         gate_occupation[gate.coordinates] = 0
 
     # Count occurrences of gate coordinates
-    for netlist in grid.netlists.values():
-        netlist_neighbors[netlist] = 0
-        gate_occupation[netlist.start] += 1
-        gate_occupation[netlist.end] += 1
+    for net in grid.nets.values():
+        net_neighbors[net] = 0
+        gate_occupation[net.start] += 1
+        gate_occupation[net.end] += 1
 
     # TODO: add comment.
-    for netlist in grid.netlists.values():
-        netlist_neighbors[netlist] \
-            += gate_occupation[netlist.start] \
-            + gate_occupation[netlist.end] - 2
+    for net in grid.nets.values():
+        net_neighbors[net] \
+            += gate_occupation[net.start] \
+            + gate_occupation[net.end] - 2
 
-    return sorted(netlist_neighbors,
-                  key=netlist_neighbors.get,
+    return sorted(net_neighbors,
+                  key=net_neighbors.get,
                   reverse=descending)
 
 
-def sort_exp_intersections(netlists, descending=False):
+def sort_exp_intersections(nets, descending=False):
     """
-    Sorts netlist object instances based on
+    Sorts net object instances based on
     how many intersections are expected.
     """
 
-    # For every netlist object copy the start- and end coordinates
-    for netlist in netlists.values():
+    # For every net object copy the start- and end coordinates
+    for net in nets.values():
 
-        segment1 = [netlist.start[:2], netlist.end[:2]]
+        segment1 = [net.start[:2], net.end[:2]]
 
         # TODO: add comment here
-        for other_netlist in netlists.values():
+        for other_net in nets.values():
 
-            segment2 = [other_netlist.start[:2], other_netlist.end[:2]]
+            segment2 = [other_net.start[:2], other_net.end[:2]]
 
             dx1 = segment1[1][0]-segment1[0][0]
             dy1 = segment1[1][1]-segment1[0][1]
@@ -154,8 +167,8 @@ def sort_exp_intersections(netlists, descending=False):
                 - dx1*(segment1[1][1]-segment2[1][1])
 
             if (p1 * p2 <= 0) & (p3 * p4 <= 0):
-                netlist.exp_intersections += 1
+                net.exp_intersections += 1
 
-    return (sorted(netlists.values(),
+    return (sorted(nets.values(),
             key=operator.attrgetter('exp_intersections'),
             reverse=descending))

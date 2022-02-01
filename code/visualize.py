@@ -21,14 +21,14 @@ def visualize(chip, legend):
                      gate.coordinates[2],
                      c="black")
 
-    # Plot all netlist routes solutions of the chip object instance
-    for netlist in chip.netlists.values():
-        path = netlist.path
+    # Plot all net routes solutions of the chip object instance
+    for net in chip.nets.values():
+        path = net.path
         x = path[0]
         y = path[1]
         z = path[2]
 
-        ax.plot(x, y, z, label=netlist)
+        ax.plot(x, y, z, label=net)
 
     ax.set_xlim(0, max_x)
     ax.set_ylim(0, max_y)
@@ -36,8 +36,8 @@ def visualize(chip, legend):
 
     # If user wants a legend, show it correctly
     if legend is True:
-        ax.legend(chip.netlists.keys(),
-                  title='Netlist',
+        ax.legend(chip.nets.keys(),
+                  title='Nets',
                   prop={'size': 7},
                   bbox_to_anchor=(1.1, 1),
                   ncol=3,

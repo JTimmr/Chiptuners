@@ -1,6 +1,5 @@
 import random
 from copy import deepcopy
-import math
 import csv
 import matplotlib.pyplot as plt
 
@@ -31,13 +30,13 @@ class Hillclimber:
         while self.iteration < self.iterations:
             print(f"Iteration {self.iteration}")
 
-            # Sort netlist in desired order
-            netlists = self.sorting[0](self.grid.netlists, descending=self.sorting[1])
+            # Sort net in desired order
+            nets = self.sorting[0](self.grid.nets, descending=self.sorting[1])
 
-            for netlist in netlists:
+            for net in nets:
 
                 # Try to make an improvement
-                self.improve_connection(netlist)
+                self.improve_connection(net)
 
                 # Quit when no improvement is made after a large amount of attempts
                 if self.attempts_without_improvement > 500:
@@ -58,11 +57,11 @@ class Hillclimber:
         if self.make_iterative_plot:
             self.plot()
 
-    def improve_connection(self, netlist):
-        """Takes a netlist as an input, and tries to find a shorter path between its two gates."""
+    def improve_connection(self, net):
+        """Takes a net as an input, and tries to find a shorter path between its two gates."""
 
-        origin = netlist.start
-        destination = netlist.end
+        origin = net.start
+        destination = net.end
 
         # Make copies so original values aren't lost
         self.grid.compute_costs()
@@ -71,12 +70,12 @@ class Hillclimber:
         # Try a number of times before succes becomes unlikely
         for attempt in range(100):
 
-            new_path = self.find_path(origin, destination, netlist)
+            new_path = self.find_path(origin, destination, net)
 
             # If path is found, calculate new costs
             if new_path:
-                old_path = deepcopy(netlist.path)
-                netlist.path = new_path
+                old_path = deepcopy(net.path)
+                net.path = new_path
                 self.grid.compute_costs()
 
                 # Allow change of path with no benefit once every 5 attempts
@@ -93,7 +92,7 @@ class Hillclimber:
 
                     # Reset if new path is worse
                     else:
-                        netlist.path = old_path
+                        net.path = old_path
                         self.attempts_without_improvement += 1
 
                 # Only allow changes to decrease the cost 4/5 attempts
@@ -113,15 +112,18 @@ class Hillclimber:
 
                     # Reset if new path is denied
                     else:
-                        netlist.path = old_path
+                        net.path = old_path
                         self.attempts_without_improvement += 1
             
             # If no path was found at all, register as failed attempt
             else:
                 self.attempts_without_improvement += 1
 
-    def find_path(self, origin, destination, netlist):
-        """Attempts to find a path between two coordinates in the grid."""
+    def find_path(self, origin, destination, net):
+        """
+        Takes a starting and ending point, and tries to make a connection between them.
+        Returns the path if succeeded, otherwise nothing.
+        """
 
         # Store path so plot can be made
         x = []
@@ -129,7 +131,7 @@ class Hillclimber:
         z = []
 
         #  Set limit for pathlength
-        max_pathlength = netlist.minimal_length * 2 + 10
+        max_pathlength = net.minimal_length * 2 + 10
 
         current_attempt = 0
 
@@ -161,18 +163,14 @@ class Hillclimber:
             # If destination is not reached, make step
             if new_origin != "reached":
 
-                # Save step as segment, and ensure two identical segments are never stored in reverse order (a, b VS b, a)
-                if ((math.sqrt(sum(i**2 for i in origin_tmp))) >= (math.sqrt(sum(i**2 for i in new_origin)))):
-                    segment = (new_origin, origin_tmp)
-                else:
-                    segment = (origin_tmp, new_origin)
+                segment = self.grid.make_segment(new_origin, origin_tmp)
 
                 # Check if segment already in use, try again otherwise
                 if segment in self.grid.wire_segments or segment in wire_segments_tmp:
                     return
 
                 # Add segment to dictionary if it was new
-                wire_segments_tmp[segment] = netlist
+                wire_segments_tmp[segment] = net
 
                 # If the coordinate does not host a gate
                 if new_origin not in self.grid.gate_coordinates:
@@ -203,7 +201,10 @@ class Hillclimber:
         return 
 
     def find_smartest_step(self, position, destination, path_tmp):
-        """Calculate step to follow random path from current position to any location. If origin equals destination, return None"""
+        """
+        Calculates step to follow semi random path from current position
+        to any location. If origin equals destination, return None.
+        """
 
         # No new position is required when destination is already reached
         if position == destination:

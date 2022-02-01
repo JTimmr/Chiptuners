@@ -1,9 +1,9 @@
-import math
-
 class A_Star:
-    def __init__(self, grid, sorting_method):
+    def __init__(self, grid, sorting_method, pop, gate_space):
         self.grid = grid
         self.sorting = sorting_method
+        self.pop = pop
+        self.gate_space = gate_space
 
     def run(self):
         """
@@ -11,18 +11,18 @@ class A_Star:
         Stores all paths in the netlist objects, and makes sure the grid object is up to date.
         """
 
-        total = len(self.grid.netlists)
+        total = len(self.grid.nets)
         completed = 0
 
-        # Sort the netlists in the given order
-        for netlist in self.sorting[0](self.grid.netlists, descending=self.sorting[1]):
+        # Sort the nets in the given order
+        for net in self.sorting[0](self.grid.nets, descending=self.sorting[1]):
             
             # Retrieve starting and ending point
-            start = netlist.start
-            end = netlist.end
+            start = net.start
+            end = net.end
 
             # Make solver object and run algorithm
-            solver = A_Star_Solver(self.grid, netlist, start, end)
+            solver = A_Star_Solver(self.grid, net, start, end, self.pop, self.gate_space)
             solver.Solve()
 
             # Extract path from solver
@@ -32,11 +32,11 @@ class A_Star:
                 y.append(coordinate[1])
                 z.append(coordinate[2])
 
-            # Store path in netlist object
+            # Store path in net object
             path = [x, y, z]
-            netlist.path = path
+            net.path = path
             completed += 1
-            print(f"Finished {netlist.start} to {netlist.end}, {completed}/{total}")
+            print(f"Finished {net.start} to {net.end}, {completed}/{total}")
 
         # Update grid
         self.grid.update()
@@ -63,7 +63,7 @@ class PriorityQueue:
         except KeyError:
             self.queue[priority + costs] = [item]
 
-    def get(self):
+    def get(self, pop):
         """
         Returns item from queue with lowest sum of estimated remaining distance and current costs.
         Deletes item from list afterwards.
@@ -78,7 +78,7 @@ class PriorityQueue:
                 lowest_costs = items
         
         # Retrieve and delete item from list
-        best_choice = self.queue[lowest_costs].pop()
+        best_choice = self.queue[lowest_costs].pop(pop)
 
         # Delete dictionary item if list is empty
         if len(self.queue[lowest_costs]) == 0:
@@ -107,12 +107,12 @@ class State(object):
  
  
 class State_Path(State):
-    def __init__(self, grid, netlist, visitedQueue, costs, value, parent, goal, start = 0):
+    def __init__(self, grid, net, visitedQueue, costs, value, parent, goal, start = 0):
         super(State_Path, self).__init__(value, parent, start, goal)
         self.heuristic = self.get_distance()
         self.goal = goal
         self.grid = grid
-        self.netlist = netlist
+        self.net = net
         self.visitedQueue = visitedQueue
         self.costs = costs
  
@@ -155,25 +155,27 @@ class State_Path(State):
                             costs_tmp += 300
                         
                         # Create child object
-                        child = State_Path(self.grid, self.netlist, self.visitedQueue, costs_tmp, val, self, self.goal)
+                        child = State_Path(self.grid, self.net, self.visitedQueue, costs_tmp, val, self, self.goal)
                         self.children.append(child)
 
 
 class A_Star_Solver:
-    def __init__(self, grid, netlist, start, goal):
+    def __init__(self, grid, net, start, goal, pop, gate_space):
         self.path = []
         self.visitedQueue = set()
         self.queue = PriorityQueue()
         self.start = start
         self.goal = goal
         self.grid = grid
-        self.netlist = netlist
+        self.net = net
+        self.pop = pop
+        self.gate_space = gate_space
 
     def Solve(self):
         """Finds and returns solution for current path."""
         
         # Make state object
-        startState = State_Path(self.grid, self.netlist, self.visitedQueue, 0, self.start, 0, self.goal, self.start)
+        startState = State_Path(self.grid, self.net, self.visitedQueue, 0, self.start, 0, self.goal, self.start)
         count = 0
 
         # Put object in queue
@@ -183,7 +185,7 @@ class A_Star_Solver:
         while(not self.path and self.queue.size()):
 
             # Get item from queue
-            current_state = self.queue.get()
+            current_state = self.queue.get(self.pop)
 
             # Make children
             current_state.create_children()
@@ -193,7 +195,7 @@ class A_Star_Solver:
                 # Chance of success is higher when gates aren't blocked unnessicarily
                 illegal = False
                 for gate in self.grid.gate_coordinates:
-                    if child.value[:2] == gate[:2] and gate != self.goal and gate != self.start and child.value[2] <= 2:
+                    if child.value[:2] == gate[:2] and gate != self.goal and gate != self.start and child.value[2] <= self.gate_space:
                         illegal = True
                         continue
 
@@ -201,11 +203,7 @@ class A_Star_Solver:
                 if illegal or child.value in self.queue.in_queue:
                     continue
 
-                # Save step as segment, and ensure two identical segments are never stored in reverse order (a, b VS b, a)
-                if ((math.sqrt(sum(i**2 for i in child.path[-2]))) >= (math.sqrt(sum(i**2 for i in child.value)))):
-                    segment = (child.value, child.path[-2])
-                else:
-                    segment = (child.path[-2], child.value)
+                segment = self.grid.make_segment(child.value, child.path[-2])
 
                 # If segment is not already in use
                 if segment not in self.grid.wire_segments:
@@ -218,17 +216,14 @@ class A_Star_Solver:
                         # Ensure dictionary with wiresegments and set with all used coordinates are up to date
                         for coordinate in range(len(self.path) - 1):
 
-                            # Ensure two identical segments are never stored in reverse order (a, b VS b, a)
-                            if ((math.sqrt(sum(i**2 for i in self.path[coordinate]))) >= (math.sqrt(sum(i**2 for i in self.path[coordinate + 1])))):
-                                segment = (self.path[coordinate + 1], self.path[coordinate])
-                            else:
-                                segment = (self.path[coordinate], self.path[coordinate + 1])
-                            self.grid.wire_segments[segment] = self.netlist
+                            segment = self.grid.make_segment(self.path[coordinate + 1], self.path[coordinate])
+
+                            self.grid.wire_segments[segment] = self.net
                             self.grid.coordinates.add(segment[0])
                             self.grid.coordinates.add(segment[1])
                         
                         # Calculate costs path, assuming no path has a length of >300.
-                        self.netlist.intersections = child.costs // 300
+                        self.net.intersections = child.costs // 300
                         return self.path
                     
                     # Put child in queue
