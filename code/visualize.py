@@ -43,10 +43,9 @@ def visualize(chip, legend):
                                    y = path_df_dict[i]["y"], 
                                    z = path_df_dict[i]['z'],
                                    name = label,
-                                   mode = 'lines'),)
-        fig.update_traces(
-            line=dict(
-                width=5
+                                   mode = 'lines'))
+        fig.update_traces(line=dict(width=5))
+
     fig.update_layout(scene = dict(zaxis = dict(nticks=7, range=[-1,7])))
     fig.show()
 
