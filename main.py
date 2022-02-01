@@ -9,72 +9,89 @@ from code.algorithms import simulated_annealing as sim
 from code.algorithms.sorting import *
 import argparse
 
-def to_csv(costs):
 
-    with open(f"output/heavy_out.csv", "w", newline="") as csvfile:
-
-
-        fieldnames = ["simulation", "cost"]
-
-        # Set up wiriter and write the header
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-        writer.writeheader() 
-
-        for i in range(len(costs)):
-
-            writer.writerow({
-                    "simulation": i + 1, "cost": costs[i]
-                    })
-
-def log_simulation(runs, netlist, constructive_algorithm, sorting_method):
-    """Run the given algorithm a number of times, creating a set of solutions. Set N to 1 if a single solution suffices."""
+def log_simulation(N, netlist, constructive_algorithm, sorting_method):
+    """
+    Takes the amount of runs, netlist number, type of algorithm and sorting algorithm as input.
+    Runs the given algorithm a number of times, creating a set of solutions. Set N to 1 if a single solution suffices.
+    Saves the results in a CSV file, where each row represents the results of a single run, 
+    and each columns stores the costs.
+    """
     
     # Calculate chip number from netlist number
     chip_nr = int((netlist - 1) / 3)
 
     # Open file where results will be stored
-    with open(f"output/netlist_{netlist}_{runs}x.csv", "w", newline="") as csvfile:
+    with open(f"output/netlist_{netlist}_{N}x.csv", "w", newline="") as csvfile:
 
         # Set up fieldnames 
-        fieldnames = ["simulation", "cost", "attempts"]
+        fieldnames = ["simulation", "cost"]
 
         # Set up wiriter and write the header
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()        
         costs = []
 
-        # Run n simulations and log each run in a new row
-        for i in range(1, runs + 1):
+        # Run N simulations and log each run in a new row
+        for n in range(1, N + 1):
+
+            # Make grid
             chip = grid.Grid(chip_nr, netlist)
+
+            # Run desired algorithm
             if constructive_algorithm == "baseline":
                 baseline = base.Baseline(chip, sorting_method)
                 baseline.run()
             elif constructive_algorithm == "a_star":
-                a = star.A_Star(chip, sorting_method)
-                a.run()
+                solver = star.A_Star(chip, sorting_method)
+                solver.run()
 
+            # Compute costs of the grid
             chip.compute_costs()
 
             # Save path data to csv
-            chip.to_csv(name=i)
+            chip.to_csv(n)
 
+            # Save row in CSV
             costs.append(chip.cost)
             writer.writerow({
-                    "simulation": i, "cost": chip.cost, "attempts": chip.tot_attempts
+                    "simulation": n, "cost": chip.cost
                     })
-            add = ""
-            if chip.tot_attempts > 0: 
-                add = f", found on attempt {chip.tot_attempts}"
-                
-            print(f"Completed simulation {i}: C = {chip.cost}{add}")
+            
 
-        avgCosts = sum(costs)/runs
+            print(f"Completed run {n}: C = {chip.cost}")
+
+        # Make row with average results
+        average_costs = sum(costs)/N
         writer.writerow({
-            "simulation": "Avg costs", "cost": avgCosts
+            "simulation": "Avg costs", "cost": average_costs
         })
 
 def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improvements, make_iterative_plot, iterations, N, N_improvements, sorting_method):
-    """Takes a csv containing previously generated paths, and tries to improve the costs of the solution using an iterative algorithm."""
+    """
+    Loads N previously generated solutions, and tries to make improvements during a given number of iterations.
+    There is also the option to start over after the algorithm is finished, since the algorithm could
+    be stuck in a local optimum. The number of runs per solution is given by N_improvements.
+    If update_csv_paths is set to True, every new solution will be saved into a CSV file.
+    If make_csv_improvements is set to True, a CSV file will be created for all runs, storing the costs
+    against the iteration so the development of the costs over time can be investigated.
+
+    The algorithms to choose from are Hillclimber and Simulated Annealing,
+    which both can use one of the following sorting algorithms:
+
+    - Random
+    - Decreasing path length
+    - Increading path length
+    - From inside to outside
+    - From outside to inside
+    - From busy gates to quiet gates
+    - From quiet gates to busy gates
+    - Increading estimated number of intersections
+    - Decreasing estimated number of intersections
+
+    For further explanation of the algorithms, see simulated_annealing.py, hillclimber.py and sorting.py.
+    Returns a list of costs.
+    """
 
     costs = []
 
@@ -125,15 +142,10 @@ def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improv
     return costs
 
 def visualize_three_dimensional(netlist, specific_file, legend):
-    """Takes a csv file containing previously generates paths, and create a 3-dimensional plot to visualize them."""
-
-    # Open specific set of paths if desired
-    add_string = "_1"
-    if specific_file:
-        add_string = f"_{specific_file}"
+    """Takes a csv file containing previously generates paths of a given netlist, and create a 3-dimensional plot to visualize them."""
 
     # Open file
-    inputfile = f"output/paths_netlist_{netlist}{add_string}.csv"
+    inputfile = f"output/paths_netlist_{netlist}_{specific_file}.csv"
     chip_nr = int((netlist - 1) / 3)
 
     # Load paths into grid
@@ -205,7 +217,7 @@ if __name__ == "__main__":
 
     parser.add_argument("-n", type=int, default=1, dest="N", help="number of solutions generated")
     parser.add_argument("-m", type=int, default=1, dest="N_improvements", help="number of improved solutions made for every prefound solution")
-    parser.add_argument("-file", type=str, default=1, dest="specific_file", help="Specific file to be improved or plotted. If file is paths_netlist_4_C_19655, use -file C_19655. If file is paths_netlist_1_3, use -file 3.")
+    parser.add_argument("-file", type=str, default="1", dest="specific_file", help="Specific file to be improved or plotted. If file is paths_netlist_4_C_19655, use -file C_19655. If file is paths_netlist_1_3, use -file 3.")
 
     # Parse the command line arguments
     args = parser.parse_args()
