@@ -16,7 +16,7 @@ class A_Star:
 
         # Sort the nets in the given order
         for net in self.sorting[0](self.grid.nets, descending=self.sorting[1]):
-            
+
             # Retrieve starting and ending point
             start = net.start
             end = net.end
@@ -76,20 +76,21 @@ class PriorityQueue:
         for items in self.queue:
             if items < lowest_costs:
                 lowest_costs = items
-        
+
         # Retrieve and delete item from list
         best_choice = self.queue[lowest_costs].pop(pop)
 
         # Delete dictionary item if list is empty
         if len(self.queue[lowest_costs]) == 0:
             del self.queue[lowest_costs]
-        
+
         # Delete item from set and return item
         self.in_queue.remove(best_choice.value)
         return best_choice
 
+
 class State(object):
-    def __init__(self, value, parent, start = 0, goal = 0):
+    def __init__(self, value, parent, start=0, goal=0):
         self.children = []
         self.parent = parent
         self.value = value
@@ -99,15 +100,15 @@ class State(object):
             self.goal = parent.goal
             self.path = parent.path[:]
             self.path.append(value)
- 
+
         else:
             self.path = [value]
             self.start = start
             self.goal = goal
- 
- 
+
+
 class State_Path(State):
-    def __init__(self, grid, net, visitedQueue, costs, value, parent, goal, start = 0):
+    def __init__(self, grid, net, visitedQueue, costs, value, parent, goal, start=0):
         super(State_Path, self).__init__(value, parent, start, goal)
         self.heuristic = self.get_distance()
         self.goal = goal
@@ -115,14 +116,14 @@ class State_Path(State):
         self.net = net
         self.visitedQueue = visitedQueue
         self.costs = costs
- 
+
     def get_distance(self):
         """Returns the estimated distance from current poit to goal."""
 
         if self.value == self.goal:
             return 0
         return abs(self.goal[0] - self.value[0]) + abs(self.goal[1] - self.value[1]) + abs(self.goal[2] - self.value[2])
- 
+
     def create_children(self):
         """Find all possible steps from a starting point, and store them in list."""
 
@@ -145,7 +146,7 @@ class State_Path(State):
                     val = tuple(val)
 
                     # Check if coordinate is already visited
-                    if val not in self.visitedQueue: 
+                    if val not in self.visitedQueue:
 
                         # Calculate new costs
                         costs_tmp = self.costs + 1
@@ -153,7 +154,7 @@ class State_Path(State):
                         # Check if coordinate makes intersection
                         if val in self.grid.coordinates and val not in self.grid.gate_coordinates:
                             costs_tmp += 300
-                        
+
                         # Create child object
                         child = State_Path(self.grid, self.net, self.visitedQueue, costs_tmp, val, self, self.goal)
                         self.children.append(child)
@@ -173,7 +174,7 @@ class A_Star_Solver:
 
     def Solve(self):
         """Finds and returns solution for current path."""
-        
+
         # Make state object
         startState = State_Path(self.grid, self.net, self.visitedQueue, 0, self.start, 0, self.goal, self.start)
         count = 0
@@ -195,7 +196,8 @@ class A_Star_Solver:
                 # Chance of success is higher when gates aren't blocked unnessicarily
                 illegal = False
                 for gate in self.grid.gate_coordinates:
-                    if child.value[:2] == gate[:2] and gate != self.goal and gate != self.start and child.value[2] <= self.gate_space:
+                    if child.value[:2] == gate[:2] and gate != self.goal and gate != self.start\
+                            and child.value[2] <= self.gate_space:
                         illegal = True
                         continue
 
@@ -221,11 +223,11 @@ class A_Star_Solver:
                             self.grid.wire_segments[segment] = self.net
                             self.grid.coordinates.add(segment[0])
                             self.grid.coordinates.add(segment[1])
-                        
+
                         # Calculate costs path, assuming no path has a length of >300.
                         self.net.intersections = child.costs // 300
                         return self.path
-                    
+
                     # Put child in queue
                     priority = child.heuristic
                     self.queue.put(priority, child.costs, child)

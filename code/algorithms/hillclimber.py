@@ -53,7 +53,7 @@ class Hillclimber:
 
         if self.make_csv_improvements:
             self.to_csv()
-        
+
         if self.make_iterative_plot:
             self.plot()
 
@@ -66,7 +66,7 @@ class Hillclimber:
         # Make copies so original values aren't lost
         self.grid.compute_costs()
         best_costs = deepcopy(self.grid.cost)
-        
+
         # Try a number of times before succes becomes unlikely
         for attempt in range(100):
 
@@ -114,7 +114,7 @@ class Hillclimber:
                     else:
                         net.path = old_path
                         self.attempts_without_improvement += 1
-            
+
             # If no path was found at all, register as failed attempt
             else:
                 self.attempts_without_improvement += 1
@@ -178,7 +178,7 @@ class Hillclimber:
                     # Check if current segment makes an interection
                     if new_origin in self.grid.coordinates:
                         intersections_tmp += 1
-                    
+
                 # Set new temporary origin
                 origin_tmp = new_origin
 
@@ -196,9 +196,9 @@ class Hillclimber:
                 self.grid.intersections += intersections_tmp
 
                 return [x, y, z]
-    
+
         # Return number of failed attempts if destination was not reached
-        return 
+        return
 
     def find_smartest_step(self, position, destination, path_tmp):
         """
@@ -209,7 +209,7 @@ class Hillclimber:
         # No new position is required when destination is already reached
         if position == destination:
             return "reached"
-        
+
         # Cannot go down from the lowest layer
         if position[2] == 0:
             step_in_direction = random.choices([0, 1, 2], weights=[2, 2, 1])[0]
@@ -227,7 +227,7 @@ class Hillclimber:
 
         # Make single step in random direction
         new_position[step_in_direction] += direction
-    
+
         new_position = tuple(new_position)
 
         # Check if step is legal
@@ -236,9 +236,9 @@ class Hillclimber:
 
         return new_position
 
-
     def to_csv(self):
-        with open(f"output/results_hillclimber/hill_netlist_{self.grid.netlist}{self.n}{self.m}_intersections_ascending.csv", "w", newline="") as csvfile:
+        path = "output/results_hillclimber/hill_netlist_"
+        with open(f"{path}{self.grid.netlist}{self.n}{self.m}_intersections_ascending.csv", "w", newline="") as csvfile:
             fieldnames = ["iteration", "cost"]
 
             # Set up wiriter and write the header
@@ -246,13 +246,13 @@ class Hillclimber:
             writer.writeheader()
 
             for i in range(self.iterations):
-                 writer.writerow({
+                writer.writerow({
                     "iteration": i + 1, "cost": self.costs[i]
-                    })
+                })
 
     def plot(self):
         """Plots hillclimber with iterations on x-axis and costs on y-axis."""
-        
+
         plt.figure()
         plt.plot([i + 1 for i in range(self.iterations)], self.costs)
         plt.xlabel("Iterations")

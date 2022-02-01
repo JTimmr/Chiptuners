@@ -91,7 +91,7 @@ class Grid:
             x, y, z = (net_object.path[0],
                        net_object.path[1],
                        net_object.path[2])
-                       
+
             for coordinate in range(len(x) - 1):
 
                 # Keep count of actual length
@@ -114,7 +114,10 @@ class Grid:
                 self.coordinates.add(segment[1])
 
     def make_segment(self, start, end):
-        """Saves two coordinates as a tuple, and ensure two identical segments are never stored in reverse order (a, b VS b, a)."""
+        """
+        Saves two coordinates as a tuple, and ensure two identical segments are
+        never stored in reverse order (a, b VS b, a).
+        """
 
         if ((math.sqrt(sum(i**2 for i in end))) >= (math.sqrt(sum(i**2 for i in start)))):
             return (start, end)

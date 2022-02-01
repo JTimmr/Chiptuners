@@ -33,7 +33,7 @@ class Baseline:
             end = net.end
 
             # Search for path until a valid path is found
-            while isinstance((path_data := self.find_path(start, end,net, current_attempt)), int):
+            while isinstance((path_data := self.find_path(start, end, net, current_attempt)), int):
                 current_attempt += path_data
 
                 # Give up if it takes too long
