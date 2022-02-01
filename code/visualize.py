@@ -4,6 +4,7 @@ import re
 #plotly
 import plotly.express as px
 import plotly.io as pio
+import plotly.graph_objects as go
 
 import pandas as pd
 
@@ -11,29 +12,49 @@ import pandas as pd
 def visualize(chip, legend):
     """Makes a 3D visualization of the chip object instance."""
 
-    x_eye = -1.25
-    y_eye = 2
-    z_eye = 0.5
-
     df1 = pd.DataFrame(index = ['x', 'y', 'z'], )
 
+    i = 0
+
     for keys, values in chip.gates.items():
-
         df1[keys] = values.coordinates[0], values.coordinates[1], values.coordinates[2]
-
-    df1[6] = 0, 0, 7
-
+    
     df1 = df1.transpose()
 
-    fig = px.scatter_3d(
-        data_frame = df1,
-        x = 'x',
-        y = 'y',
-        z = 'z',
-        # template ='ggplot2'
-    )
-    fig.show()
+    dictionary = {}
 
+    for keys in chip.nets.keys():
+        dictionary[keys] = pd.DataFrame(columns = ['x', 'y', 'z'])
+
+    for keys, values in chip.nets.items():
+        print(keys)
+        df = dictionary[keys]
+        for i in range(len(values.path[0])):
+            df.loc[i] = [values.path[0][i], values.path[1][i], values.path[2][i]]
+
+    fig = go.Figure()
+
+    fig = go.Figure(data=[go.Scatter3d(
+        x=df1['x'],
+        y=df1['y'],
+        z=df1['z'],
+        mode = 'markers',
+        showlegend=False
+        )])
+
+    for i in dictionary:
+        label = str(i)
+        print(label)
+        fig = fig.add_trace(go.Scatter3d(x = dictionary[i]["x"],
+                                   y = dictionary[i]["y"], 
+                                   z = dictionary[i]['z'],
+                                   name = label,
+                                   mode = 'lines'),)
+        # template = "plotly_dark"
+    
+    fig.update_layout(scene = dict(zaxis = dict(nticks=7, range=[-1,7])))
+    fig.show()
+    
     # # Get maximum x,y values for x,y axis size
     # max_x = chip.size[0]
     # max_y = chip.size[1]
