@@ -70,6 +70,7 @@ def log_simulation(N, netlist, constructive_algorithm, sorting_method):
             "simulation": "Avg costs", "cost": average_costs
         })
 
+
 def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improvements, make_iterative_plot, iterations, N, N_improvements, sorting_method):
     """
     Loads N previously generated solutions, and tries to make improvements during a given number of iterations.
@@ -150,26 +151,49 @@ def visualize_three_dimensional(netlist, specific_file, legend):
     vis(chip, legend)
 
 
-
 if __name__ == "__main__": 
 
+    # Make it possible to accept closely related arguments with dictionaries
+    # Calls sorting function based on args given
     function_map = {
         'random' : [random_sort, None], "r" : [random_sort, None], "rand" : [random_sort, None], "willekeurig" : [random_sort, None],
-        'length_d' : [sort_length, True], 'length d': [sort_length, True], 'd length': [sort_length, True], 'length descending' : [sort_length, True], 'descending length': [sort_length, True], 'length_descending': [sort_length, True], "descending_length" : [sort_length, True],
-        'length_a' : [sort_length, False], 'length a' : [sort_length, False], 'a length': [sort_length, False], 'length ascending' : [sort_length, False], 'ascending length': [sort_length, False], 'length_ascending': [sort_length, False], "ascending_length": [sort_length, False], "length" : [sort_length, False],
-        'middle' : [sort_middle_first, False], 
-        'outside' : [sort_middle_first, True],
-        'gate_d' : [sort_gate, True], 'gates_d' : [sort_gate, True], 'gates d' : [sort_gate, True], 'gate d' : [sort_gate, True], 'd_gate' : [sort_gate, True], 'd gate' : [sort_gate, True], 'gate_descending': [sort_gate, True], 'descending_gate' : [sort_gate, True], 'gate descending' : [sort_gate, True], 'descending gate' : [sort_gate, True],
-        'gate_a' : [sort_gate, False], 'gates_a' : [sort_gate, False], 'gates a' : [sort_gate, False], 'gate' : [sort_gate, False], 'gate a' : [sort_gate, False], 'a_gate' : [sort_gate, False], 'a gate' : [sort_gate, False], 'gate_ascending' : [sort_gate, False], 'ascending_gate' : [sort_gate, False], 'ascending gate' : [sort_gate, False], 'gate ascending' : [sort_gate, False], 'gates' : [sort_gate, False],
-        'intersections_d' : [sort_exp_intersections, True], 'intersections d' : [sort_exp_intersections, True], 'd intersections' : [sort_exp_intersections, True], 'd_intersections' : [sort_exp_intersections, True], 'intersections_descending' : [sort_exp_intersections, True], 'descending_intersections' : [sort_exp_intersections, True], 'intersection_d' : [sort_exp_intersections, True], 'intersection d' : [sort_exp_intersections, True],
-        'intersections_a' : [sort_exp_intersections, False], 'intersections a' : [sort_exp_intersections, False], 'a intersections' : [sort_exp_intersections, False], 'a_intersections' : [sort_exp_intersections, False], 'intersections_ascending' : [sort_exp_intersections, False], 'ascending_intersections' : [sort_exp_intersections, False], 'intersections' : [sort_exp_intersections, False], 'intersection' : [sort_exp_intersections, False], 'intersection a' : [sort_exp_intersections, False], 'intersection_a' : [sort_exp_intersections, False],
+
+        'length_d' : [sort_length, True], 'length d': [sort_length, True], 'd length': [sort_length, True], 'length descending' : [sort_length, True],
+        'descending length': [sort_length, True], 'length_descending': [sort_length, True], "descending_length" : [sort_length, True],
+
+        'length_a' : [sort_length, False], 'length a' : [sort_length, False], 'a length': [sort_length, False], 'length ascending' : [sort_length, False],
+        'ascending length': [sort_length, False], 'length_ascending': [sort_length, False], "ascending_length": [sort_length, False], "length" : [sort_length, False],
+
+        'middle' : [sort_middle_first, False], 'outside' : [sort_middle_first, True],
+
+        'gate_d' : [sort_gate, True], 'gates_d' : [sort_gate, True], 'gates d' : [sort_gate, True], 'gate d' : [sort_gate, True], 'd_gate' : [sort_gate, True],
+        'd gate' : [sort_gate, True],'gate_descending': [sort_gate, True], 'descending_gate' : [sort_gate, True], 'gate descending' : [sort_gate, True],
+        'descending gate' : [sort_gate, True],
+        
+        'gate_a' : [sort_gate, False], 'gates_a' : [sort_gate, False], 'gates a' : [sort_gate, False], 'gate' : [sort_gate, False], 'gate a' : [sort_gate, False],
+        'a_gate' : [sort_gate, False], 'a gate' : [sort_gate, False], 'gate_ascending' : [sort_gate, False], 'ascending_gate' : [sort_gate, False],
+        'ascending gate' : [sort_gate, False], 'gate ascending' : [sort_gate, False], 'gates' : [sort_gate, False],
+        
+        'intersections_d' : [sort_exp_intersections, True], 'intersections d' : [sort_exp_intersections, True], 'd intersections' : [sort_exp_intersections, True],
+        'd_intersections' : [sort_exp_intersections, True], 'intersections_descending' : [sort_exp_intersections, True],
+        'descending_intersections' : [sort_exp_intersections, True], 'intersection_d' : [sort_exp_intersections, True], 'intersection d' : [sort_exp_intersections, True],
+        
+        'intersections_a' : [sort_exp_intersections, False], 'intersections a' : [sort_exp_intersections, False], 'a intersections' : [sort_exp_intersections, False],
+        'a_intersections' : [sort_exp_intersections, False], 'intersections_ascending' : [sort_exp_intersections, False], 'ascending_intersections' : [sort_exp_intersections, False],
+        'intersections' : [sort_exp_intersections, False], 'intersection' : [sort_exp_intersections, False], 'intersection a' : [sort_exp_intersections, False],
+        'intersection_a' : [sort_exp_intersections, False],
     }
 
     possible_entries = {
         "b" : "baseline", "base" :"baseline", "basefunction" : "baseline", "baseline" : "baseline",
+
         "a" : "a_star", "star" : "a_star", "a star": "a_star", "a*" : "a_star", "a-star" : "a_star", "a_star" : "a_star",
-        "h" : "hillclimber", "hill" : "hillclimber", "hillc" : "hillclimber", "hillclimb" : "hillclimber", "climber" : "hillclimber", "climb" : "hillclimber", "hc" : "hillclimber", "hillclimber" : "hillclimber",
-        "sa" : "simulated_annealing", "s" : "simulated_annealing", "sim" : "simulated_annealing", "sim_a" : "simulated_annealing", "sim a" : "simulated_annealing", "sima" : "simulated_annealing", "simulated_annealing" : "simulated_annealing",
+
+        "h" : "hillclimber", "hill" : "hillclimber", "hillc" : "hillclimber", "hillclimb" : "hillclimber", "climber" : "hillclimber", "climb" : "hillclimber", "hc" : "hillclimber", 
+        "hillclimber" : "hillclimber",
+
+        "sa" : "simulated_annealing", "s" : "simulated_annealing", "sim" : "simulated_annealing", "sim_a" : "simulated_annealing", "sim a" : "simulated_annealing",
+        "sima" : "simulated_annealing", "simulated_annealing" : "simulated_annealing",
     }
     
     parser = argparse.ArgumentParser(description='Find the most efficient solution for a network of points to be connected without collisions')
@@ -190,11 +214,12 @@ if __name__ == "__main__":
     # Parse the command line arguments
     args = parser.parse_args()
 
+    # Error messages
     if len(sys.argv) < 3: 
-        print("You are missing some required arguments. Did you specify which algorithm you wanted to use?")
+        print("Error message: You are missing some required arguments. Did you specify which algorithm you wanted to use?")
         
     if args.netlist < 1 or args.netlist > 9:
-        print("Error message: See data directory: enter a netlist between 1 and 9.")
+        print("Error message: See data directory! Enter a netlist between 1 and 9.")
 
     if args.algorithm:
         # Make string and case insensitive 
@@ -220,8 +245,6 @@ if __name__ == "__main__":
 
         # Each iteration attempts to improve all netlists until improvement is found or none it found after long tim
         iterations = 10000
-
-
 
         # Makes a new csv file for each improvement made in costs by hillclimber or simulated annealing
         # Final form will always be saved
