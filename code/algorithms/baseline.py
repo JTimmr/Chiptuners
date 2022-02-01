@@ -1,6 +1,5 @@
 from copy import deepcopy
 import random
-import math
 
 
 class Baseline:
@@ -8,6 +7,7 @@ class Baseline:
     Defines/contains the algorithm for random (uniformly distributed) movements
     as used in our base case.
     """
+
     def __init__(self, grid, sorting_method):
         self.grid = grid
         self.sorting = sorting_method
@@ -25,8 +25,7 @@ class Baseline:
     def make_connections(self):
         """Connects two points on the grid, and plots the result"""
 
-        for netlist in self.sorting[0](self.grid.netlists,
-                                       descending=self.sorting[1]):
+        for netlist in self.sorting[0](self.grid.netlists, descending=self.sorting[1]):
             current_attempt = 0
 
             # Retrieve starting and ending point
@@ -34,11 +33,7 @@ class Baseline:
             end = netlist.end
 
             # Search for path until a valid path is found
-            while isinstance((path_data := self.find_path(start,
-                                                          end,
-                                                          netlist,
-                                                          current_attempt)),
-                             int):
+            while isinstance((path_data := self.find_path(start, end,netlist, current_attempt)), int):
                 current_attempt += path_data
 
                 # Give up if it takes too long
@@ -46,15 +41,17 @@ class Baseline:
                     self.grid.tot_attempts += current_attempt
                     return False
 
-            # If a path is found, update attempts and retrieve coordinates
-            self.grid.tot_attempts += current_attempt
+            # If a path is found, retrieve coordinates
             x, y, z = path_data[:3]
             netlist.path = [x, y, z]
 
         return True
 
     def find_path(self, origin, destination, netlist, current_attempt):
-        """Attempts to find a path between two coordinates in the grid."""
+        """
+        Takes a starting and ending point, and tries to make a connection between them.
+        Returns the path if succeeded, otherwise nothing.
+        """
 
         # Store path so plot can be made
         x = []
@@ -80,10 +77,7 @@ class Baseline:
             path_tmp.append(origin_tmp)
 
             # Try random moves until a legal one is found
-            while not (new_origin := self.find_smartest_step(origin,
-                                                             origin_tmp,
-                                                             destination,
-                                                             path_tmp)):
+            while not (new_origin := self.find_smartest_step(origin_tmp, destination,  path_tmp)):
                 new_attempts += 1
 
                 # Give up after 10 failed attempts to make a single step
@@ -93,16 +87,10 @@ class Baseline:
             # If destination is not reached, make step
             if new_origin != "reached":
 
-                # Save identical segments in right order
-                if ((math.sqrt(sum(i**2 for i in origin_tmp))) >=
-                        (math.sqrt(sum(i**2 for i in new_origin)))):
-                    segment = (new_origin, origin_tmp)
-                else:
-                    segment = (origin_tmp, new_origin)
+                segment = self.grid.make_segment(new_origin, origin_tmp)
 
                 # Check if segment already in use, try again otherwise
-                if segment in self.grid.wire_segments or \
-                        segment in wire_segments_tmp:
+                if segment in self.grid.wire_segments or segment in wire_segments_tmp:
                     return new_attempts
 
                 # Add segment to dictionary if it was new
@@ -112,8 +100,7 @@ class Baseline:
                 if new_origin not in self.grid.gate_coordinates:
 
                     # Check if current segment makes an interection
-                    if [segment for segment in self.grid.wire_segments
-                            if new_origin in segment]:
+                    if [segment for segment in self.grid.wire_segments if new_origin in segment]:
                         intersections_tmp += 1
 
                 # Set new temporary origin
@@ -138,9 +125,9 @@ class Baseline:
         # Return number of failed attempts if destination was not reached
         return new_attempts + 1
 
-    def find_smartest_step(self, origin, position, destination, path_tmp):
+    def find_smartest_step(self, position, destination, path_tmp):
         """
-        Calculate step to follow random path from current position
+        Calculates step to follow semi random path from current position
         to any location. If origin equals destination, return None.
         """
 
@@ -152,10 +139,10 @@ class Baseline:
                      destination[1] - position[1],
                      destination[2] - position[2])
 
-        step_in_dimension = random.choices([0, 1, 2],
-                                           weights=[(abs(i) + 1)
-                                           for i in direction])[0]
+        # Selects a dimension to move in by a weighted random choice
+        step_in_dimension = random.choices([0, 1, 2], weights=[(abs(i) + 1) for i in direction])[0]
 
+        # Cannot go down from lowest layer
         if step_in_dimension == 2 and position[2] == 0:
             step_in_direction = 1
         else:
@@ -165,6 +152,7 @@ class Baseline:
             if direction[step_in_dimension] < 0:
                 prefered = 1
 
+            # Select direction to make move in by weighted random choice
             weights[prefered] = abs(direction[step_in_dimension]) + 1
             step_in_direction = random.choices([1, -1], weights=weights)[0]
 

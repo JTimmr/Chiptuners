@@ -1,5 +1,3 @@
-import math
-
 class A_Star:
     def __init__(self, grid, sorting_method, pop, gate_space):
         self.grid = grid
@@ -205,11 +203,7 @@ class A_Star_Solver:
                 if illegal or child.value in self.queue.in_queue:
                     continue
 
-                # Save step as segment, and ensure two identical segments are never stored in reverse order (a, b VS b, a)
-                if ((math.sqrt(sum(i**2 for i in child.path[-2]))) >= (math.sqrt(sum(i**2 for i in child.value)))):
-                    segment = (child.value, child.path[-2])
-                else:
-                    segment = (child.path[-2], child.value)
+                segment = self.grid.make_segment(child.value, child.path[-2])
 
                 # If segment is not already in use
                 if segment not in self.grid.wire_segments:
@@ -222,11 +216,8 @@ class A_Star_Solver:
                         # Ensure dictionary with wiresegments and set with all used coordinates are up to date
                         for coordinate in range(len(self.path) - 1):
 
-                            # Ensure two identical segments are never stored in reverse order (a, b VS b, a)
-                            if ((math.sqrt(sum(i**2 for i in self.path[coordinate]))) >= (math.sqrt(sum(i**2 for i in self.path[coordinate + 1])))):
-                                segment = (self.path[coordinate + 1], self.path[coordinate])
-                            else:
-                                segment = (self.path[coordinate], self.path[coordinate + 1])
+                            segment = self.grid.make_segment(self.path[coordinate + 1], self.path[coordinate])
+
                             self.grid.wire_segments[segment] = self.netlist
                             self.grid.coordinates.add(segment[0])
                             self.grid.coordinates.add(segment[1])

@@ -1,6 +1,7 @@
 import csv
 from code.classes import gate, netlist
 import pandas as pd
+import math
 
 
 class Grid:
@@ -12,8 +13,6 @@ class Grid:
         self.size = [0, 0, 7]
 
         self.intersections = 0
-
-        self.tot_attempts = 0
 
         self.wire_segments = {}
 
@@ -27,14 +26,13 @@ class Grid:
         # Dictionary containing all connections: {(startID, endID): Netlist}
         self.netlists = {}
 
-        # Set boundaries such that the paths do not leave the grid
-        self.layers = ()
-
         # Create gate objects
         self.load_gates()
 
         # Create netlist objects
         self.load_netlists()
+
+        # Load previously generated configuration of one is given
         if infile:
             self.load_configuration()
 
@@ -43,7 +41,7 @@ class Grid:
         self.theoretical_minimum = 0
 
     def load_configuration(self):
-        """Load a previously generated set of netlists."""
+        """Loads a previously generated set of netlists."""
 
         # Extract data from csv
         data = pd.read_csv(self.infile)
@@ -108,11 +106,20 @@ class Grid:
                         and end not in self.gate_coordinates]:
                     self.intersections += 1
 
+                segment = self.make_segment(start, end)
+
                 # Add segment to dictionary
-                segment = (start, end)
                 self.wire_segments[segment] = netlist_object
                 self.coordinates.add(segment[0])
                 self.coordinates.add(segment[1])
+
+    def make_segment(self, start, end):
+        """Saves two coordinates as a tuple, and ensure two identical segments are never stored in reverse order (a, b VS b, a)."""
+
+        if ((math.sqrt(sum(i**2 for i in end))) >= (math.sqrt(sum(i**2 for i in start)))):
+            return (start, end)
+        else:
+            return (end, start)
 
     def load_gates(self):
         """
@@ -161,9 +168,7 @@ class Grid:
                 end_gate = self.gates[end_gate_id]
 
                 # Make netlist object
-                netlist_object = netlist.Netlist(start_gate.coordinates,
-                                                 end_gate.coordinates,
-                                                 self)
+                netlist_object = netlist.Netlist(start_gate.coordinates, end_gate.coordinates,  self)
 
                 # Create unique key per netlist
                 key = (start_gate_id, end_gate_id)
@@ -173,7 +178,7 @@ class Grid:
                 self.netlists[key] = netlist_object
 
     def to_csv(self, number=None, name=""):
-        """Writes a csv file that contains an overview of the grid"""
+        """Writes a csv file that contains all paths in the grid."""
 
         netlists = {}
         x = {}
@@ -211,7 +216,7 @@ class Grid:
                   index=False)
 
     def compute_costs(self):
-        """Calculate total cost of the current configuration"""
+        """Calculates total cost of the current configuration."""
 
         self.update()
         wire_amount = len(self.wire_segments)

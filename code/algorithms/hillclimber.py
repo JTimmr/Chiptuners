@@ -1,6 +1,5 @@
 import random
 from copy import deepcopy
-import math
 import csv
 import matplotlib.pyplot as plt
 
@@ -164,11 +163,7 @@ class Hillclimber:
             # If destination is not reached, make step
             if new_origin != "reached":
 
-                # Save step as segment, and ensure two identical segments are never stored in reverse order (a, b VS b, a)
-                if ((math.sqrt(sum(i**2 for i in origin_tmp))) >= (math.sqrt(sum(i**2 for i in new_origin)))):
-                    segment = (new_origin, origin_tmp)
-                else:
-                    segment = (origin_tmp, new_origin)
+                segment = self.grid.make_segment(new_origin, origin_tmp)
 
                 # Check if segment already in use, try again otherwise
                 if segment in self.grid.wire_segments or segment in wire_segments_tmp:
@@ -206,7 +201,10 @@ class Hillclimber:
         return 
 
     def find_smartest_step(self, position, destination, path_tmp):
-        """Calculate step to follow random path from current position to any location. If origin equals destination, return None"""
+        """
+        Calculates step to follow semi random path from current position
+        to any location. If origin equals destination, return None.
+        """
 
         # No new position is required when destination is already reached
         if position == destination:

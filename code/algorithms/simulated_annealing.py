@@ -270,11 +270,7 @@ class SimulatedAnnealing:
             # If destination is not reached, make step
             if new_origin != "reached":
 
-                # Save step as segment, and ensure two identical segments are never stored in reverse order (a, b VS b, a)
-                if ((math.sqrt(sum(i**2 for i in origin_tmp))) >= (math.sqrt(sum(i**2 for i in new_origin)))):
-                    segment = (new_origin, origin_tmp)
-                else:
-                    segment = (origin_tmp, new_origin)
+                segment = self.grid.make_segment(new_origin, origin_tmp)
 
                 # Check if segment already in use, try again otherwise
                 if segment in self.grid.wire_segments or segment in wire_segments_tmp:
