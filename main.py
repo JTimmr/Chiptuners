@@ -50,10 +50,12 @@ def log_simulation(N, netlist, constructive_algorithm, sorting_method, randomize
                 baseline = base.Baseline(chip, sorting_method)
                 baseline.run()
             elif constructive_algorithm == "a_star":
-                pop = 0
+                pop = -1
                 gate_space = 2
                 solver = star.A_Star(chip, sorting_method, pop, gate_space)
-                solver.run()
+                if not solver.run():
+                    print(f"Netlist {netlist} cannot be solved using A* with the current combination of sorting algorithm, gate_space and pop.")
+                    return
 
             # Compute costs of the grid
             chip.compute_costs()

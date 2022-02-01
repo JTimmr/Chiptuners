@@ -166,12 +166,12 @@ if __name__ == "__main__":
     with open(f"output/netlist_test.csv", "w", newline="") as csvfile:
         
         fieldnames = ["simulation", "density", "intersections", "occupation overflow", "failed"]
+
         # Set up wiriter and write the header
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
         for n in range(1, args.N + 1):
             answers = main(args.netlist, args.randomized, n)
-
 
 
             writer.writerow({
