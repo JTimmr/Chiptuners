@@ -23,7 +23,8 @@ class A_Star:
 
             # Make solver object and run algorithm
             solver = A_Star_Solver(self.grid, net, start, end, self.pop, self.gate_space)
-            solver.Solve()
+            if not solver.Solve():
+                return False
 
             # Extract path from solver
             x, y, z = [], [], []
@@ -231,3 +232,5 @@ class A_Star_Solver:
                     # Put child in queue
                     priority = child.heuristic
                     self.queue.put(priority, child.costs, child)
+
+        return False

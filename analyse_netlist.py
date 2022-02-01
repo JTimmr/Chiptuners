@@ -17,11 +17,13 @@ def load_nets(netlist, n, chip, randomized):
     
     if randomized:
         add = "random/"
+        second_add = f"_{n}"
     else:
         add = ""
+        second_add = ""
 
     nets = set()
-    with open(f"data/chip_{chip}/{add}netlist_{netlist}_{n}.csv") as file:
+    with open(f"data/chip_{chip}/{add}netlist_{netlist}{second_add}.csv") as file:
         reader = csv.DictReader(file)
         for row in reader:
             nets.add((row['chip_a'], row['chip_b']))
@@ -171,11 +173,11 @@ if __name__ == "__main__":
     with open(f"output/netlist_test.csv", "w", newline="") as csvfile:
         
         fieldnames = ["simulation", "density", "intersections", "occupation overflow", "failed"]
+
         # Set up wiriter and write the header
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
         for n in range(1, args.N + 1):
-            
             make.main(args.netlist, 1)
             answers = main(args.netlist, args.randomized, 1)
 
