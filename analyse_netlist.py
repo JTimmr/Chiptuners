@@ -13,11 +13,13 @@ def load_nets(netlist, n, chip, randomized):
     
     if randomized:
         add = "random/"
+        second_add = f"_{n}"
     else:
         add = ""
+        second_add = ""
 
     nets = set()
-    with open(f"data/chip_{chip}/{add}netlist_{netlist}_{n}.csv") as file:
+    with open(f"data/chip_{chip}/{add}netlist_{netlist}{second_add}.csv") as file:
         reader = csv.DictReader(file)
         for row in reader:
             nets.add((row['chip_a'], row['chip_b']))
