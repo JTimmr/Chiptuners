@@ -102,28 +102,37 @@ def sort_exp_intersections(nets, descending=False):
         # Go over all other nets and compute the dot product with itself and the others one by one
         for other_net in nets.values():
 
-            segment2 = [other_net.start[:2], other_net.end[:2]]
+            # segment2 = [other_net.start[:2], other_net.end[:2]]
 
-            dx1 = segment1[1][0]-segment1[0][0]
-            dy1 = segment1[1][1]-segment1[0][1]
-            dx2 = segment2[1][0]-segment2[0][0]
-            dy2 = segment2[1][1]-segment2[0][1]
+            # dx1 = segment1[1][0]-segment1[0][0]
+            # dy1 = segment1[1][1]-segment1[0][1]
+            # dx2 = segment2[1][0]-segment2[0][0]
+            # dy2 = segment2[1][1]-segment2[0][1]
 
-            # Dot product
-            p1 = dy2*(segment2[1][0]-segment1[0][0]) \
-                - dx2*(segment2[1][1]-segment1[0][1])
-            p2 = dy2*(segment2[1][0]-segment1[1][0]) \
-                - dx2*(segment2[1][1]-segment1[1][1])
-            p3 = dy1*(segment1[1][0]-segment2[0][0]) \
-                - dx1*(segment1[1][1]-segment2[0][1])
-            p4 = dy1*(segment1[1][0]-segment2[1][0]) \
-                - dx1*(segment1[1][1]-segment2[1][1])
+            # # Dot product
+            # p1 = dy2*(segment2[1][0]-segment1[0][0]) \
+            #     - dx2*(segment2[1][1]-segment1[0][1])
+            # p2 = dy2*(segment2[1][0]-segment1[1][0]) \
+            #     - dx2*(segment2[1][1]-segment1[1][1])
+            # p3 = dy1*(segment1[1][0]-segment2[0][0]) \
+            #     - dx1*(segment1[1][1]-segment2[0][1])
+            # p4 = dy1*(segment1[1][0]-segment2[1][0]) \
+            #     - dx1*(segment1[1][1]-segment2[1][1])
 
-            # Check for expected intersections
-            if (p1 * p2 <= 0) & (p3 * p4 <= 0):
-                net.exp_intersections += 1
+            # # Check for expected intersections
+            # if (p1 * p2 <= 0) & (p3 * p4 <= 0):
+            #     net.exp_intersections += 1
+
+            p0 = ()
+
+
+
+
+        print(net.exp_intersections)
 
     # Return sorted list
+
+    breakpoint()
     return (sorted(nets.values(),
             key=operator.attrgetter('exp_intersections'),
             reverse=descending))
