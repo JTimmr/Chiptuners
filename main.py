@@ -220,7 +220,7 @@ if __name__ == "__main__":
         args.sorting_c.lower()
 
         # Each iteration attempts to improve all netlists until improvement is found or none it found after long tim
-        iterations = 100
+        iterations = 1000
 
 
 

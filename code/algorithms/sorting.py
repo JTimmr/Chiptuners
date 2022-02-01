@@ -36,19 +36,6 @@ def sort_middle_first(netlists, descending=False):
     middle_y = round(size[1]/2)
 
     # Determine for every netlist its total summed distance to the middle of the grid
-    # for key in netlists:
-        
-    #     delta_middle_start = abs(middle_x - netlists[key].start[0]) + abs(middle_y - netlists[key].start[1])
-    #     delta_middle_end = abs(middle_x - netlists[key].end[0]) + abs(middle_y - netlists[key].end[1])
-    #     total_distance_middle = delta_middle_start + delta_middle_end
-
-    #     netlists[key].total_distance_middle = total_distance_middle
-
-    # # Sort the netlists 
-    # return (sorted(netlists.values(),
-    #         key=operator.attrgetter('total_distance_middle'),
-    #         reverse=descending))
-
     for netlist in netlists.values():
         
         delta_middle_start = abs(middle_x - netlist.start[0]) + abs(middle_y - netlist.start[1])
