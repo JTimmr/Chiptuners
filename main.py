@@ -8,6 +8,7 @@ from code.visualize import visualize as vis
 from code.algorithms import simulated_annealing as sim
 from code.algorithms.sorting import *
 import argparse
+import sys
 
 
 def log_simulation(N, netlist, constructive_algorithm, sorting_method):
@@ -203,14 +204,21 @@ if __name__ == "__main__":
         'intersections_d' : [sort_exp_intersections, True],
         'intersections_a' : [sort_exp_intersections, False],
     }
+
+    possible_entries = {
+        "b" : "baseline", "base" :"baseline", "basefunction" : "baseline", "baseline" : "baseline",
+        "a" : "a_star", "star" : "a_star", "a star": "a_star", "a*" : "a_star", "a-star" : "a_star", "a_star" : "a_star",
+        "h" : "hillclimber", "hill" : "hillclimber", "hillc" : "hillclimber", "hillclimb" : "hillclimber", "climber" : "hillclimber", "climb" : "hillclimber", "hc" : "hillclimber", "hillclimber" : "hillclimber",
+        "sa" : "simulated_annealing", "s" : "simulated_annealing", "sim" : "simulated_annealing", "sim_a" : "simulated_annealing", "sim a" : "simulated_annealing", "sima" : "simulated_annealing", "simulated_annealing" : "simulated_annealing",
+    }
     
     parser = argparse.ArgumentParser(description='Find the most efficient solution for a network of points to be connected without collisions')
     parser.add_argument("netlist", type=int, help="Netlist to be solved")
 
-    parser.add_argument("-c", type=str, default=None, dest="algorithm", help="Algorithm to be used. Pick either baseline or a_star.")
-    parser.add_argument("-i", type=str, default=None, dest="improving_algorithm", help="Algorithm to be used to improve existing solutions. Pick either hillclimber or simulated annealing.")
-    parser.add_argument("-sort_c", type = str, default="length_d", dest="sorting_c", help="In which order must the netlists be ordered for the basis algorithm? Options: random, length_a, length_d, middle, outside, gate_a, gate_d, intersections_a, intersections_d")
-    parser.add_argument("-sort_i", type= str, default="length_d", dest="sorting_i", help="In which order must the netlists be ordered for the iterative algorithm? Options: random, length_a, length_d, middle, outside, gate_a, gate_d, intersections_a, intersections_d")
+    parser.add_argument("-c", type=str, default=None, dest="algorithm", nargs = "+", help="Algorithm to be used. Pick either baseline or a_star.")
+    parser.add_argument("-i", type=str, default=None, dest="improving_algorithm", nargs = "+", help="Algorithm to be used to improve existing solutions. Pick either hillclimber or simulated annealing.")
+    parser.add_argument("-sort_c", type = str, default="length_a", dest="sorting_c", help="In which order must the netlists be ordered for the basis algorithm? Options: random, length_a, length_d, middle, outside, gate_a, gate_d, intersections_a, intersections_d")
+    parser.add_argument("-sort_i", type= str, default="length_a", dest="sorting_i", help="In which order must the netlists be ordered for the iterative algorithm? Options: random, length_a, length_d, middle, outside, gate_a, gate_d, intersections_a, intersections_d")
     
     parser.add_argument("-vis", "--visualize", action='store_true', help="Renders a 3D plot of the grid with all its paths.")
     parser.add_argument("-leg", "--legend", action='store_true', help="Renders a legend for 3D plot.") 
@@ -222,14 +230,27 @@ if __name__ == "__main__":
     # Parse the command line arguments
     args = parser.parse_args()
 
+    if len(sys.argv) < 3: 
+        print("You are missing some required arguments. Did you specify which algorithm you wanted to use?")
+        
+    if args.netlist < 1 or args.netlist > 9:
+        print("Error message: See data directory: enter a netlist between 1 and 9.")
 
     if args.algorithm:
-        log_simulation(args.N, args.netlist, args.algorithm, function_map[args.sorting_c])
+        # Make string and case insensitive 
+        if isinstance(args.algorithm, list):
+            args.algorithm = ' '.join(map(str, args.algorithm))
+        args.algorithm.lower()
+
+        log_simulation(args.N, args.netlist, possible_entries[args.algorithm], function_map[args.sorting_c])
 
         # quick_sort_test(args.algorithm)
 
-
     if args.improving_algorithm:
+        # Make string and case insensitive 
+        if isinstance(args.improving_algorithm, list):
+            args.improving_algorithm = ' '.join(map(str, args.improving_algorithm))
+        args.improving_algorithm.lower()
 
         # Each iteration attempts to improve all netlists until improvement is found or none it found after long tim
         iterations = 10000
@@ -241,7 +262,7 @@ if __name__ == "__main__":
         # Makes CSV files after a hillclimber is done, storing the new costs per iteration
         make_csv_improvements = True
         make_iterative_plot = False
-        improve(args.netlist, args.specific_file, args.improving_algorithm, update_csv_paths, make_csv_improvements, make_iterative_plot, iterations, args.N, args.N_improvements, function_map[args.sorting_i])
+        improve(args.netlist, args.specific_file, possible_entries[args.improving_algorithm], update_csv_paths, make_csv_improvements, make_iterative_plot, iterations, args.N, args.N_improvements, function_map[args.sorting_i])
 
     if args.visualize:
         visualize_three_dimensional(args.netlist, args.specific_file, args.legend) 
