@@ -1,3 +1,19 @@
+"""
+simulated_annealing.py
+
+This file tries to find an optimum by simulated annealing. 
+It should converge to a global optimum as the probability function converges to a Boltzmann distribution.
+
+The starting tenmprature is computed in the main file and is based on the maximal delta that may occur. 
+
+Contains the class for the simulated annealing process and cooling functions.
+Includes:   - (func) sort_length
+            - (func) random_sort
+            - (func) sort_middle_first
+            - (func) sort_gate
+            - (func) sort_exp_intersections
+            - (clss) simulated_annealing
+"""
 import random
 import math
 from copy import deepcopy
@@ -38,7 +54,7 @@ def geomtric_cooling(temprature, iteration, beta=0.9):
     return new_temprature
 
 
-def LundyMees_cooling(temprature, beta=0.9):
+def lundy_and_mees_cooling(temprature, beta=0.9):
     """
     As proposed by Lundy And Mees
     """
@@ -47,7 +63,7 @@ def LundyMees_cooling(temprature, beta=0.9):
     return temprature
 
 
-def VCF_cooling(temprature, iteration, starting_temprature, t_lower=1):
+def vcf_cooling(temprature, iteration, starting_temprature, t_lower=1):
     """
     Cooling schedule following a VCF model
     """
@@ -172,28 +188,6 @@ class SimulatedAnnealing:
 
                 net.path = new_path
                 self.grid.compute_costs()
-
-# # --------------------------------------- update all other paths via A* --------------------------------------- #
-#                 deepcopy_nets = deepcopy(self.grid.nets)
-#                 deepcopy_nets.pop(net.key)
-#                 other_nets = deepcopy_nets
-
-#                 for net in sorting.sort_exp_intersections(other_nets, descending=False):
-
-#                     # Retrieve starting and ending point
-#                     start = net.start
-#                     end = net.end
-#                     a = A_star.A_Star_Solver(self.grid, net, start, end)
-#                     a.Solve()
-#                     x, y, z = [], [], []
-#                     for coordinate in range(len(a.path)):
-#                         x.append(a.path[coordinate][0])
-#                         y.append(a.path[coordinate][1])
-#                         z.append(a.path[coordinate][2])
-#                     path = [x, y, z]
-#                     net.path = path
-#                 self.grid.update()
-# # --------------------------------------- update all other paths via A* --------------------------------------- #
 
                 delta = self.grid.cost - best_costs
 

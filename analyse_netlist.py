@@ -153,7 +153,7 @@ def main(netlist, randomized, n):
         print("No reason to conclude this netlilst is impossible (yet ...)")
 
     solvegrid = grid.Grid(chip, netlist, randomized=randomized)
-    solve = a_star.A_Star(solvegrid, [sort.sort_length, False], 0, 0)
+    solve = a_star.A_Star(solvegrid, [sort.sort_length, False], 0, 2)
 
     if solve.run():
         print("cookie")
@@ -173,7 +173,7 @@ if __name__ == "__main__":
     # Parse the command line arguments
     args = parser.parse_args()
 
-    with open(f"output/netlist_test.csv", "w", newline="") as csvfile:
+    with open(f"output/netlist_test{args.netlist}.csv", "w", newline="") as csvfile:
         
         fieldnames = ["simulation", "cost", "density", "intersections", "occupation overflow", "solved"]
 
