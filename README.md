@@ -85,7 +85,6 @@ pip3 install -r requirements.txt
 
 ### Met Dank Aan
 
-De minor programmeren aan de Universiteit van Amsterdam
-https://www.proglab.nl/minoren/minprog/
+<a href="https://www.proglab.nl/minoren/minprog/" target="_blank">De minor Programmeren aan de Universiteit van Amsterdam</a>
 
 Onze mentoren Charlotte & Joos
