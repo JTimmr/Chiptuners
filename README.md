@@ -60,6 +60,8 @@ In de commandline is het mogelijk om verschillende functies aan te roepen:
 ### Structuur
 - data/ - 
 
+- doc/ -
+
 - results/
 
     - figures_and_plots/
