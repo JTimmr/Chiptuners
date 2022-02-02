@@ -95,7 +95,7 @@ class SimulatedAnnealing:
     For the cooling function it is important that the function is monotonically decreasing and nonnegative.
     The temprature is then used to compute the probability of acceptance for values worse than its current state.
     """
-    def __init__(self, grid, limit, update_csv_paths, make_csv_improvements, make_iterative_plot, name, n, temperature, sorting_method):
+    def __init__(self, grid, limit, update_csv_paths, make_csv_improvements, make_iterative_plot, name, n, temperature, sorting_method, output):
         self.grid = grid
         self.limit = limit
         self.iterations = 0
@@ -110,6 +110,7 @@ class SimulatedAnnealing:
         self.n = n
         self.lowest_costs = deepcopy(self.grid.cost)
         self.sorting = sorting_method
+        self.output = output
 
         # Starting temperature and current temperature
         self.Starting_T = temperature
@@ -149,7 +150,10 @@ class SimulatedAnnealing:
         print(f"Reached max number of iterations. Costs are {self.grid.cost}")
 
         # Write to csv
-        self.grid.to_csv(self.grid.cost)
+        if self.output:
+            self.grid.to_ouptut(self.grid.cost)
+        else:
+            self.grid.to_csv(self.grid.cost)
 
         if self.make_csv_improvements:
             self.to_csv()
@@ -201,8 +205,12 @@ class SimulatedAnnealing:
                     best_costs = deepcopy(self.grid.cost)
                     self.update_temperature()
 
+                    # Save data if desired, in desired format
                     if self.update_csv_paths:
-                        self.grid.to_csv(self.grid.cost)
+                        if self.output:
+                            self.grid.to_output(self.grid.cost)
+                        else:
+                            self.grid.to_csv(self.grid.cost)
                     return
                 else:
                     net.path = old_path

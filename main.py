@@ -36,7 +36,7 @@ import argparse
 import sys
 
 
-def log_simulation(N, netlist, constructive_algorithm, sorting_method, randomized, pop, gate_space):
+def log_simulation(N, netlist, constructive_algorithm, sorting_method, randomized, pop, gate_space, output):
     """
     Takes the amount of runs, netlist number, type of algorithm and sorting algorithm as input.
     Runs the given algorithm a number of times, creating a set of solutions. Set N to 1 if a single solution suffices.
@@ -94,7 +94,10 @@ def log_simulation(N, netlist, constructive_algorithm, sorting_method, randomize
             chip.compute_costs()
 
             # Save path data to csv
-            chip.to_csv(name=n)
+            if output:
+                chip.to_output()
+            else:
+                chip.to_csv(name=n)
 
             # Save row in CSV
             costs.append(chip.cost)
@@ -111,7 +114,7 @@ def log_simulation(N, netlist, constructive_algorithm, sorting_method, randomize
         })
 
 
-def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improvements, make_iterative_plot, iterations, N, N_improvements, sorting_method, randomized):
+def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improvements, make_iterative_plot, iterations, N, N_improvements, sorting_method, randomized, output):
     """
     Loads N previously generated solutions, and tries to make improvements during a given number of iterations.
     There is also the option to start over after the algorithm is finished, since the algorithm could
@@ -163,7 +166,7 @@ def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improv
 
             # Run hillclimber algorithm with a number of iterations
             if algorithm == "hillclimber":
-                hillclimber = climber.Hillclimber(chip, iterations, update_csv_paths, make_csv_improvements, make_iterative_plot, i, j, sorting_method)
+                hillclimber = climber.Hillclimber(chip, iterations, update_csv_paths, make_csv_improvements, make_iterative_plot, i, j, sorting_method, output)
                 hillclimber.run()
 
             elif algorithm == "simulated_annealing":
@@ -172,7 +175,7 @@ def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improv
 
                 temperature = 10000
                 start_cost = deepcopy(chip.cost)
-                simanneal = sim.SimulatedAnnealing(chip, iterations, update_csv_paths, make_csv_improvements, make_iterative_plot, i, j, temperature, sorting_method)
+                simanneal = sim.SimulatedAnnealing(chip, iterations, update_csv_paths, make_csv_improvements, make_iterative_plot, i, j, temperature, sorting_method, output)
 
                 simanneal.run()
                 print(f"{start_cost}")
@@ -209,32 +212,40 @@ if __name__ == "__main__":
     # Make it possible to accept closely related arguments with dictionaries
     # Calls sorting function based on args given
     function_map = {
-        'random': [random_sort, None], "r": [random_sort, None], "rand": [random_sort, None], "willekeurig": [random_sort, None],
+        'random': [random_sort, None], "r": [random_sort, None], "rand": [random_sort, None], 
+	 "willekeurig": [random_sort, None],
 
-        'length_d': [sort_length, True], 'length d': [sort_length, True], 'd length': [sort_length, True], 'length descending': [sort_length, True],
-        'descending length': [sort_length, True], 'length_descending': [sort_length, True], "descending_length": [sort_length, True],
+        'length_d': [sort_length, True], 'length d': [sort_length, True], 'd length': [sort_length, True], 
+	 'length descending': [sort_length, True], 'descending length': [sort_length, True], 
+        'length_descending': [sort_length, True], "descending_length": [sort_length, True],
 
-        'length_a': [sort_length, False], 'length a': [sort_length, False], 'a length': [sort_length, False], 'length ascending': [sort_length, False],
-        'ascending length': [sort_length, False], 'length_ascending': [sort_length, False], "ascending_length": [sort_length, False], "length": [sort_length, False],
+        'length_a': [sort_length, False], 'length a': [sort_length, False], 'a length': [sort_length, False], 
+	'length ascending': [sort_length, False], 'ascending length': [sort_length, False], 
+        'length_ascending': [sort_length, False], "ascending_length": [sort_length, False], 
+	 "length": [sort_length, False],
 
         'middle': [sort_middle_first, False], 'outside': [sort_middle_first, True],
 
-        'gate_d': [sort_gate, True], 'gates_d': [sort_gate, True], 'gates d': [sort_gate, True], 'gate d': [sort_gate, True], 'd_gate': [sort_gate, True],
-        'd gate': [sort_gate, True], 'gate_descending': [sort_gate, True], 'descending_gate': [sort_gate, True], 'gate descending': [sort_gate, True],
-        'descending gate': [sort_gate, True],
+        'gate_d': [sort_gate, True], 'gates_d': [sort_gate, True], 'gates d': [sort_gate, True], 
+	'gate d': [sort_gate, True], 'd_gate': [sort_gate, True], 'd gate': [sort_gate, True], 
+	'gate_descending': [sort_gate, True], 'descending_gate': [sort_gate, True], 
+	'gate descending': [sort_gate, True], 'descending gate': [sort_gate, True],
 
-        'gate_a': [sort_gate, False], 'gates_a': [sort_gate, False], 'gates a': [sort_gate, False], 'gate': [sort_gate, False], 'gate a': [sort_gate, False],
-        'a_gate': [sort_gate, False], 'a gate': [sort_gate, False], 'gate_ascending': [sort_gate, False], 'ascending_gate': [sort_gate, False],
+        'gate_a': [sort_gate, False], 'gates_a': [sort_gate, False], 'gates a': [sort_gate, False], 
+	'gate': [sort_gate, False], 'gate a': [sort_gate, False], 'a_gate': [sort_gate, False], 
+	'a gate': [sort_gate, False], 'gate_ascending': [sort_gate, False], 'ascending_gate': [sort_gate, False],
         'ascending gate': [sort_gate, False], 'gate ascending': [sort_gate, False], 'gates': [sort_gate, False],
 
-        'intersections_d': [sort_exp_intersections, True], 'intersections d': [sort_exp_intersections, True], 'd intersections': [sort_exp_intersections, True],
-        'd_intersections': [sort_exp_intersections, True], 'intersections_descending': [sort_exp_intersections, True],
-        'descending_intersections': [sort_exp_intersections, True], 'intersection_d': [sort_exp_intersections, True], 'intersection d': [sort_exp_intersections, True],
+        'intersections_d': [sort_exp_intersections, True], 'intersections d': [sort_exp_intersections, True], 																	
+	'd intersections': [sort_exp_intersections, True], 'd_intersections': [sort_exp_intersections, True], 												
+	'intersection_d': [sort_exp_intersections, True], 'intersections_descending': [sort_exp_intersections, True], 
+	'descending_intersections': [sort_exp_intersections, True],  'intersection d': [sort_exp_intersections, True],
 
-        'intersections_a': [sort_exp_intersections, False], 'intersections a': [sort_exp_intersections, False], 'a intersections': [sort_exp_intersections, False],
-        'a_intersections': [sort_exp_intersections, False], 'intersections_ascending': [sort_exp_intersections, False], 'ascending_intersections': [sort_exp_intersections, False],
-        'intersections': [sort_exp_intersections, False], 'intersection': [sort_exp_intersections, False], 'intersection a': [sort_exp_intersections, False],
-        'intersection_a': [sort_exp_intersections, False]
+        'intersections_a': [sort_exp_intersections, False], 'intersections a': [sort_exp_intersections, False], 
+	'a intersections': [sort_exp_intersections, False], 'a_intersections': [sort_exp_intersections, False], 
+	'intersections_ascending': [sort_exp_intersections, False], 'ascending_intersections': [sort_exp_intersections, False],
+        'intersections': [sort_exp_intersections, False], 'intersection': [sort_exp_intersections, False], 
+	'intersection a': [sort_exp_intersections, False], 'intersection_a': [sort_exp_intersections, False]
     }
 
     possible_entries = {
@@ -269,6 +280,7 @@ if __name__ == "__main__":
     parser.add_argument("-pop", type=int, default=0, dest="pop", help="Index at which item will be popped in A* algorithm when multiple states have the same priority.")
     parser.add_argument("-gs", type=int, default=2, dest="gate_space", help="Minimal height above a gate which will remain free of passing nets, so the gate is not unnecessarily blocked by other nets.")
     parser.add_argument("-random", "--randomized", action='store_true', help="Load random netlists instead of the originals.")
+    parser.add_argument("-output", action='store_true', help="Save data in another output.")
 
     # Parse the command line arguments
     args = parser.parse_args()
@@ -290,7 +302,7 @@ if __name__ == "__main__":
         args.algorithm.lower()
         args.sorting_c.lower()
 
-        log_simulation(args.N, args.netlist, possible_entries[args.algorithm], function_map[args.sorting_c], args.randomized, args.pop, args.gate_space)
+        log_simulation(args.N, args.netlist, possible_entries[args.algorithm], function_map[args.sorting_c], args.randomized, args.pop, args.gate_space, args.output)
 
     if args.improving_algorithm:
 
@@ -311,7 +323,7 @@ if __name__ == "__main__":
 
         # Plots the progress of Hillclimber or Simulated annealing as costs vs iteration
         make_iterative_plot = True
-        improve(args.netlist, args.specific_file, possible_entries[args.improving_algorithm], update_csv_paths, make_csv_improvements, make_iterative_plot, args.iterations, args.N, args.N_improvements, function_map[args.sorting_i], args.randomized)
+        improve(args.netlist, args.specific_file, possible_entries[args.improving_algorithm], update_csv_paths, make_csv_improvements, make_iterative_plot, args.iterations, args.N, args.N_improvements, function_map[args.sorting_i], args.randomized, args.output)
 
     if args.visualize or args.plotly:
         visualize_three_dimensional(args.netlist, args.specific_file, args.legend, args.randomized, args.visualize, args.plotly)

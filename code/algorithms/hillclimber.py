@@ -29,7 +29,7 @@ import matplotlib.pyplot as plt
 
 
 class Hillclimber:
-    def __init__(self, grid, iterations, update_csv_paths, make_csv_improvements, make_iterative_plot, n, m, sorting_method):
+    def __init__(self, grid, iterations, update_csv_paths, make_csv_improvements, make_iterative_plot, n, m, sorting_method, output):
         self.grid = grid
         self.iterations = iterations
         self.iteration = 0
@@ -43,6 +43,7 @@ class Hillclimber:
         self.grid.compute_costs()
         self.lowest_costs = deepcopy(self.grid.cost)
         self.sorting = sorting_method
+        self.output = output
 
     def run(self):
         """Runs over all nets one after another, and tries to find cheaper paths.
@@ -72,7 +73,11 @@ class Hillclimber:
 
         self.grid.compute_costs()
         print(f"Reached max number of iterations. Costs are {self.grid.cost}")
-        self.grid.to_csv(self.grid.cost)
+
+        if self.output:
+            self.grid.to_output(self.grid.cost)
+        else:
+            self.grid.to_csv(self.grid.cost)
 
         if self.make_csv_improvements:
             self.to_csv()
@@ -117,7 +122,10 @@ class Hillclimber:
 
                         # Keep csv updated if update_csv is set to True in main function
                         if self.update_csv_paths:
-                            self.grid.to_csv(self.grid.cost)
+                            if self.output:
+                                self.grid.to_output(self.grid.cost)
+                            else:
+                                self.grid.to_csv(self.grid.cost)
 
                     # Reset if new path is worse
                     else:
