@@ -273,8 +273,14 @@ class Grid:
             # Write all values for the gates and paths conform the format
             for net in self.nets:
                 net_id_text = f"-{net[0]},{net[1]}"
+                net_path_text = []
+
+                for item in range(len(self.nets[net].path[0])):
+                    path_tuple = (self.nets[net].path[0][item], self.nets[net].path[1][item], self.nets[net].path[2][item])
+                    net_path_text.append(path_tuple)
+
                 writer.writerow({
-                    "net": net_id_text, "wires": self.nets[net].path
+                    "net": net_id_text, "wires": net_path_text
                     })
 
             # Write final values in csv
