@@ -66,10 +66,6 @@ Wij hebben een map voor onze gebruikte data, foto's in de readme, onze resultate
 - results/
 
     - figures_and_plots/
-    - results_a_star/
-    - results_annealing/
-    - results_baseline/
-    - results_hillclimber/
 
 - code/ -
 
