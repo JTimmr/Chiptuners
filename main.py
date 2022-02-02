@@ -1,3 +1,28 @@
+"""
+main.py
+
+Authors: Auriella, Jasper en Rick
+
+This program tries to find a good as posible solution to the shortest path problem on a grid between points.
+It optimizes the routes/ nets between gates on a grid with respect to costs.
+
+rules:
+    - Each wire segment has a cost of 1
+    - Intersection of wire costs 300 and is highly undesireable
+    - NO wires may ever share the same segment called "collition"
+
+Our structure of solving this problem is as follows:
+    - Sort netlist by a specific rule
+    - Find a base solution that is as close to the global optimum as possible
+    - Improve that base solution by use of an itterative algorithm in order to obtain the global/local optimum
+
+Findings: the best results were obtained by using sorting by length ascending, using A* as base algortihm and optimizing with a hillclimber.
+
+Usage: python3 main.py netlistnummer (-h) (-c naam algoritme) (-i naam algoritme) (-vis) (-leg) (-plotly) (-iter N) (-n N) (-m N verbeteringen) (-file bestandsnaam) (-pop indexnummer) (-gs lagen) (-random netlistnummer)
+
+Powered by Chiptuners
+"""
+
 from copy import deepcopy
 import csv
 import code.classes.grid as grid

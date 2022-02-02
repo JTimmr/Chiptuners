@@ -26,7 +26,6 @@ De kostenfunctie: TK = aantal segmenten + 300 * aantal intersecties
 > n = lengte grid
 
 
-<!-- ![visualisatie voorbeeld](https://github.com/JappieeeT/Chiptuners/blob/main/photos/vis.png) -->
 <p float="center">
   <img align="center" src="/doc/Example_Solved_grid.png" width="512"/>
 </p>
