@@ -1,2 +1,3 @@
 # Doc
-Here all images used for the documentation of the project are stored
+
+Hier bevinden zich alle foto's voor de readme's. 
