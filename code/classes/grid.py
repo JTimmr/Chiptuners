@@ -270,10 +270,11 @@ class Grid:
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
 
-            # Write all values for the gates and paths
+            # Write all values for the gates and paths conform the format
             for net in self.nets:
+                net_id_text = f"-{net[0]},{net[1]}"
                 writer.writerow({
-                    "net": net, "wires": self.nets[net]
+                    "net": net_id_text, "wires": self.nets[net].path
                     })
 
             # Write final values in csv

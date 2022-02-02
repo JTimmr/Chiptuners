@@ -1,7 +1,7 @@
 """
 main.py
 
-Authors: Auriella, Jasper en Rick
+Authors: Ariella, Jasper en Rick
 
 This program tries to find a good as posible solution to the shortest path problem on a grid between points.
 It optimizes the routes/ nets between gates on a grid with respect to costs.
