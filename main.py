@@ -244,7 +244,7 @@ if __name__ == "__main__":
     parser.add_argument("-m", type=int, default=1, dest="N_improvements", help="number of improved solutions made for every prefound solution")
     parser.add_argument("-file", type=str, default="1", dest="specific_file", help="Specific file to be improved or plotted. If file is paths_netlist_4_C_19655, use -file C_19655. If file is paths_netlist_1_3, use -file 3.")
 
-    parser.add_argument("-pop", type=int, default=-1, dest="pop", help="Index at which item will be popped in A* algorithm when multiple states have the same priority.")
+    parser.add_argument("-pop", type=int, default=0, dest="pop", help="Index at which item will be popped in A* algorithm when multiple states have the same priority.")
     parser.add_argument("-gs", type=int, default=2, dest="gate_space", help="Minimal height above a gate which will remain free of passing nets, so the gate is not unnecessarily blocked by other nets.")
     parser.add_argument("-random", "--randomized", action='store_true', help="Load random netlists instead of the originals.")
 
