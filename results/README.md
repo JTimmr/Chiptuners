@@ -1,5 +1,5 @@
 # Results
-Al onze resultaten worden opgeslagen in csv bestanden, met uitzondering van visualisaties deze worden opgeslagen als png bestanden.
+Al onze resultaten worden opgeslagen in csv bestanden, met uitzondering van visualisaties; deze worden opgeslagen als png bestanden.
 
 De namen van onze bestanden kennen het volgende format:
 
