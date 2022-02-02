@@ -106,16 +106,20 @@ def sort_exp_intersections(nets, descending=False):
         for other_net in other_nets.values():
 
             # p0 = (y3 - y2)(x3 - x0) - (x3 - x2)(y3 - y0)
-            p0 = (other_net.end[1] - other_net.start[1]) * (other_net.end[0] - net.start[0]) - (other_net.end[0] - other_net.start[0]) * (other_net.end[1] - net.start[1])
+            p0 = (other_net.end[1] - other_net.start[1]) * (other_net.end[0] - net.start[0]) - \
+                 (other_net.end[0] - other_net.start[0]) * (other_net.end[1] - net.start[1])
 
             # p1 = (y3 - y2)(x3 - x1) - (x3 - x2)(y3 - y1)
-            p1 = (other_net.end[1] - other_net.start[1]) * (other_net.end[0] - net.end[0]) - (other_net.end[0] - other_net.start[0]) * (other_net.end[1] - net.end[1])
+            p1 = (other_net.end[1] - other_net.start[1]) * (other_net.end[0] - net.end[0]) - \
+                 (other_net.end[0] - other_net.start[0]) * (other_net.end[1] - net.end[1])
 
             # p2 = (y1 - y0)(x1 - x2) - (x1 - x0)(y1 - y2)
-            p2 = (net.end[1] - net.start[1]) * (net.end[0] - other_net.start[0]) - (net.end[0] - net.start[0]) * (net.end[1] - other_net.start[1])
+            p2 = (net.end[1] - net.start[1]) * (net.end[0] - other_net.start[0]) - \
+                 (net.end[0] - net.start[0]) * (net.end[1] - other_net.start[1])
 
             # p3 = (y1 - y0)(x1 - x3) - (x1 - x0)(y1 - y3)
-            p3 = (net.end[1] - net.start[1]) * (net.end[0] - other_net.end[0]) - (net.end[0] - net.start[0]) * (net.end[1] - other_net.end[1])
+            p3 = (net.end[1] - net.start[1]) * (net.end[0] - other_net.end[0]) - \
+                 (net.end[0] - net.start[0]) * (net.end[1] - other_net.end[1])
 
             # Check for expected intersections
             if (p0 * p1 < 0) and (p2 * p3 < 0):

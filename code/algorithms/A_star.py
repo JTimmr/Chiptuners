@@ -20,7 +20,7 @@ For further explanation of these algorithms, see sorting.py.
 After the nets are sorted, the solving algorithm will lay all paths in the desired order.
 The A* algorithm lays each step within a path using the following formula:
 Priority = (Costs to lay path to get to this point) + (estimated remaining costs to reach destination).
-Costs to lay path is calculated by C = n + 300 * k, 
+Costs to lay path is calculated by C = n + 300 * k,
 where n is the number of steps taken and k is the number of intersections.
 The heuristic to estimate the remaining costs is just the number of steps required for a
 greedy algorithm to reach the destination.
@@ -30,6 +30,8 @@ A situation could occur where the algorithm is unable to create a valid solution
 net cannot reach it's destination. The algorithm stops if such a situation occurs, and returns False.
 If all connections are made without failure, the program will return True.
 """
+
+
 class A_Star:
     def __init__(self, grid, sorting_method, pop, gate_space, display=False):
         self.grid = grid
@@ -161,14 +163,14 @@ class State_Path(State):
         self.costs = costs
 
     def get_distance(self):
-        """Returns the estimated distance from current poit to goal."""
+        """Returns the estimated distance from current point to goal."""
 
         if self.value == self.goal:
             return 0
         return abs(self.goal[0] - self.value[0]) + abs(self.goal[1] - self.value[1]) + abs(self.goal[2] - self.value[2])
 
     def create_children(self):
-        """Find all possible steps from a starting point, and store them in list."""
+        """Finds all possible steps from a starting point, and store them in list."""
 
         # If state has no children
         if not self.children:

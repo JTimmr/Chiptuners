@@ -18,7 +18,7 @@ or another sorting algorithm can be used to make a custom order in the nets. The
 For further explanation of these algorithms, see sorting.py.
 
 A disadvantage of a Hillclimber algorithm is that it could pursue a local optimum, from which it cannot escape.
-Hence, it can never be known if a hillclimber found the global optimum if there are no improvements are found 
+Hence, it can never be known if a hillclimber found the global optimum if there are no improvements are found
 after a number of iterations. This issue can however be solved using Simulated annealing. For futher explanation of
 the Simulated annealing algorithm, see simulated_annealing.py.
 """
@@ -40,7 +40,8 @@ class Hillclimber:
         self.costs = []
         self.m = f"_{m}"
         self.n = f"_{n}"
-        self.lowest_costs = None
+        self.grid.compute_costs()
+        self.lowest_costs = deepcopy(self.grid.cost)
         self.sorting = sorting_method
 
     def run(self):
@@ -225,7 +226,6 @@ class Hillclimber:
 
                 return [x, y, z]
 
-
     def find_smartest_step(self, position, destination, path_tmp):
         """
         Calculates step to follow semi random path from current position
@@ -257,7 +257,8 @@ class Hillclimber:
         new_position = tuple(new_position)
 
         # Check if step is legal
-        if new_position in path_tmp or (new_position in self.grid.gate_coordinates and new_position != destination):
+        if new_position in path_tmp or (new_position in self.grid.gate_coordinates and new_position != destination) or \
+                (new_position[0] < 0 or new_position[1] < 0 or new_position[0] > self.grid.size[0] or new_position[1] > self.grid.size[1]):
             return
 
         return new_position
@@ -265,8 +266,8 @@ class Hillclimber:
     def to_csv(self):
         """Saves the progress of the algorithm in a CSV file. Each iteration is saved with the costs at that time."""
 
-        path = "output/results_hillclimber/hill_netlist_"
-        with open(f"{path}{self.grid.netlist}{self.n}{self.m}_intersections_ascending.csv", "w", newline="") as csvfile:
+        path = f"results/hill_netlist_{self.grid.netlist}"
+        with open(f"{path}_{self.n}_{self.m}_intersections_ascending.csv", "w", newline="") as csvfile:
             fieldnames = ["iteration", "cost"]
 
             # Set up wiriter and write the header
@@ -285,4 +286,4 @@ class Hillclimber:
         plt.plot([i + 1 for i in range(self.iterations)], self.costs)
         plt.xlabel("Iterations")
         plt.ylabel("Costs")
-        plt.savefig(f"output/figs/hillclimber_{self.grid.netlist}_I_{self.iterations}_C_{self.lowest_costs}.png")
+        plt.savefig(f"results/figures_and_plots/hillclimber_{self.grid.netlist}_I_{self.iterations}_C_{self.lowest_costs}.png")

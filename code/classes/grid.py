@@ -163,8 +163,8 @@ class Grid:
             add = "random/"
         else:
             add = ""
+
         with open(f"data/chip_{self.chip}/{add}netlist_{self.netlist}.csv") as file:
-        # with open(f"data/chip_{self.chip}/random/netlist_{self.netlist}_1.csv") as file:
             reader = csv.DictReader(file)
 
             for row in reader:
@@ -227,7 +227,7 @@ class Grid:
 
         # Save dataframe to csv
         df = pd.DataFrame({'net': nets, 'x': x, 'y': y, 'z': z})
-        df.to_csv(f"output/{add}paths_netlist_{self.netlist}{name}{string}.csv", index=False)
+        df.to_csv(f"results/{add}paths_netlist_{self.netlist}{name}{string}.csv", index=False)
 
     def compute_costs(self):
         """Calculates total cost of the current configuration."""
