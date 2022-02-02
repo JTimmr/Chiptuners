@@ -329,8 +329,8 @@ class SimulatedAnnealing:
     def to_csv(self):
         """Saves the progress of the algorithm in a CSV file. Each iteration is saved with the costs at that time."""
 
-        path = "/results/annealing_netlist_{self.grid.netlist}"
-        with open(f"{path}{self.grid.netlist}{self.name}{self.n}_length(a).csv", "w", newline="") as csvfile:
+        path = f"results/annealing_netlist_{self.grid.netlist}"
+        with open(f"{path}_{self.name}_{self.n}_length(a).csv", "w", newline="") as csvfile:
             fieldnames = ["iteration", "cost"]
 
             # Set up wiriter and write the header

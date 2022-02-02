@@ -148,8 +148,8 @@ def check_intersections(net_coordinates, display):
 
     # Prints results if requested
     if display:
-        print(f"There are {exp_intersections} intersections expected, \
-              {round(exp_intersections / len(net_coordinates), 2)} per net on average.")
+        a = round(exp_intersections / len(net_coordinates), 2)
+        print(f"There are {exp_intersections} intersections expected, {a} per net on average.")
 
     return exp_intersections
 
@@ -196,10 +196,11 @@ def check_density(net_coordinates, display):
 
     # Print results if requested
     if display:
-        print(f"The average distance between the two gates a net connects is \
-              {round(np.average(minimal_lengths), 2)} +/- {round(np.std(minimal_lengths), 2)}")
-        print(f"In total, at least {total_segments} are required. This results in \
-              {round(100 * density, 2)} % of the grid to be filled assuming only 1 layer.")
+        a = round(np.average(minimal_lengths), 2)
+        b = round(np.std(minimal_lengths), 2)
+        print(f"""The average distance between the two gates a net connects is {a} +/- {b}""")
+        print(f"In total, at least {total_segments} segments are required. ")
+        print(f"This results in {round(100 * density, 2)} % of the grid to be filled assuming only 1 layer.")
 
     return(density)
 
@@ -234,10 +235,10 @@ def main(netlist, randomized, display):
     # Check if there is a gate-overflow
     if check_gate_occupation(nets, gates, display) == "impossible":
         overflow = True
-        return (density, intersections, overflow, solved, cost)
+        return (cost, density, intersections, overflow, solved)
     else:
         if display:
-            print("No reason to conclude this netlilst is impossible (yet ...)")
+            print("No reason to conclude this netlist is impossible (yet ...)")
 
     # Solve netlist if it seems possible
     solvegrid = grid.Grid(chip, netlist, randomized=randomized)
@@ -249,8 +250,10 @@ def main(netlist, randomized, display):
         solved = True
         solvegrid.compute_costs()
         cost = solvegrid.cost
+        print("Netlist solved!")
+        print()
 
-    return (cost, density, intersections, overflow, solved)
+    return cost, density, intersections, overflow, solved
 
 
 if __name__ == "__main__":
@@ -263,7 +266,7 @@ if __name__ == "__main__":
     # Parse the command line arguments
     args = parser.parse_args()
 
-    with open(f"results/netlist_test{args.netlist}a.csv", "w", newline="") as csvfile:
+    with open(f"results/netlist_test{args.netlist}.csv", "w", newline="") as csvfile:
 
         fieldnames = ["simulation", "cost", "density", "intersections", "occupation overflow", "solved"]
 

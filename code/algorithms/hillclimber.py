@@ -40,6 +40,7 @@ class Hillclimber:
         self.costs = []
         self.m = f"_{m}"
         self.n = f"_{n}"
+        self.grid.compute_costs()
         self.lowest_costs = deepcopy(self.grid.cost)
         self.sorting = sorting_method
 
@@ -265,8 +266,8 @@ class Hillclimber:
     def to_csv(self):
         """Saves the progress of the algorithm in a CSV file. Each iteration is saved with the costs at that time."""
 
-        path = "results/hill_netlist_{self.grid.netlist}"
-        with open(f"{path}{self.grid.netlist}{self.n}{self.m}_intersections_ascending.csv", "w", newline="") as csvfile:
+        path = f"results/hill_netlist_{self.grid.netlist}"
+        with open(f"{path}_{self.n}_{self.m}_intersections_ascending.csv", "w", newline="") as csvfile:
             fieldnames = ["iteration", "cost"]
 
             # Set up wiriter and write the header
