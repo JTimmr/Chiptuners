@@ -52,12 +52,14 @@ In de commandline is het mogelijk om verschillende functies aan te roepen:
 | `-n`                   | Hoeveel oplossingen moeten er worden gegenereerd?                   |
 | `-m`                   | Hoeveel verbeterde oplossingen moeten er zijn voor elke oplossing?  |
 | `-file`                | Wanneer een al bestaand bestand gebruikt moet worden, voorbeeld: wanneer de bestandsnaam "paths_netlist_4_C_19655" is, gebruik dan "C_19655". |
-|  `-pop`                | Geef aan welk item verwijdert wordt in het a* algoritme, wanneer er meerdere staten dezelfde prioriteit hebben. Wanneer niks ingevuld wordt kiest hij 1|
+|  `-pop`                | Geef aan welk item verwijdert wordt in het a* algoritme, wanneer er meerdere staten dezelfde prioriteit hebben. Wanneer niks ingevuld wordt kiest hij 1. |
 |  `-gs`                 | Minimale hoogte boven een gate die vrij moet blijven van paden, zodat de gate niet onnodig geblokkeerd wordt. Wanneer niks ingevuld wordt is dit 2. |
-|  `-random`, `--randomized`| Maakt random netlists aan in plaats van de al bestaande. Hij gebruikt hiervoor de al bestaande coordinaten van de netlisten uit de data map. Daarvoor is het wel nodig om een al bestaande netlist op te geven.|
+|  `-random`, `--randomized`| Maakt random netlists aan in plaats van de al bestaande. Hij gebruikt hiervoor de al bestaande coordinaten van de netlisten uit de data map, waardor het wel nodig om een al bestaande netlist op te geven.|
 
 
 ### Structuur
+Wij hebben een map voor onze gebruikte data, foto's in de readme, onze resultaten & onze code respectievelijk:
+
 - data/ - 
 
 - doc/ -
@@ -82,3 +84,9 @@ Om het programma werkend te laten draaien, zullen enkele dingen geïnstalleerd m
 ```bash
 pip3 install -r requirements.txt
 ```
+
+### Met Dank Aan
+
+<a href="https://www.proglab.nl/minoren/minprog/" target="_blank">De minor Programmeren aan de Universiteit van Amsterdam</a>
+
+Onze mentoren Charlotte & Joos
