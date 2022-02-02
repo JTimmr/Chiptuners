@@ -319,10 +319,10 @@ if __name__ == "__main__":
         update_csv_paths = True
 
         # Makes CSV files after a hillclimber is done, storing the new costs per iteration
-        make_csv_improvements = True
+        make_csv_improvements = False
 
         # Plots the progress of Hillclimber or Simulated annealing as costs vs iteration
-        make_iterative_plot = True
+        make_iterative_plot = False
         improve(args.netlist, args.specific_file, possible_entries[args.improving_algorithm], update_csv_paths, make_csv_improvements, make_iterative_plot, args.iterations, args.N, args.N_improvements, function_map[args.sorting_i], args.randomized, args.output)
 
     if args.visualize or args.plotly:
