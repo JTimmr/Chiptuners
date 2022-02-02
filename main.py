@@ -17,7 +17,18 @@ def log_simulation(N, netlist, constructive_algorithm, sorting_method, randomize
     Takes the amount of runs, netlist number, type of algorithm and sorting algorithm as input.
     Runs the given algorithm a number of times, creating a set of solutions. Set N to 1 if a single solution suffices.
     Saves the results in a CSV file, where each row represents the results of a single run,
-    and each columns stores the costs.
+    and each columns stores the costs. The algorithms to choose from are baseline and A*. A* can be combined
+    with one of the following sorting algorithms:
+    - Random
+    - Decreasing path length
+    - Increading path length
+    - From inside to outside
+    - From outside to inside
+    - From busy gates to quiet gates
+    - From quiet gates to busy gates
+    - Increading estimated number of intersections
+    - Decreasing estimated number of intersections
+    See baseline.py, a_star.py and sorting.py for further explanation of the algorithms.
     """
 
     # Calculate chip number from netlist number
