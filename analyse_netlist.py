@@ -25,6 +25,7 @@ import make_netlists as make
 import code.algorithms.A_star as a_star
 import code.algorithms.sorting as sort
 import code.classes.grid as grid
+import math
 
 
 def load_nets(netlist, chip, randomized):
@@ -192,6 +193,25 @@ def check_density(net_coordinates, display):
 
     return(density)
 
+def exp_overflow(amount_nets, amount_gates):
+    """
+    Checks whether there are free gates in on the grid for multiple connections to occur, that are spots where overfow may happen.
+    If a chip contains less than 5 gates connection overflow can not occur as a maximum of 4 other connections can be made.
+    Therefore, chips with a gate count less or equal to five are excluded as they are not prone for a connection overflow
+    """
+    
+    if amount_gates <= 5:
+        overflows = 0
+
+        print(overflows)
+        return overflows
+    
+    amount_of_unique_nets = math.ceil((amount_gates-1)/2) 
+    overflows = (amount_nets - amount_of_unique_nets) 
+
+    print(overflows, overflows/amount_nets)
+
+    return overflows
 
 def main(netlist, randomized, display):
 
@@ -200,6 +220,14 @@ def main(netlist, randomized, display):
     overflow = False
     solved = False
     cost = 0
+
+    # Extract number of gates and nets
+    num_gates = load_gates(chip)
+    num_nets = load_nets(netlist, chip)
+
+    overflows = exp_overflow(num_nets, num_gates)
+
+    breakpoint()
 
     # Load nets
     nets = load_nets(netlist, chip, randomized)
@@ -252,7 +280,7 @@ if __name__ == "__main__":
     # Parse the command line arguments
     args = parser.parse_args()
 
-    with open(f"output/netlist_test{args.netlist}.csv", "w", newline="") as csvfile:
+    with open(f"output/netlist_test{args.netlist}a.csv", "w", newline="") as csvfile:
         
         fieldnames = ["simulation", "cost", "density", "intersections", "occupation overflow", "solved"]
 

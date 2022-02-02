@@ -12,7 +12,6 @@ For the random netlists, there are a few criteria:
 import csv
 import random
 import argparse
-import math
 
 
 def load_gates(chip):
@@ -47,34 +46,6 @@ def load_nets(netlist, chip):
 
     return num_nets
 
-
-def probability_gate_overflow(amount_nets, amount_gates):
-    """
-    Assuming gates get selected by a poisson process, hence the probability of getting more
-    than 5 nets per gate is (1 - Pr[X <= 5]) ^ gates where X denotes the number of nets per gate.
-    """
-    
-    # if amount_nets <= 5:
-    #     probability_gate_overflow = 0
-    #     return probability_gate_overflow
-    
-    
-    # p1 = 
-    # p2 = 
-    # p3 = 
-    # p4 = 
-
-
-    prob_selcting_gate = (amount_gates - 1) / sum(range(1,amount_gates - 1))
-
-    # pr_overflow = amount_nets * prob_selcting_gate
-
-    amount_of_unique_nets = math.ceil((amount_gates-1)/2) 
-
-    nets_left_for_duplicate = (amount_nets - amount_of_unique_nets) 
-
-
-    return nets_left_for_duplicate
 
 def main(netlist):
 
