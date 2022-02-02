@@ -55,7 +55,11 @@ def visualize_plotly(chip):
 
 
 def visualize_matplotlib(chip, legend):
-    """ """
+    """
+    Makes a 3D visualization of the chip object instance in matplotlib.
+    After running code plot opens automatically in python and saves to the
+    results directory under figures_and_plots.
+    """
     # Get maximum x,y values for x,y axis size
     max_x = chip.size[0]
     max_y = chip.size[1]
