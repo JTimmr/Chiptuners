@@ -19,7 +19,7 @@ De kostenfunctie: TK = aantal segmenten + 300 * aantal intersecties
 
 ### Usage
 ```bash
-python3 main.py netlistnummer (-h) (-c naam algoritme) (-i naam algoritme) (-vis) (-leg) (-plotly) (-iter N) (-n N) (-m N verbeteringen) (-file bestandsnaam) (-pop indexnummer) (-gs lagen) (-random)
+python3 main.py netlistnummer (-h) (-c naam algoritme) (-i naam algoritme) (-vis) (-leg) (-plotly) (-iter N) (-n N) (-m N verbeteringen) (-file bestandsnaam) (-pop indexnummer) (-gs lagen) (-random) (-output)
 ```
 De volgorde van de bovenstaande argumenten maakt niet uit.
 
@@ -42,6 +42,7 @@ In de commandline is het mogelijk om verschillende functies aan te roepen:
 |  `-pop`                | Geef aan welk item verwijdert wordt in het a* algoritme, wanneer er meerdere staten dezelfde prioriteit hebben. Wanneer niks ingevuld wordt kiest hij 1. |
 |  `-gs`                 | Minimale hoogte boven een gate die vrij moet blijven van paden, zodat de gate niet onnodig geblokkeerd wordt. Wanneer niks ingevuld wordt is dit 2. |
 |  `-random`, `--randomized`| Maakt random netlists aan in plaats van de al bestaande. Hij gebruikt hiervoor de al bestaande coordinaten van de netlisten uit de data map, waardor het wel nodig om een al bestaande netlist op te geven.|
+| `-output` | Om de oplossingen in het gewenste format van de opdracht te krijgen. | 
 
 
 ### Structuur
