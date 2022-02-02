@@ -1,6 +1,6 @@
 # Chiptuners
 
-Jasper Timmer, Rick Cornelisse, Ariella Hiele
+Rick Cornelisse, Ariella Hiele, Jasper Timmer
 
 ## Case: Chips and Circuits
 
@@ -33,7 +33,7 @@ De kostenfunctie: TK = aantal segmenten + 300 * aantal intersecties
 
 ### Usage
 ```bash
-python3 main.py netlistnummer (-h) (-c naam algoritme) (-i naam algoritme) (-vis) (-leg) (-plotly) (-iter N) (-n N) (-m N verbeteringen) (-file bestandsnaam) (-pop indexnummer) (-gs lagen) (-random netlistnummer)
+python3 main.py netlistnummer (-h) (-c naam algoritme) (-i naam algoritme) (-vis) (-leg) (-plotly) (-iter N) (-n N) (-m N verbeteringen) (-file bestandsnaam) (-pop indexnummer) (-gs lagen) (-random)
 ```
 In de commandline is het mogelijk om verschillende functies aan te roepen:
 
