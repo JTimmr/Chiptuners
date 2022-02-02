@@ -1,0 +1,12 @@
+Elke gate kan hoogstens met 5 andere gates verbinden, aangezien een lijnsegment alleen
+naar links, rechts, voor, achter of naar boven kan lopen; een gate ligt immers op de onderste laag.
+
+Als een netlist uit meer dan 5 nets bestaat zal er dus een kans zijn dat deze niet allemaal aangelegd kunnen worden.
+Hiervoor geldt, hoe meer nets, hoe groter de kans dat een netlist onoplosbaar is.
+
+Dit hebben we onderzocht met analyse_netlist.py. Dit bestand maakt random netlisten aan, die equivalent zijn aan
+de gegeven netlisten, en kijkt vervolgens naar de oplosbaarheid. Als er een gate in de netlist staat die 6 of meer
+connecties moet laden zal het programma aangeven dat het niet oplosbaar is.
+
+Wij hebben voor netlist 1 t/m 9 50.000 alternatieve netlists gemaakt, om hiermee de oplosbaarheid te onderzoeken.
+Hier zijn de volgende resultaten uitgekomen:
