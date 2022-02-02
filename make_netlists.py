@@ -4,6 +4,7 @@ import argparse
 from scipy.stats import poisson
 import math
 
+
 def load_gates(chip):
     """
     Reads requested file containing the location of the gates,
@@ -60,50 +61,63 @@ def probability_gate_overflow(amount_nets, amount_gates):
 
     amount_of_unique_nets = math.ceil((amount_gates-1)/2) 
 
-    nets_left_for_duplicate = (amount_nets - amount_of_unique_nets) / 
+    nets_left_for_duplicate = (amount_nets - amount_of_unique_nets) 
 
 
     return nets_left_for_duplicate
 
-def main(netlist, N):
+def main(netlist):
+    """
+    Creates a random netlist equivalent of the netlist given as argument.
+    Netlist will be stored in a CSV file, in the correct chip subfolder in the data directory.
+    To prevent overwriting the original netlists, the random netlists will be stored in a folder named random.
+    For the random netlists, there are a few criteria:
+    - The number of nets are identical to the original netlist (hence 'eqiuivalent')
+    - A gate cannot make a connection with itself
+    - Each net in a netlist is unique. If path a to b already exists, neither a to b nor b to a can be added to the netlist.
+    """
+
+    # Calculate chip number from netlist number
     chip = int((netlist - 1) / 3)
 
+    # Extract number of gates and nets
     num_gates = load_gates(chip)
     num_nets = load_nets(netlist, chip)
 
-    prob = probability_gate_overflow(num_nets, num_gates)
-    print(prob)
+    # Creates random netlist conform to the criteria
+    nets = set()
+    while len(nets) < num_nets:
+        gates = [i + 1 for i in range(num_gates)]
+        start = random.choice(gates)
 
-    for n in range(N):
-        nets = set()
-        while len(nets) < num_nets:
-            gates = [i + 1 for i in range(num_gates)]
-            start = random.choice(gates)
-            gates.remove(start)
-            end = random.choice(gates)
-            if (start, end) not in nets and (end, start) not in nets:
-                nets.add((start, end))
+        # Ensure gate does not connect with itself
+        gates.remove(start)
+        end = random.choice(gates)
 
-        with open(f"data/chip_{chip}/random/netlist_{netlist}_{n + 1}.csv", "w", newline="") as csvfile:
+        # Ensure each net is unique
+        if (start, end) not in nets and (end, start) not in nets:
+            nets.add((start, end))
 
-            # Set up fieldnames
-            fieldnames = ["chip_a", "chip_b"]
+    # Save netlist to CSV
+    with open(f"data/chip_{chip}/random/netlist_{netlist}.csv", "w", newline="") as csvfile:
 
-            # Set up wiriter and write the header
-            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-            writer.writeheader()
-            for net in nets:
-                writer.writerow({
-                    "chip_a": net[0], "chip_b": net[1]
-                    })
+        # Set up fieldnames
+        fieldnames = ["chip_a", "chip_b"]
+
+        # Set up wiriter and write the header
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+        for net in nets:
+            writer.writerow({
+                "chip_a": net[0], "chip_b": net[1]
+            })
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Make a new netlist')
     parser.add_argument("netlist", type=int, help="Netlist to be remade")
-    parser.add_argument("-n", type=int, default=1, dest="N", help="number of solutions generated")
 
     # Parse the command line arguments
     args = parser.parse_args()
 
-    main(args.netlist, args.N)
+    main(args.netlist)

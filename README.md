@@ -34,7 +34,7 @@ De kostenfunctie: TK = aantal segmenten + 300 * aantal intersecties
 
 ### Usage
 ```bash
-python main.py netlistnummer (-h) (-c naam algoritme) (-i naam algoritme) (-vis) (-leg) (-n N) (-m N verbeteringen) (-file bestandsnaam)
+python3 main.py netlistnummer (-h) (-c naam algoritme) (-i naam algoritme) (-vis) (-leg) (-plotly) (-iter N) (-n N) (-m N verbeteringen) (-file bestandsnaam) (-pop indexnummer) (-gs lagen) (-random netlistnummer)
 ```
 In de commandline is het mogelijk om verschillende functies aan te roepen:
 
@@ -45,17 +45,27 @@ In de commandline is het mogelijk om verschillende functies aan te roepen:
 | `-i`                   | Kiest iteratief algoritme, keuze uit: hillclimber of simulated_annealing.                           |
 | `-sort_c`              | Kiest sorteermethode voor basis algoritme, keuze uit: random, length_a, length_d, middle, outside, gate_a, gate_d, intersections_a, intersections_d. Wanneer er geen methode is gekozen wordt automatisch lengte oplopend gekozen. Wanneer er geen volgorde is gekozen, wordt er automatisch gekozen voor oplopend. |
 | `-sort_i`              | Kiest sorteermethode voor iteratief algoritme, keuze uit bovenstaande. Wanneer er geen methode is gekozen wordt automatisch lengte oplopend gekozen. Wanneer er geen volgorde is gekozen, wordt er automatisch gekozen voor oplopend. |
-| `-vis` of `--visualize`| Plot een 3D visualizatie van een oplossing.                         |
-| `-leg`of `--legend`    | Geeft een legenda bij de 3D visualisatie.                           |
+| `-vis` of `--visualize`| Plot een 3D visualizatie van een oplossing in matplotlib.                         |
+| `-leg`of `--legend`    | Geeft een legenda bij de 3D visualisatie van matplotlib.                           |
+| `-plotly`              | Genereert een 3D visualizatie in plotly, die opent in je browser.             |
+| `-iter`                | Hoeveel iteraties zijn er nodig bij het iteratief algoritme? Wanneer deze niet wordt ingevuld staat hij automatisch op 1000. |
 | `-n`                   | Hoeveel oplossingen moeten er worden gegenereerd?                   |
 | `-m`                   | Hoeveel verbeterde oplossingen moeten er zijn voor elke oplossing?  |
 | `-file`                | Wanneer een al bestaand bestand gebruikt moet worden, voorbeeld: wanneer de bestandsnaam "paths_netlist_4_C_19655" is, gebruik dan "C_19655". |
+|  `-pop`                | Geef aan welk item verwijdert wordt in het a* algoritme, wanneer er meerdere staten dezelfde prioriteit hebben. Wanneer niks ingevuld wordt kiest hij 1. |
+|  `-gs`                 | Minimale hoogte boven een gate die vrij moet blijven van paden, zodat de gate niet onnodig geblokkeerd wordt. Wanneer niks ingevuld wordt is dit 2. |
+|  `-random`, `--randomized`| Maakt random netlists aan in plaats van de al bestaande. Hij gebruikt hiervoor de al bestaande coordinaten van de netlisten uit de data map, waardor het wel nodig om een al bestaande netlist op te geven.|
 
 
 ### Structuur
+Wij hebben een map voor onze gebruikte data, foto's in de readme, onze resultaten & onze code respectievelijk:
+
 - data/ - 
 
+- doc/ -
+
 - results/
+
     - figures_and_plots/
     - results_a_star/
     - results_annealing/
@@ -72,5 +82,11 @@ In de commandline is het mogelijk om verschillende functies aan te roepen:
 Om het programma werkend te laten draaien, zullen enkele dingen geïnstalleerd moeten zijn. Deze kun je automatisch installeren door: 
 
 ```bash
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 ```
+
+### Met Dank Aan
+
+<a href="https://www.proglab.nl/minoren/minprog/" target="_blank">De minor Programmeren aan de Universiteit van Amsterdam</a>
+
+Onze mentoren Charlotte & Joos

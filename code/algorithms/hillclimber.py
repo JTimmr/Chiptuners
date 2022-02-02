@@ -5,6 +5,29 @@ import matplotlib.pyplot as plt
 
 
 class Hillclimber:
+    """
+    Takes a previously generated solution of a netlist as input, and tries to improve it by
+    making random adjustments, comparing the original and new solution and throwing away the most expensive one.
+    This repeats a number of iterations. The random adjustments are made in one of the nets, and it moves on to
+    a new net after an improvement is found. The order in which the nets are modified can be made randomly as well,
+    or another sorting algorithm can be used to make a custom order in the nets. There are 9 algorithms to choose from:
+    - Random
+    - Decreasing path length
+    - Increading path length
+    - From inside to outside
+    - From outside to inside
+    - From busy gates to quiet gates
+    - From quiet gates to busy gates
+    - Increading estimated number of intersections
+    - Decreasing estimated number of intersections
+    for further explanation of these algorithms, see sorting.py.
+
+    A disadvantage of a Hillclimber algorithm is that it could pursue a local optimum, from which it cannot escape.
+    Hence, it can never be known if a hillclimber found the global optimum if there are no improvements are found 
+    after a number of iterations. This issue can however be solved using Simulated annealing. For futher explanation of
+    the Simulated annealing algorithm, see simulated_annealing.py.
+    """
+
     def __init__(self, grid, iterations, update_csv_paths, make_csv_improvements, make_iterative_plot, n, m, sorting_method):
         self.grid = grid
         self.iterations = iterations
@@ -20,7 +43,9 @@ class Hillclimber:
         self.sorting = sorting_method
 
     def run(self):
-        """Keeps the Hillclimber algorithm running."""
+        """Runs over all nets one after another, and tries to find cheaper paths.
+        The order in which the nets are investigated is determined in main.py.
+        Algorithm stops when the requested number of iterations are completed."""
 
         print("Searching for improvements...")
         self.grid.compute_costs
@@ -38,10 +63,6 @@ class Hillclimber:
                 # Try to make an improvement
                 self.improve_connection(net)
 
-                # Quit when no improvement is made after a large amount of attempts
-                if self.attempts_without_improvement > 500:
-                    continue
-
             self.iteration += 1
 
             while len(self.costs) < self.iteration:
@@ -58,7 +79,13 @@ class Hillclimber:
             self.plot()
 
     def improve_connection(self, net):
-        """Takes a net as an input, and tries to find a shorter path between its two gates."""
+        """
+        Takes a net as an input, and tries to find a cheaper path between its two gates.
+        The cheaper path is found by generating a new, semi random path, and checking if the costs have reduced.
+        If the costs were not cheaper, or no path was found at all, the algorithm makes another attempt. The
+        maximum number of attempts is set at 100. If all 100 failed, the method resets the grid and returns nothing.
+        If a cheaper path is found, the algoritm deletes the old path and updates the grid.
+        """
 
         origin = net.start
         destination = net.end
@@ -130,7 +157,7 @@ class Hillclimber:
         y = []
         z = []
 
-        #  Set limit for pathlength
+        # Set limit for pathlength
         max_pathlength = net.minimal_length * 2 + 10
 
         current_attempt = 0
@@ -197,8 +224,6 @@ class Hillclimber:
 
                 return [x, y, z]
 
-        # Return number of failed attempts if destination was not reached
-        return
 
     def find_smartest_step(self, position, destination, path_tmp):
         """
@@ -237,6 +262,8 @@ class Hillclimber:
         return new_position
 
     def to_csv(self):
+        """Saves the progress of the algorithm in a CSV file. Each iteration is saved with the costs at that time."""
+
         path = "output/results_hillclimber/hill_netlist_"
         with open(f"{path}{self.grid.netlist}{self.n}{self.m}_intersections_ascending.csv", "w", newline="") as csvfile:
             fieldnames = ["iteration", "cost"]

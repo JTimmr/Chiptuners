@@ -20,12 +20,11 @@ from copy import deepcopy
 import numpy
 import csv
 import matplotlib.pyplot as plt
-import code.algorithms.A_star as A_star
 
 
 def linear_cooling(temprature, cooling_speed=20, t_lower=1):
     """
-    Linear decreasing temprature
+    Linear decreasing temprature.
     """
     temprature -= cooling_speed
 
@@ -37,7 +36,7 @@ def linear_cooling(temprature, cooling_speed=20, t_lower=1):
 
 def log_cooling(temprature, iteration):
     """
-    Logarithmic decrease as described by Aarts and Korst in 1989
+    Logarithmic decrease as described by Aarts and Korst in 1989.
     """
     log_factor = 1 + numpy.log(1 + iteration)
     temprature = temprature / log_factor
@@ -47,7 +46,7 @@ def log_cooling(temprature, iteration):
 
 def geomtric_cooling(temprature, iteration, beta=0.9):
     """
-    Geomtric cooling schedule
+    Geomtric cooling schedule.
     """
     new_temprature = pow(beta, iteration) * temprature
 
@@ -56,7 +55,7 @@ def geomtric_cooling(temprature, iteration, beta=0.9):
 
 def lundy_and_mees_cooling(temprature, beta=0.9):
     """
-    As proposed by Lundy And Mees
+    As proposed by Lundy And Mees.
     """
     temprature = temprature / (1 + beta * temprature)
 
@@ -65,7 +64,7 @@ def lundy_and_mees_cooling(temprature, beta=0.9):
 
 def vcf_cooling(temprature, iteration, starting_temprature, t_lower=1):
     """
-    Cooling schedule following a VCF model
+    Cooling schedule following a VCF model.
     """
     beta = (starting_temprature - t_lower)/(iteration * starting_temprature * t_lower)
     temprature = temprature / (1 + beta * temprature)
@@ -75,7 +74,7 @@ def vcf_cooling(temprature, iteration, starting_temprature, t_lower=1):
 
 def exponential_cooling(temprature, alpha=0.98):
     """
-    Cooling schedule based on exponential decrease
+    Cooling schedule based on exponential decrease.
     """
     if alpha > 1 or alpha < 0:
         raise Exception("Please enter values for alpha between 0-1")
@@ -106,33 +105,17 @@ class SimulatedAnnealing:
         self.Starting_T = temperature
         self.Current_T = temperature
 
-    def run_per_paths(self, net):
-        # Retrieve starting and ending point
-        start = net.start
-        end = net.end
-        a = A_star.A_Star_Solver(self.grid, net, start, end)
-        a.Solve()
-
-        x, y, z = [], [], []
-        for coordinate in range(len(a.path)):
-            x.append(a.path[coordinate][0])
-            y.append(a.path[coordinate][1])
-            z.append(a.path[coordinate][2])
-        path = [x, y, z]
-
-        return path
-
     def update_temperature(self):
         """Updates the current temperature."""
 
         # Check that ensures the temperature only updates when the iteration number has increased
         if self.iterationlist and self.Current_T > 0:
             if self.iterationlist[-1] != self.iterations:
-                self.Current_T = geomtric_cooling(self.Current_T, self.iterations, beta=0.8)
+                self.Current_T = linear_cooling(self.Current_T, self.iterations)
                 return self.Current_T
 
     def run(self):
-        """Keeps the simulated annealing algorithm running until all iteration limit reached."""
+        """Keeps the simulated annealing algorithm running until iteration limit reached."""
 
         print("Searching for improvements...")
 
@@ -168,8 +151,10 @@ class SimulatedAnnealing:
         return self.grid.cost
 
     def improve_connection(self, net):
-        """Takes a netlist as an input, and tries to find a shorter path between its two gates.
-            While sometimes accepting worse solutions, to eventually find a better one."""
+        """
+        Takes a netlist as an input, and tries to find a shorter path between its two gates.
+        While sometimes accepting worse solutions, to eventually find a better one.
+        """
 
         origin = net.start
         destination = net.end
@@ -196,9 +181,7 @@ class SimulatedAnnealing:
                         probability = 0
                     else:
                         probability = math.exp(-delta/self.Current_T)
-                        # print(f"probability = {probability}")
                 else:
-                    # print("not worse")
                     probability = 1
                 rand = random.random()
 
@@ -217,7 +200,10 @@ class SimulatedAnnealing:
                 return
 
     def find_path(self, origin, destination, net):
-        """Attempts to find a path between two coordinates in the grid."""
+        """
+        Takes a starting and ending point, and tries to make a connection between them.
+        Returns the path if succeeded, otherwise nothing.
+        """
 
         # Store path so plot can be made
         x = []
@@ -331,6 +317,8 @@ class SimulatedAnnealing:
         return new_position
 
     def to_csv(self):
+        """Saves the progress of the algorithm in a CSV file. Each iteration is saved with the costs at that time."""
+
         path = "output/results_annealing/annealing_netlist_"
         with open(f"{path}{self.grid.netlist}{self.name}{self.n}_length(a).csv", "w", newline="") as csvfile:
             fieldnames = ["iteration", "cost"]

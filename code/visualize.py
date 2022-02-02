@@ -5,21 +5,25 @@ import pandas as pd
 
 
 def visualize_plotly(chip):
-    """Makes a 3D visualization of the chip object instance."""
+    """
+    Makes a 3D visualization of the chip object instance in plotly.
+    The visualization opens in your browser.
+    It is possible to select paths you want to see by double clicking the legend.
+    """
 
     # Make df out of gates to plot
-    df_gates = pd.DataFrame(index = ['x', 'y', 'z'])
+    df_gates = pd.DataFrame(index=['x', 'y', 'z'])
 
     for keys, values in chip.gates.items():
         df_gates[keys] = values.coordinates[0], values.coordinates[1], values.coordinates[2]
-    
+
     df_gates = df_gates.transpose()
 
     # Create a df for every path in the netlist and store it in a dict
     path_df_dict = {}
 
     for keys in chip.nets.keys():
-        path_df_dict[keys] = pd.DataFrame(columns = ['x', 'y', 'z'])
+        path_df_dict[keys] = pd.DataFrame(columns=['x', 'y', 'z'])
 
     for keys, values in chip.nets.items():
         df = path_df_dict[keys]
@@ -33,25 +37,30 @@ def visualize_plotly(chip):
         x=df_gates['x'],
         y=df_gates['y'],
         z=df_gates['z'],
-        mode = 'markers',
+        mode='markers',
         showlegend=False
         )])
 
     for i in path_df_dict:
         label = str(i)
-        fig = fig.add_trace(go.Scatter3d(x = path_df_dict[i]["x"],
-                                   y = path_df_dict[i]["y"], 
-                                   z = path_df_dict[i]['z'],
-                                   name = label,
-                                   mode = 'lines'))
+        fig = fig.add_trace(go.Scatter3d(x=path_df_dict[i]["x"],
+                                         y=path_df_dict[i]["y"],
+                                         z=path_df_dict[i]['z'],
+                                         name=label,
+                                         mode='lines'))
         fig.update_traces(line=dict(width=5))
 
-    fig.update_layout(scene = dict(zaxis = dict(nticks=7, range=[-1,7])))
+    fig.update_layout(scene=dict(zaxis=dict(nticks=7, range=[-1, 7])))
     fig.show()
 
 
 def visualize_matplotlib(chip, legend):
-    """ """
+    """
+    Makes a 3D visualization of the chip object instance in matplotlib.
+    After running code plot opens automatically in python and saves to the
+    results directory under figures_and_plots.
+    """
+
     # Get maximum x,y values for x,y axis size
     max_x = chip.size[0]
     max_y = chip.size[1]
@@ -64,9 +73,9 @@ def visualize_matplotlib(chip, legend):
     # Get all gate coordinates and make them visible in plot
     for gate in chip.gates.values():
         ax.scatter3D(gate.coordinates[0],
-                    gate.coordinates[1],
-                    gate.coordinates[2],
-                    c="black")
+                     gate.coordinates[1],
+                     gate.coordinates[2],
+                     c="black")
 
     # Plot all net routes solutions of the chip object instance
     for net in chip.nets.values():
@@ -84,11 +93,11 @@ def visualize_matplotlib(chip, legend):
     # If user wants a legend, show it correctly
     if legend is True:
         ax.legend(chip.nets.keys(),
-                title='Nets',
-                prop={'size': 7},
-                bbox_to_anchor=(1.1, 1),
-                ncol=3,
-                loc='upper left')
+                  title='Nets',
+                  prop={'size': 7},
+                  bbox_to_anchor=(1.1, 1),
+                  ncol=3,
+                  loc='upper left')
 
     # Filter inputfilename
     pattern = "_(.*?).csv"
