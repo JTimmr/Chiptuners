@@ -273,7 +273,7 @@ class Grid:
             # Write all values for the gates and paths
             for net in self.nets:
                 writer.writerow({
-                    "net": net, "wires": self.nets[net]
+                    "net": net, "wires": self.nets[net].path
                     })
 
             # Write final values in csv
