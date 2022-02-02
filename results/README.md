@@ -1,5 +1,7 @@
 # Results
-All results are outputted here in the following format:
+Al onze resultaten worden opgeslagen in csv bestanden, met uitzondering van visualisaties deze worden opgeslagen als png bestanden.
+
+De namen van onze bestanden kennen het volgende format:
 
 |net |wires |
 | :--- | :--- |
