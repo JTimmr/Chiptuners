@@ -89,10 +89,10 @@ def exponential_cooling(temprature, alpha=0.98):
 class SimulatedAnnealing:
     """
     Simulated Annealing based on the Boltzmann distribution.
-    
+
     The simulated annealing algortihm works like a hillclimber but one that may accept bad move to escape local optima.
     It makes use of a starting temprature that follows a (recursive) cooling function to lower the temprature to a minimum.
-    For the cooling function it is important that the function is monotonically decreasing and nonnegative. 
+    For the cooling function it is important that the function is monotonically decreasing and nonnegative.
     The temprature is then used to compute the probability of acceptance for values worse than its current state.
     """
     def __init__(self, grid, limit, update_csv_paths, make_csv_improvements, make_iterative_plot, name, n, temperature, sorting_method):
@@ -350,4 +350,5 @@ class SimulatedAnnealing:
         plt.legend()
         plt.xlabel("Iterations")
         plt.ylabel("Costs")
-        plt.savefig(f"results/figures_and_plots/annealing_N{self.grid.netlist}_T{self.Starting_T}_I{self.limit}_C{self.lowest_costs}.png")
+        plt.savefig(f"results/figures_and_plots/annealing_N\
+                    {self.grid.netlist}_T{self.Starting_T}_I{self.limit}_C{self.lowest_costs}.png")
