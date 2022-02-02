@@ -36,7 +36,7 @@ import argparse
 import sys
 
 
-def log_simulation(N, netlist, constructive_algorithm, sorting_method, randomized, pop, gate_space):
+def log_simulation(N, netlist, constructive_algorithm, sorting_method, randomized, pop, gate_space, output):
     """
     Takes the amount of runs, netlist number, type of algorithm and sorting algorithm as input.
     Runs the given algorithm a number of times, creating a set of solutions. Set N to 1 if a single solution suffices.
@@ -94,7 +94,10 @@ def log_simulation(N, netlist, constructive_algorithm, sorting_method, randomize
             chip.compute_costs()
 
             # Save path data to csv
-            chip.to_csv(name=n)
+            if output:
+                chip.to_output()
+            else:
+                chip.to_csv(name=n)
 
             # Save row in CSV
             costs.append(chip.cost)
@@ -111,7 +114,7 @@ def log_simulation(N, netlist, constructive_algorithm, sorting_method, randomize
         })
 
 
-def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improvements, make_iterative_plot, iterations, N, N_improvements, sorting_method, randomized):
+def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improvements, make_iterative_plot, iterations, N, N_improvements, sorting_method, randomized, output):
     """
     Loads N previously generated solutions, and tries to make improvements during a given number of iterations.
     There is also the option to start over after the algorithm is finished, since the algorithm could
@@ -163,7 +166,7 @@ def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improv
 
             # Run hillclimber algorithm with a number of iterations
             if algorithm == "hillclimber":
-                hillclimber = climber.Hillclimber(chip, iterations, update_csv_paths, make_csv_improvements, make_iterative_plot, i, j, sorting_method)
+                hillclimber = climber.Hillclimber(chip, iterations, update_csv_paths, make_csv_improvements, make_iterative_plot, i, j, sorting_method, output)
                 hillclimber.run()
 
             elif algorithm == "simulated_annealing":
@@ -172,7 +175,7 @@ def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improv
 
                 temperature = 10000
                 start_cost = deepcopy(chip.cost)
-                simanneal = sim.SimulatedAnnealing(chip, iterations, update_csv_paths, make_csv_improvements, make_iterative_plot, i, j, temperature, sorting_method)
+                simanneal = sim.SimulatedAnnealing(chip, iterations, update_csv_paths, make_csv_improvements, make_iterative_plot, i, j, temperature, sorting_method, output)
 
                 simanneal.run()
                 print(f"{start_cost}")
@@ -269,6 +272,7 @@ if __name__ == "__main__":
     parser.add_argument("-pop", type=int, default=0, dest="pop", help="Index at which item will be popped in A* algorithm when multiple states have the same priority.")
     parser.add_argument("-gs", type=int, default=2, dest="gate_space", help="Minimal height above a gate which will remain free of passing nets, so the gate is not unnecessarily blocked by other nets.")
     parser.add_argument("-random", "--randomized", action='store_true', help="Load random netlists instead of the originals.")
+    parser.add_argument("-output", action='store_true', help="Save data in another output.")
 
     # Parse the command line arguments
     args = parser.parse_args()
@@ -290,7 +294,7 @@ if __name__ == "__main__":
         args.algorithm.lower()
         args.sorting_c.lower()
 
-        log_simulation(args.N, args.netlist, possible_entries[args.algorithm], function_map[args.sorting_c], args.randomized, args.pop, args.gate_space)
+        log_simulation(args.N, args.netlist, possible_entries[args.algorithm], function_map[args.sorting_c], args.randomized, args.pop, args.gate_space, args.output)
 
     if args.improving_algorithm:
 
@@ -311,7 +315,7 @@ if __name__ == "__main__":
 
         # Plots the progress of Hillclimber or Simulated annealing as costs vs iteration
         make_iterative_plot = True
-        improve(args.netlist, args.specific_file, possible_entries[args.improving_algorithm], update_csv_paths, make_csv_improvements, make_iterative_plot, args.iterations, args.N, args.N_improvements, function_map[args.sorting_i], args.randomized)
+        improve(args.netlist, args.specific_file, possible_entries[args.improving_algorithm], update_csv_paths, make_csv_improvements, make_iterative_plot, args.iterations, args.N, args.N_improvements, function_map[args.sorting_i], args.randomized, args.output)
 
     if args.visualize or args.plotly:
         visualize_three_dimensional(args.netlist, args.specific_file, args.legend, args.randomized, args.visualize, args.plotly)
