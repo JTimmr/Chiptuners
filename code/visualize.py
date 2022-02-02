@@ -44,13 +44,13 @@ def visualize_plotly(chip):
     for i in path_df_dict:
         label = str(i)
         fig = fig.add_trace(go.Scatter3d(x=path_df_dict[i]["x"],
-                                y=path_df_dict[i]["y"], 
-                                z=path_df_dict[i]['z'],
-                                name = label,
-                                mode = 'lines'))
+                                         y=path_df_dict[i]["y"],
+                                         z=path_df_dict[i]['z'],
+                                         name=label,
+                                         mode='lines'))
         fig.update_traces(line=dict(width=5))
 
-    fig.update_layout(scene = dict(zaxis = dict(nticks=7, range=[-1,7])))
+    fig.update_layout(scene=dict(zaxis=dict(nticks=7, range=[-1, 7])))
     fig.show()
 
 
@@ -60,6 +60,7 @@ def visualize_matplotlib(chip, legend):
     After running code plot opens automatically in python and saves to the
     results directory under figures_and_plots.
     """
+
     # Get maximum x,y values for x,y axis size
     max_x = chip.size[0]
     max_y = chip.size[1]
@@ -72,9 +73,9 @@ def visualize_matplotlib(chip, legend):
     # Get all gate coordinates and make them visible in plot
     for gate in chip.gates.values():
         ax.scatter3D(gate.coordinates[0],
-                    gate.coordinates[1],
-                    gate.coordinates[2],
-                    c="black")
+                     gate.coordinates[1],
+                     gate.coordinates[2],
+                     c="black")
 
     # Plot all net routes solutions of the chip object instance
     for net in chip.nets.values():
@@ -92,11 +93,11 @@ def visualize_matplotlib(chip, legend):
     # If user wants a legend, show it correctly
     if legend is True:
         ax.legend(chip.nets.keys(),
-                title='Nets',
-                prop={'size': 7},
-                bbox_to_anchor=(1.1, 1),
-                ncol=3,
-                loc='upper left')
+                  title='Nets',
+                  prop={'size': 7},
+                  bbox_to_anchor=(1.1, 1),
+                  ncol=3,
+                  loc='upper left')
 
     # Filter inputfilename
     pattern = "_(.*?).csv"
