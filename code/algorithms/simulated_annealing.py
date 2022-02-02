@@ -1,10 +1,10 @@
 """
 simulated_annealing.py
 
-This file tries to find an optimum by simulated annealing. 
+This file tries to find an optimum by simulated annealing.
 It should converge to a global optimum as the probability function converges to a Boltzmann distribution.
 
-The starting tenmprature is computed in the main file and is based on the maximal delta that may occur. 
+The starting tenmprature is computed in the main file and is based on the maximal delta that may occur.
 
 Contains the class for the simulated annealing process and cooling functions.
 Includes:   - (func) sort_length
@@ -14,6 +14,8 @@ Includes:   - (func) sort_length
             - (func) sort_exp_intersections
             - (clss) simulated_annealing
 """
+
+
 import random
 import math
 from copy import deepcopy
@@ -319,7 +321,7 @@ class SimulatedAnnealing:
     def to_csv(self):
         """Saves the progress of the algorithm in a CSV file. Each iteration is saved with the costs at that time."""
 
-        path = "output/results_annealing/annealing_netlist_"
+        path = "/results/annealing_netlist_{self.grid.netlist}"
         with open(f"{path}{self.grid.netlist}{self.name}{self.n}_length(a).csv", "w", newline="") as csvfile:
             fieldnames = ["iteration", "cost"]
 
@@ -340,4 +342,4 @@ class SimulatedAnnealing:
         plt.legend()
         plt.xlabel("Iterations")
         plt.ylabel("Costs")
-        plt.savefig(f"output/figs/annealing_N{self.grid.netlist}_T{self.Starting_T}_I{self.limit}_C{self.lowest_costs}.png")
+        plt.savefig(f"results/figures_and_plots/annealing_N{self.grid.netlist}_T{self.Starting_T}_I{self.limit}_C{self.lowest_costs}.png")

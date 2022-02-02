@@ -17,6 +17,8 @@ See the README on Github of or the description in A_star.py for an explanation o
 It could very well be that this set of parameters can't find a solution while another set can, but
 it takes way too long to test a large set of netlists with all different combinations.
 """
+
+
 import csv
 import argparse
 from copy import deepcopy
@@ -25,7 +27,6 @@ import make_netlists as make
 import code.algorithms.A_star as a_star
 import code.algorithms.sorting as sort
 import code.classes.grid as grid
-import math
 
 
 def load_nets(netlist, chip, randomized):
@@ -91,11 +92,13 @@ def check_gate_occupation(nets, gates, display):
         # Check if gate can host the required number of connections
         if gates[net[0]] > 5:
             if display:
-                print(f"Gate {net[0]} has to make at least {gates[net[0]]} connections, which is not possible. This netlist cannot be solved.")
+                print(f"Gate {net[0]} has to make at least {gates[net[0]]} connections, \
+                       which is not possible. This netlist cannot be solved.")
             return "impossible"
         if gates[net[1]] > 5:
             if display:
-                print(f"Gate {net[1]} has to make at least {gates[net[1]]} connections, which is not possible. This netlist cannot be solved.")
+                print(f"Gate {net[1]} has to make at least {gates[net[1]]} connections, \
+                        which is not possible. This netlist cannot be solved.")
             return "impossible"
 
 
@@ -124,16 +127,20 @@ def check_intersections(net_coordinates, display):
             # Calculate relevant factors accoring to formulas
 
             # p0 = (y3 - y2)(x3 - x0) - (x3 - x2)(y3 - y0)
-            p0 = (other_net[1][1] - other_net[0][1]) * (other_net[1][0] - net[0][0]) - (other_net[1][0] - other_net[0][0]) * (other_net[1][1] - net[0][1])
+            p0 = (other_net[1][1] - other_net[0][1]) * (other_net[1][0] - net[0][0]) - \
+                 (other_net[1][0] - other_net[0][0]) * (other_net[1][1] - net[0][1])
 
             # p1 = (y3 - y2)(x3 - x1) - (x3 - x2)(y3 - y1)
-            p1 = (other_net[1][1] - other_net[0][1]) * (other_net[1][0] - net[1][0]) - (other_net[1][0] - other_net[0][0]) * (other_net[1][1] - net[1][1])
+            p1 = (other_net[1][1] - other_net[0][1]) * (other_net[1][0] - net[1][0]) - \
+                 (other_net[1][0] - other_net[0][0]) * (other_net[1][1] - net[1][1])
 
             # p2 = (y1 - y0)(x1 - x2) - (x1 - x0)(y1 - y2)
-            p2 = (net[1][1] - net[0][1]) * (net[1][0] - other_net[0][0]) - (net[1][0] - net[0][0]) * (net[1][1] - other_net[0][1])
+            p2 = (net[1][1] - net[0][1]) * (net[1][0] - other_net[0][0]) - \
+                 (net[1][0] - net[0][0]) * (net[1][1] - other_net[0][1])
 
             # p3 = (y1 - y0)(x1 - x3) - (x1 - x0)(y1 - y3)
-            p3 = (net[1][1] - net[0][1]) * (net[1][0] - other_net[1][0]) - (net[1][0] - net[0][0]) * (net[1][1] - other_net[1][1])
+            p3 = (net[1][1] - net[0][1]) * (net[1][0] - other_net[1][0]) - \
+                 (net[1][0] - net[0][0]) * (net[1][1] - other_net[1][1])
 
             # Check for expected intersections
             if (p0 * p1 < 0) and (p2 * p3 < 0):
@@ -141,7 +148,8 @@ def check_intersections(net_coordinates, display):
 
     # Prints results if requested
     if display:
-        print(f"There are {exp_intersections} intersections expected, {round(exp_intersections / len(net_coordinates), 2)} per net on average.")
+        print(f"There are {exp_intersections} intersections expected, \
+              {round(exp_intersections / len(net_coordinates), 2)} per net on average.")
 
     return exp_intersections
 
@@ -188,31 +196,13 @@ def check_density(net_coordinates, display):
 
     # Print results if requested
     if display:
-        print(f"The average distance between the two gates a net connects is {round(np.average(minimal_lengths), 2)} +/- {round(np.std(minimal_lengths), 2)}")
-        print(f"In total, at least {total_segments} are required. This results in {round(100 * density, 2)} % of the grid to be filled assuming only 1 layer.")
+        print(f"The average distance between the two gates a net connects is \
+              {round(np.average(minimal_lengths), 2)} +/- {round(np.std(minimal_lengths), 2)}")
+        print(f"In total, at least {total_segments} are required. This results in \
+              {round(100 * density, 2)} % of the grid to be filled assuming only 1 layer.")
 
     return(density)
 
-def exp_overflow(amount_nets, amount_gates):
-
-    """
-    Checks whether there are free gates in on the grid for multiple connections to occur, that are spots where overfow may happen.
-    If a chip contains less than 5 gates connection overflow can not occur as a maximum of 4 other connections can be made.
-    Therefore, chips with a gate count less or equal to five are excluded as they are not prone for a connection overflow
-    """
-    
-    if amount_gates <= 5:
-        overflows = 0
-
-        print(overflows)
-        return overflows
-    
-    amount_of_unique_nets = math.ceil((amount_gates-1)/2) 
-    overflows = (amount_nets - amount_of_unique_nets) 
-
-    print(overflows, overflows/amount_nets)
-
-    return overflows
 
 def main(netlist, randomized, display):
 
@@ -221,14 +211,6 @@ def main(netlist, randomized, display):
     overflow = False
     solved = False
     cost = 0
-
-    # Extract number of gates and nets
-    num_gates = load_gates(chip)
-    num_nets = load_nets(netlist, chip)
-
-    overflows = exp_overflow(num_nets, num_gates)
-
-    breakpoint()
 
     # Load nets
     nets = load_nets(netlist, chip, randomized)
@@ -274,28 +256,28 @@ def main(netlist, randomized, display):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Analyse a netlist')
     parser.add_argument("netlist", type=int, help="Netlist to be inspected")
-    parser.add_argument("-random", "--randomized", action='store_true', help="Choose randomly generated netlists instead of the originals.")
+    parser.add_argument("-random", "--randomized", action='store_true', help="Choose randomly generated netlists.")
     parser.add_argument("-n", type=int, default=1, dest="N", help="number of solutions analyzed")
     parser.add_argument("-print", "--display", action='store_true', help="Prints the calculated data.")
 
     # Parse the command line arguments
     args = parser.parse_args()
 
-    with open(f"output/netlist_test{args.netlist}a.csv", "w", newline="") as csvfile:
-        
+    with open(f"results/netlist_test{args.netlist}a.csv", "w", newline="") as csvfile:
+
         fieldnames = ["simulation", "cost", "density", "intersections", "occupation overflow", "solved"]
 
         # Set up wiriter and write the header
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
         for n in range(1, args.N + 1):
-            make.main(args.netlist, 1)
+            make.main(args.netlist)
             answers = main(args.netlist, args.randomized, args.display)
             writer.writerow({
-                "simulation": n, 
+                "simulation": n,
                 "cost": answers[0],
-                "density": answers[1], 
-                "intersections": answers[2], 
-                "occupation overflow": answers[3], 
+                "density": answers[1],
+                "intersections": answers[2],
+                "occupation overflow": answers[3],
                 "solved": answers[4],
                 })

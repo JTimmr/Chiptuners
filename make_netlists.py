@@ -5,17 +5,15 @@ Creates a random netlist equivalent of the netlist given as argument.
 Netlist will be stored in a CSV file, in the correct chip subfolder in the data directory.
 To prevent overwriting the original netlists, the random netlists will be stored in a folder named random.
 For the random netlists, there are a few criteria:
-- The number of nets are identical to the original netlist (hence 'eqiuivalent')
+- The number of nets are identical to the original netlist (hence 'equivalent')
 - A gate cannot make a connection with itself
 - Each net in a netlist is unique. If path a to b already exists, neither a to b nor b to a can be added to the netlist.
 """
+
+
 import csv
 import random
 import argparse
-<<<<<<< HEAD
-=======
-from scipy.stats import poisson
->>>>>>> fc057e87eb681932a20c37878d3a38e5a219653a
 
 
 def load_gates(chip):

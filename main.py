@@ -23,8 +23,8 @@ def log_simulation(N, netlist, constructive_algorithm, sorting_method, randomize
     - Increading path length
     - From inside to outside
     - From outside to inside
-    - From busy gates to quiet gates
-    - From quiet gates to busy gates
+    - Number of connections gate descending
+    - Number of connections gate ascending
     - Increading estimated number of intersections
     - Decreasing estimated number of intersections
     See baseline.py, a_star.py and sorting.py for further explanation of the algorithms.
@@ -39,7 +39,7 @@ def log_simulation(N, netlist, constructive_algorithm, sorting_method, randomize
         add = ""
 
     # Open file where results will be stored
-    with open(f"output/{add}netlist_{netlist}_{N}x.csv", "w", newline="") as csvfile:
+    with open(f"results/{add}netlist_{netlist}_{N}x.csv", "w", newline="") as csvfile:
 
         # Set up fieldnames
         fieldnames = ["simulation", "cost"]
@@ -101,8 +101,8 @@ def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improv
     - Increading path length
     - From inside to outside
     - From outside to inside
-    - From busy gates to quiet gates
-    - From quiet gates to busy gates
+    - Number of connections gate descending
+    - Number of connections gate ascending
     - Increading estimated number of intersections
     - Decreasing estimated number of intersections
     For further explanation of the algorithms, see simulated_annealing.py, hillclimber.py and sorting.py.
@@ -130,7 +130,7 @@ def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improv
                     add_string = f"_{specific_file}"
 
             # Open file
-            inputfile = f"output/{add}paths_netlist_{netlist}{add_string}.csv"
+            inputfile = f"results/{add}paths_netlist_{netlist}{add_string}.csv"
             chip_nr = int((netlist - 1) / 3)
 
             # Load paths into grid
@@ -144,8 +144,6 @@ def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improv
             elif algorithm == "simulated_annealing":
 
                 chip.compute_costs()
-
-                max_delta = chip.cost - chip.theoretical_minimum
 
                 temperature = 10000
                 start_cost = deepcopy(chip.cost)
@@ -167,7 +165,7 @@ def visualize_three_dimensional(netlist, specific_file, legend, randomized, matp
         add = ""
 
     # Open file
-    inputfile = f"output/{add}paths_netlist_{netlist}_{specific_file}.csv"
+    inputfile = f"results/{add}paths_netlist_{netlist}_{specific_file}.csv"
     chip_nr = int((netlist - 1) / 3)
 
     # Load paths into grid
@@ -207,7 +205,7 @@ if __name__ == "__main__":
         'intersections_d': [sort_exp_intersections, True], 'intersections d': [sort_exp_intersections, True], 'd intersections': [sort_exp_intersections, True],
         'd_intersections': [sort_exp_intersections, True], 'intersections_descending': [sort_exp_intersections, True],
         'descending_intersections': [sort_exp_intersections, True], 'intersection_d': [sort_exp_intersections, True], 'intersection d': [sort_exp_intersections, True],
-        
+
         'intersections_a': [sort_exp_intersections, False], 'intersections a': [sort_exp_intersections, False], 'a intersections': [sort_exp_intersections, False],
         'a_intersections': [sort_exp_intersections, False], 'intersections_ascending': [sort_exp_intersections, False], 'ascending_intersections': [sort_exp_intersections, False],
         'intersections': [sort_exp_intersections, False], 'intersection': [sort_exp_intersections, False], 'intersection a': [sort_exp_intersections, False],

@@ -72,10 +72,7 @@ def visualize_matplotlib(chip, legend):
 
     # Get all gate coordinates and make them visible in plot
     for gate in chip.gates.values():
-        ax.scatter3D(gate.coordinates[0],
-                     gate.coordinates[1],
-                     gate.coordinates[2],
-                     c="black")
+        ax.scatter3D(gate.coordinates[0], gate.coordinates[1], gate.coordinates[2], c="black")
 
     # Plot all net routes solutions of the chip object instance
     for net in chip.nets.values():
@@ -92,12 +89,7 @@ def visualize_matplotlib(chip, legend):
 
     # If user wants a legend, show it correctly
     if legend is True:
-        ax.legend(chip.nets.keys(),
-                  title='Nets',
-                  prop={'size': 7},
-                  bbox_to_anchor=(1.1, 1),
-                  ncol=3,
-                  loc='upper left')
+        ax.legend(chip.nets.keys(), title='Nets', prop={'size': 7}, bbox_to_anchor=(1.1, 1), ncol=3, loc='upper left')
 
     # Filter inputfilename
     pattern = "_(.*?).csv"
@@ -106,8 +98,8 @@ def visualize_matplotlib(chip, legend):
     # If regex could filter the filename correctly use, else use inputfilename
     if substring:
         substring = substring.group(1)
-        plt.savefig(f"output/figs/fig_{substring}.png", bbox_inches="tight")
+        plt.savefig(f"results/figures_and_plots/fig_{substring}.png", bbox_inches="tight")
     else:
-        plt.savefig(f"output/figs/fig_{chip.infile}.png")
+        plt.savefig(f"results/figures_and_plots/fig_{chip.infile}.png")
 
     plt.show()
