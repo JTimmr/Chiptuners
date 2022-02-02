@@ -94,11 +94,13 @@ def check_gate_occupation(nets, gates, display):
             if display:
                 print(f"Gate {net[0]} has to make at least {gates[net[0]]} connections, \
                        which is not possible. This netlist cannot be solved.")
+                print(f"\n{'---'*40}\n")
             return "impossible"
         if gates[net[1]] > 5:
             if display:
                 print(f"Gate {net[1]} has to make at least {gates[net[1]]} connections, \
                         which is not possible. This netlist cannot be solved.")
+                print(f"\n{'---'*40}\n")
             return "impossible"
 
 
@@ -149,6 +151,7 @@ def check_intersections(net_coordinates, display):
     # Prints results if requested
     if display:
         a = round(exp_intersections / len(net_coordinates), 2)
+        print(f"\n{'---'*40}\n")
         print(f"There are {exp_intersections} intersections expected, {a} per net on average.")
 
     return exp_intersections
@@ -256,6 +259,7 @@ def main(netlist, randomized, display):
     else:
         if display:
             print("No reason to conclude this netlist is impossible (yet ...)")
+            print(f"\n{'---'*40}\n")
 
     # Solve netlist if it seems possible
     solvegrid = grid.Grid(chip, netlist, randomized=randomized)
