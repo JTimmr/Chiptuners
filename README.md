@@ -1,6 +1,6 @@
 # Chiptuners
 
-Jasper Timmer, Rick Cornelisse, Ariella Hiele
+Rick Cornelisse, Ariella Hiele, Jasper Timmer
 
 ## Case: Chips and Circuits
 
@@ -11,20 +11,6 @@ De case kent ook enkele constraints; zo mogen stukken draad niet over hetzelfde 
 
 De kostenfunctie: TK = aantal segmenten + 300 * aantal intersecties
 
-> Ook hebben wij de grootte van de state-space van onze case als volgt berekent:
->
-> 2^ N
->
-> N = l * [m(n - 1) + n(m - 1)] + mn(l − 1)
->
-> N =  totale aantal segmenten
->
-> l = aantal lagen
->
-> m = breedte grid
->
-> n = lengte grid
-
 
 <p float="center">
   <img align="center" src="/doc/Example_Solved_grid.png" width="512"/>
@@ -33,8 +19,10 @@ De kostenfunctie: TK = aantal segmenten + 300 * aantal intersecties
 
 ### Usage
 ```bash
-python3 main.py netlistnummer (-h) (-c naam algoritme) (-i naam algoritme) (-vis) (-leg) (-plotly) (-iter N) (-n N) (-m N verbeteringen) (-file bestandsnaam) (-pop indexnummer) (-gs lagen) (-random netlistnummer)
+python3 main.py netlistnummer (-h) (-c naam algoritme) (-i naam algoritme) (-vis) (-leg) (-plotly) (-iter N) (-n N) (-m N verbeteringen) (-file bestandsnaam) (-pop indexnummer) (-gs lagen) (-random)
 ```
+De volgorde van de bovenstaande argumenten maakt niet uit.
+
 In de commandline is het mogelijk om verschillende functies aan te roepen:
 
 | functies               | beschrijving                                                        |
@@ -66,10 +54,6 @@ Wij hebben een map voor onze gebruikte data, foto's in de readme, onze resultate
 - results/
 
     - figures_and_plots/
-    - results_a_star/
-    - results_annealing/
-    - results_baseline/
-    - results_hillclimber/
 
 - code/ -
 
