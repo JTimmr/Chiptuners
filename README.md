@@ -11,20 +11,6 @@ De case kent ook enkele constraints; zo mogen stukken draad niet over hetzelfde 
 
 De kostenfunctie: TK = aantal segmenten + 300 * aantal intersecties
 
-> Ook hebben wij de grootte van de state-space van onze case als volgt berekent:
->
-> 2^ N
->
-> N = l * [m(n - 1) + n(m - 1)] + mn(l − 1)
->
-> N =  totale aantal segmenten
->
-> l = aantal lagen
->
-> m = breedte grid
->
-> n = lengte grid
-
 
 <p float="center">
   <img align="center" src="/doc/Example_Solved_grid.png" width="512"/>
