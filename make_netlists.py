@@ -28,7 +28,6 @@ def load_gates(chip):
     with open(f"data/chip_{chip}/print_{chip}.csv", 'r') as file:
         reader = csv.DictReader(file)
         for row in reader:
-
             num_gates += 1
     return num_gates
 
