@@ -21,6 +21,8 @@ De kostenfunctie: TK = aantal segmenten + 300 * aantal intersecties
 ```bash
 python3 main.py netlistnummer (-h) (-c naam algoritme) (-i naam algoritme) (-vis) (-leg) (-plotly) (-iter N) (-n N) (-m N verbeteringen) (-file bestandsnaam) (-pop indexnummer) (-gs lagen) (-random)
 ```
+De volgorde van de bovenstaande argumenten maakt niet uit.
+
 In de commandline is het mogelijk om verschillende functies aan te roepen:
 
 | functies               | beschrijving                                                        |
