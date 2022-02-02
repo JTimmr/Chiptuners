@@ -34,7 +34,6 @@ from code.algorithms import simulated_annealing as sim
 from code.algorithms.sorting import *
 import argparse
 import sys
-import make_netlists as make
 
 
 def log_simulation(N, netlist, constructive_algorithm, sorting_method, randomized, pop, gate_space):
@@ -318,4 +317,3 @@ if __name__ == "__main__":
 
     if args.visualize or args.plotly:
         visualize_three_dimensional(args.netlist, args.specific_file, args.legend, args.randomized, args.visualize, args.plotly)
-

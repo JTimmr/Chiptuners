@@ -1,3 +1,27 @@
+"""
+hillclimber.py
+
+Takes a previously generated solution of a netlist as input, and tries to improve it by
+making random adjustments, comparing the original and new solution and throwing away the most expensive one.
+This repeats a number of iterations. The random adjustments are made in one of the nets, and it moves on to
+a new net after an improvement is found. The order in which the nets are modified can be made randomly as well,
+or another sorting algorithm can be used to make a custom order in the nets. There are 9 algorithms to choose from:
+- Random
+- Decreasing path length
+- Increading path length
+- From inside to outside
+- From outside to inside
+- From busy gates to quiet gates
+- From quiet gates to busy gates
+- Increading estimated number of intersections
+- Decreasing estimated number of intersections
+For further explanation of these algorithms, see sorting.py.
+
+A disadvantage of a Hillclimber algorithm is that it could pursue a local optimum, from which it cannot escape.
+Hence, it can never be known if a hillclimber found the global optimum if there are no improvements are found 
+after a number of iterations. This issue can however be solved using Simulated annealing. For futher explanation of
+the Simulated annealing algorithm, see simulated_annealing.py.
+"""
 import random
 from copy import deepcopy
 import csv
@@ -5,29 +29,6 @@ import matplotlib.pyplot as plt
 
 
 class Hillclimber:
-    """
-    Takes a previously generated solution of a netlist as input, and tries to improve it by
-    making random adjustments, comparing the original and new solution and throwing away the most expensive one.
-    This repeats a number of iterations. The random adjustments are made in one of the nets, and it moves on to
-    a new net after an improvement is found. The order in which the nets are modified can be made randomly as well,
-    or another sorting algorithm can be used to make a custom order in the nets. There are 9 algorithms to choose from:
-    - Random
-    - Decreasing path length
-    - Increading path length
-    - From inside to outside
-    - From outside to inside
-    - From busy gates to quiet gates
-    - From quiet gates to busy gates
-    - Increading estimated number of intersections
-    - Decreasing estimated number of intersections
-    for further explanation of these algorithms, see sorting.py.
-
-    A disadvantage of a Hillclimber algorithm is that it could pursue a local optimum, from which it cannot escape.
-    Hence, it can never be known if a hillclimber found the global optimum if there are no improvements are found 
-    after a number of iterations. This issue can however be solved using Simulated annealing. For futher explanation of
-    the Simulated annealing algorithm, see simulated_annealing.py.
-    """
-
     def __init__(self, grid, iterations, update_csv_paths, make_csv_improvements, make_iterative_plot, n, m, sorting_method):
         self.grid = grid
         self.iterations = iterations
