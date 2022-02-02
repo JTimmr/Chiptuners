@@ -1,6 +1,6 @@
 # Code
 ## Algorithms
-<img src="https://github.com/JappieeeT/Chiptuners/blob/main/doc/Schermafbeelding%202022-02-02%20om%2009.50.06.png" align="left"/>
+<img src="https://github.com/JappieeeT/Chiptuners/blob/main/doc/Schermafbeelding%202022-02-02%20om%2009.50.06.png" align="right"/>
 Zoals op de schematische weergave te zien is, hebben wij gekozen voor een bepaalde structuur in het oplossen van de case. Wij hebben namelijk gevonden dat het sorteren van de paden binnen een netlist uitmaakt en sommige sorteermethodes lagere kosten brengen dan anderen, daarom doen wij dit vóór elk algoritme. Daarnaast hebben wij gekozen om eerst met een sterk "basisalgoritme" (a*) oplossingen te vinden die vervolgens verbeterd kunnen worden door een iteratief algoritme (hillclimber). Onze voorkeur gaat niet uit naar het simulated annealing algoritme, aangezien deze slechtere oplossingen vind dan de hillclimber. Toch hebben we hem erbij gezet.
 
 
