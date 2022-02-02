@@ -242,9 +242,42 @@ class Grid:
         for net_object in self.nets.values():
             self.theoretical_minimum += net_object.minimal_length
 
-    def __str__(self) -> str:
-        return (f"grid for chip {self.chip} with netlist {self.netlist} \n"
-                f"\033[1mCost: \033[0m\t\t{self.cost} \n"
-                f"\033[1mIntersections: \033[0m\t{self.intersections} \n"
-                f"\033[1mGates: \033[0m\t\t{self.gate_coordinates}\n"
-                f"\033[1mWire: \033[0m\t\t{self.wire_segments}\n")
+    def to_output(self, number=None, name=""):
+
+        # Ensure correct file is created/modified
+        if number:
+            string = f"_C_{number}"
+        else:
+            string = ""
+
+        if name:
+            name = f"_{name}"
+        else:
+            name = ""
+
+        if self.randomized:
+            add = "random_"
+        else:
+            add = ""
+
+        # Open file where results will be stored
+        with open(f"results/output_{add}paths_netlist_{self.netlist}{name}{string}", "w", newline="") as csvfile:
+
+            # Set up fieldnames
+            fieldnames = ["net", "wires"]
+
+            # Set up wiriter and write the header
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writeheader()
+
+            # Write all values for the gates and paths
+            for net in self.nets:
+                writer.writerow({
+                    "net": net, "wires": self.nets[net]
+                    })
+
+            # Write final values in csv
+            self.compute_costs()
+            writer.writerow({
+                    "net": f"chip_{self.chip}_net_{self.netlist}", "wires": self.cost
+                    })

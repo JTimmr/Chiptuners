@@ -12,5 +12,3 @@ class Net:
         self.key = ()
         self.intersection = 0
 
-    def __str__(self) -> str:
-        return ("\n\t\t")
