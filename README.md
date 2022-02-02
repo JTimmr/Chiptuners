@@ -34,7 +34,7 @@ De kostenfunctie: TK = aantal segmenten + 300 * aantal intersecties
 
 ### Usage
 ```bash
-python main.py netlistnummer (-h) (-c naam algoritme) (-i naam algoritme) (-vis) (-leg) (-n N) (-m N verbeteringen) (-file bestandsnaam)
+python3 main.py netlistnummer (-h) (-c naam algoritme) (-i naam algoritme) (-vis) (-leg) (-plotly) (-iter N) (-n N) (-m N verbeteringen) (-file bestandsnaam) (-pop indexnummer) (-gs lagen) (-random netlistnummer)
 ```
 In de commandline is het mogelijk om verschillende functies aan te roepen:
 
@@ -54,7 +54,7 @@ In de commandline is het mogelijk om verschillende functies aan te roepen:
 | `-file`                | Wanneer een al bestaand bestand gebruikt moet worden, voorbeeld: wanneer de bestandsnaam "paths_netlist_4_C_19655" is, gebruik dan "C_19655". |
 |  `-pop`                | Geef aan welk item verwijdert wordt in het a* algoritme, wanneer er meerdere staten dezelfde prioriteit hebben. Wanneer niks ingevuld wordt kiest hij 1|
 |  `-gs`                 | Minimale hoogte boven een gate die vrij moet blijven van paden, zodat de gate niet onnodig geblokkeerd wordt. Wanneer niks ingevuld wordt is dit 2. |
-|  `-random`, `--randomized`| Maakt random netlists aan in plaats van de al bestaande. |
+|  `-random`, `--randomized`| Maakt random netlists aan in plaats van de al bestaande. Hij gebruikt hiervoor de al bestaande coordinaten van de netlisten uit de data map. Daarvoor is het wel nodig om een al bestaande netlist op te geven.|
 
 
 ### Structuur
@@ -78,5 +78,5 @@ In de commandline is het mogelijk om verschillende functies aan te roepen:
 Om het programma werkend te laten draaien, zullen enkele dingen geïnstalleerd moeten zijn. Deze kun je automatisch installeren door: 
 
 ```bash
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 ```
