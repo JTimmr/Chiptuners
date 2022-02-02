@@ -58,6 +58,8 @@ In de commandline is het mogelijk om verschillende functies aan te roepen:
 
 
 ### Structuur
+Wij hebben een map voor onze gebruikte data, foto's in de readme, onze resultaten & onze code respectievelijk:
+
 - data/ - 
 
 - doc/ -
