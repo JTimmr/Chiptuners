@@ -90,16 +90,16 @@ def check_gate_occupation(nets, gates, display):
         gates[net[1]] += 1
 
         # Check if gate can host the required number of connections
+        a = "which is not possible. This netlist cannot be solved."
+
         if gates[net[0]] > 5:
             if display:
-                print(f"Gate {net[0]} has to make at least {gates[net[0]]} connections, \
-                       which is not possible. This netlist cannot be solved.")
+                print(f"Gate {net[0]} has to make at least {gates[net[0]]} connections, {a}")
                 print(f"\n{'---'*40}\n")
             return "impossible"
         if gates[net[1]] > 5:
             if display:
-                print(f"Gate {net[1]} has to make at least {gates[net[1]]} connections, \
-                        which is not possible. This netlist cannot be solved.")
+                print(f"Gate {net[1]} has to make at least {gates[net[1]]} connections, {a}")
                 print(f"\n{'---'*40}\n")
             return "impossible"
 
