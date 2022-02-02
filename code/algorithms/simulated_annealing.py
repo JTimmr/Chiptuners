@@ -112,7 +112,7 @@ class SimulatedAnnealing:
         # Check that ensures the temperature only updates when the iteration number has increased
         if self.iterationlist and self.Current_T > 0:
             if self.iterationlist[-1] != self.iterations:
-                self.Current_T = geomtric_cooling(self.Current_T, self.iterations, beta=0.8)
+                self.Current_T = linear_cooling(self.Current_T, self.iterations)
                 return self.Current_T
 
     def run(self):

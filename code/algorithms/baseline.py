@@ -38,7 +38,6 @@ class Baseline:
 
                 # Give up if it takes too long
                 if current_attempt > 50000:
-                    self.grid.tot_attempts += current_attempt
                     return False
 
             # If a path is found, retrieve coordinates

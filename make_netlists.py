@@ -51,7 +51,7 @@ def main(netlist, N):
             if (start, end) not in nets and (end, start) not in nets:
                 nets.add((start, end))
 
-        with open(f"data/chip_{chip}/random/netlist_{netlist}_{n + 1}.csv", "w", newline="") as csvfile:
+        with open(f"data/chip_{chip}/random/netlist_{netlist}.csv", "w", newline="") as csvfile:
 
             # Set up fieldnames
             fieldnames = ["chip_a", "chip_b"]

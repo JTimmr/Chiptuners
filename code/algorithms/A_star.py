@@ -1,9 +1,10 @@
 class A_Star:
-    def __init__(self, grid, sorting_method, pop, gate_space):
+    def __init__(self, grid, sorting_method, pop, gate_space, display=False):
         self.grid = grid
         self.sorting = sorting_method
         self.pop = pop
         self.gate_space = gate_space
+        self.display = display
 
     def run(self):
         """
@@ -37,7 +38,8 @@ class A_Star:
             path = [x, y, z]
             net.path = path
             completed += 1
-            print(f"Finished {net.start} to {net.end}, {completed}/{total}")
+            if self.display:
+                print(f"Finished {net.start} to {net.end}, {completed}/{total}")
 
         # Update grid
         self.grid.update()

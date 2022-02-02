@@ -8,7 +8,7 @@ import code.algorithms.sorting as sort
 import code.classes.grid as grid
 
 
-def load_nets(netlist, n, chip, randomized):
+def load_nets(netlist, chip, randomized):
     """
     Reads requested file containing the requested nets,
     and extracts their starting and ending coordinates.
@@ -17,13 +17,11 @@ def load_nets(netlist, n, chip, randomized):
     
     if randomized:
         add = "random/"
-        second_add = f"_{n}"
     else:
         add = ""
-        second_add = ""
 
     nets = set()
-    with open(f"data/chip_{chip}/{add}netlist_{netlist}{second_add}.csv") as file:
+    with open(f"data/chip_{chip}/{add}netlist_{netlist}.csv") as file:
         reader = csv.DictReader(file)
         for row in reader:
             nets.add((row['chip_a'], row['chip_b']))
@@ -50,19 +48,21 @@ def load_gates(chip):
     return gates, coordinates
 
 
-def check_gate_occupation(nets, gates):
+def check_gate_occupation(nets, gates, display):
     for net in nets:
         gates[net[0]] += 1
         gates[net[1]] += 1
         if gates[net[0]] > 5:
-            print(f"Gate {net[0]} has to make {gates[net[0]]} connections, which is not possible. This netlist cannot be solved.")
+            if display:
+                print(f"Gate {net[0]} has to make {gates[net[0]]} connections, which is not possible. This netlist cannot be solved.")
             return "impossible"
         if gates[net[1]] > 5:
-            print(f"Gate {net[1]} has to make {gates[net[1]]} connections, which is not possible. This netlist cannot be solved.")
+            if display:
+                print(f"Gate {net[1]} has to make {gates[net[1]]} connections, which is not possible. This netlist cannot be solved.")
             return "impossible"
 
 
-def check_intersections(net_coordinates):
+def check_intersections(net_coordinates, display):
 
     exp_intersections = 0
 
@@ -90,11 +90,12 @@ def check_intersections(net_coordinates):
             if (p0 * p1 < 0) and (p2 * p3 < 0):
                 exp_intersections += 1
 
-    print(f"There are {exp_intersections} intersections expected, {round(exp_intersections / len(net_coordinates), 2)} per net on average.")
+    if display:
+        print(f"There are {exp_intersections} intersections expected, {round(exp_intersections / len(net_coordinates), 2)} per net on average.")
     return exp_intersections
 
 
-def check_density(net_coordinates):
+def check_density(net_coordinates, display):
     size = [0, 0]
 
     minimal_lengths = []
@@ -121,18 +122,20 @@ def check_density(net_coordinates):
     total_segments = np.sum(minimal_lengths)
     density = total_segments / (size[0]*(size[1] - 1) + size[1]*(size[0] - 1))
 
-    print(f"The average distance between the two gates a net connects is {round(np.average(minimal_lengths), 2)} +/- {round(np.std(minimal_lengths), 2)}")
-    print(f"In total, at least {total_segments} are required. This results in {round(100 * density, 2)} % of the grid to be filled assuming only 1 layer.")
+    if display:
+        print(f"The average distance between the two gates a net connects is {round(np.average(minimal_lengths), 2)} +/- {round(np.std(minimal_lengths), 2)}")
+        print(f"In total, at least {total_segments} are required. This results in {round(100 * density, 2)} % of the grid to be filled assuming only 1 layer.")
 
     return(density)
 
 
-def main(netlist, randomized, n):
+def main(netlist, randomized, display):
     chip = int((netlist - 1) / 3)
     overflow = False
-    solved = True
+    solved = False
+    cost = 0
 
-    nets = load_nets(netlist, n, chip, randomized)
+    nets = load_nets(netlist, chip, randomized)
     gates, coordinates = load_gates(chip)
 
     net_coordinates = {}
@@ -141,24 +144,27 @@ def main(netlist, randomized, n):
         end = coordinates[net[1]]
         net_coordinates[net] = (start, end)
 
-    intersections = check_intersections(net_coordinates)
+    intersections = check_intersections(net_coordinates, display)
 
-    density = check_density(net_coordinates)
+    density = check_density(net_coordinates, display)
 
-    if check_gate_occupation(nets, gates) == "impossible":
+    if check_gate_occupation(nets, gates, display) == "impossible":
         overflow = True
-        return (density, intersections, overflow, solved)
+        return (density, intersections, overflow, solved, cost)
     else:
-        print("No reason to conclude this netlilst is impossible (yet ...)")
+        if display:
+            print("No reason to conclude this netlilst is impossible (yet ...)")
 
     solvegrid = grid.Grid(chip, netlist, randomized=randomized)
-    solve = a_star.A_Star(solvegrid, [sort.sort_length, False], 0, 2)
-
-    if not solve.run():
-        solved = False
+    solve = a_star.A_Star(solvegrid, [sort.sort_length, False], 0, 2, display)
 
 
-    return (density, intersections, overflow, solved)
+    if solve.run():
+        solved = True
+        solvegrid.compute_costs()
+        cost = solvegrid.cost
+
+    return (cost, density, intersections, overflow, solved)
 
 
 if __name__ == "__main__":
@@ -166,25 +172,26 @@ if __name__ == "__main__":
     parser.add_argument("netlist", type=int, help="Netlist to be inspected")
     parser.add_argument("-random", "--randomized", action='store_true', help="Choose randomly generated netlists instead of the originals.")
     parser.add_argument("-n", type=int, default=1, dest="N", help="number of solutions analyzed")
+    parser.add_argument("-print", "--display", action='store_true', help="Prints the calculated data.")
 
     # Parse the command line arguments
     args = parser.parse_args()
 
     with open(f"output/netlist_test.csv", "w", newline="") as csvfile:
         
-        fieldnames = ["simulation", "density", "intersections", "occupation overflow", "failed"]
+        fieldnames = ["simulation", "cost", "density", "intersections", "occupation overflow", "solved"]
 
         # Set up wiriter and write the header
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
         for n in range(1, args.N + 1):
             make.main(args.netlist, 1)
-            answers = main(args.netlist, args.randomized, 1)
-
+            answers = main(args.netlist, args.randomized, args.display)
             writer.writerow({
                 "simulation": n, 
-                "density": answers[0], 
-                "intersections": answers[1], 
-                "occupation overflow": answers[2], 
-                "failed": answers[3],
+                "cost": answers[0],
+                "density": answers[1], 
+                "intersections": answers[2], 
+                "occupation overflow": answers[3], 
+                "solved": answers[4],
                 })

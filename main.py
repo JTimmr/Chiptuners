@@ -12,7 +12,7 @@ import sys
 import make_netlists as make
 
 
-def log_simulation(N, netlist, constructive_algorithm, sorting_method, randomized):
+def log_simulation(N, netlist, constructive_algorithm, sorting_method, randomized, pop, gate_space):
     """
     Takes the amount of runs, netlist number, type of algorithm and sorting algorithm as input.
     Runs the given algorithm a number of times, creating a set of solutions. Set N to 1 if a single solution suffices.
@@ -50,9 +50,7 @@ def log_simulation(N, netlist, constructive_algorithm, sorting_method, randomize
                 baseline = base.Baseline(chip, sorting_method)
                 baseline.run()
             elif constructive_algorithm == "a_star":
-                pop = -1
-                gate_space = 2
-                solver = star.A_Star(chip, sorting_method, pop, gate_space)
+                solver = star.A_Star(chip, sorting_method, pop, gate_space, display=True)
                 if not solver.run():
                     print(f"Netlist {netlist} cannot be solved using A* with the current combination of sorting algorithm, gate_space and pop.")
                     return
@@ -139,7 +137,7 @@ def improve(netlist, specific_file, algorithm, update_csv_paths, make_csv_improv
 
                 max_delta = chip.cost - chip.theoretical_minimum
 
-                temperature = 0
+                temperature = 10000
                 start_cost = deepcopy(chip.cost)
                 simanneal = sim.SimulatedAnnealing(chip, iterations, update_csv_paths, make_csv_improvements, make_iterative_plot, i, j, temperature, sorting_method)
 
@@ -230,10 +228,13 @@ if __name__ == "__main__":
     parser.add_argument("-leg", "--legend", action='store_true', help="Renders a legend for 3D plot.")
     parser.add_argument("-plotly", action='store_true', help="Renders a 3D plot of the grid with all its paths in your browser with plotly.")
 
+    parser.add_argument("-iter", type=int, default=1000, dest="iterations", help="Number of iterations used by an improving algorithm.")
     parser.add_argument("-n", type=int, default=1, dest="N", help="number of solutions generated")
     parser.add_argument("-m", type=int, default=1, dest="N_improvements", help="number of improved solutions made for every prefound solution")
     parser.add_argument("-file", type=str, default="1", dest="specific_file", help="Specific file to be improved or plotted. If file is paths_netlist_4_C_19655, use -file C_19655. If file is paths_netlist_1_3, use -file 3.")
 
+    parser.add_argument("-pop", type=int, default=-1, dest="pop", help="Index at which item will be popped in A* algorithm when multiple states have the same priority.")
+    parser.add_argument("-gs", type=int, default=2, dest="gate_space", help="Minimal height above a gate which will remain free of passing nets, so the gate is not unnecessarily blocked by other nets.")
     parser.add_argument("-random", "--randomized", action='store_true', help="Load random netlists instead of the originals.")
 
     # Parse the command line arguments
@@ -256,7 +257,7 @@ if __name__ == "__main__":
         args.algorithm.lower()
         args.sorting_c.lower()
 
-        log_simulation(args.N, args.netlist, possible_entries[args.algorithm], function_map[args.sorting_c], args.randomized)
+        log_simulation(args.N, args.netlist, possible_entries[args.algorithm], function_map[args.sorting_c], args.randomized, args.pop, args.gate_space)
 
     if args.improving_algorithm:
 
@@ -268,9 +269,6 @@ if __name__ == "__main__":
         args.improving_algorithm.lower()
         args.sorting_i.lower()
 
-        # Each iteration attempts to improve all netlists until improvement is found or none it found after long tim
-        iterations = 10000
-
         # Makes a new csv file for each improvement made in costs by hillclimber or simulated annealing
         # Final form will always be saved
         update_csv_paths = True
@@ -278,7 +276,7 @@ if __name__ == "__main__":
         # Makes CSV files after a hillclimber is done, storing the new costs per iteration
         make_csv_improvements = False
         make_iterative_plot = False
-        improve(args.netlist, args.specific_file, possible_entries[args.improving_algorithm], update_csv_paths, make_csv_improvements, make_iterative_plot, iterations, args.N, args.N_improvements, function_map[args.sorting_i], args.randomized)
+        improve(args.netlist, args.specific_file, possible_entries[args.improving_algorithm], update_csv_paths, make_csv_improvements, make_iterative_plot, args.iterations, args.N, args.N_improvements, function_map[args.sorting_i], args.randomized)
 
     if args.visualize or args.plotly:
         visualize_three_dimensional(args.netlist, args.specific_file, args.legend, args.randomized, args.visualize, args.plotly)
