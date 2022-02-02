@@ -194,6 +194,7 @@ def check_density(net_coordinates, display):
     return(density)
 
 def exp_overflow(amount_nets, amount_gates):
+
     """
     Checks whether there are free gates in on the grid for multiple connections to occur, that are spots where overfow may happen.
     If a chip contains less than 5 gates connection overflow can not occur as a maximum of 4 other connections can be made.

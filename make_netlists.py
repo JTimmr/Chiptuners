@@ -12,6 +12,10 @@ For the random netlists, there are a few criteria:
 import csv
 import random
 import argparse
+<<<<<<< HEAD
+=======
+from scipy.stats import poisson
+>>>>>>> fc057e87eb681932a20c37878d3a38e5a219653a
 
 
 def load_gates(chip):
