@@ -1,3 +1,35 @@
+"""
+baseline.py
+
+Hosts and executes a semi random algorithm in order to solve a given netlist.
+A solution consists of a sometimes quite large number of nets, which can all be seen as a solution on it's own.
+Hence, this algorithm doesn't try to solve everything at once, but loops over the nets one after another.
+This does however raise the question, in which order will the nets be solved?
+There are 9 different sorting algorithms to choose from:
+- Random
+- Decreasing path length
+- Increading path length
+- From inside to outside
+- From outside to inside
+- From busy gates to quiet gates
+- From quiet gates to busy gates
+- Increading estimated number of intersections
+- Decreasing estimated number of intersections
+For further explanation of these algorithms, see sorting.py.
+
+After the nets are sorted, the solving algorithm will lay all paths in the desired order.
+The paths are built up from individual steps, which are made one after another. The paths are
+semi random, since every step has the highest probability to be in the right direction, while
+all other directions have a probability to be chosen as well. If all steps in a path are in the
+right direction, the algorithm has the same output as a greedy algorithm.
+The probability to go in a certain direction scales with the distance between the current point
+and the destination in said direction. So, the higher the number of steps required to be set in a
+direction for the destination to be reached, the higher the probability a step in that direction will
+actually be set. This probability will never reach 1, so there is always the chance of a detour. This is
+usefull, since a greedy algorithm is very unlikely to actually produce a valid solution, since it has no
+way of avoiding collisions or intersections. Hence, this algorithm will be more successful than a greedy
+algorithm, however it is definitely not the most efficient algorithm possible.
+"""
 from copy import deepcopy
 import random
 

@@ -1,3 +1,22 @@
+"""
+analyse_netlist.py
+
+Calculates a number of factors which might influence the solvability of a netlist without actually solving it.
+Netlist will only be solved if those factors cannot guarantee it is impossibe to solve. Factors to be calculated are:
+- Number of connections the most occupied gate has to make
+- Average pathlength of all nets if a greedy algorithm solves the netlist without preventing collisions or intersections
+- Sum of all pathlengths if all paths are solved with a greedy algorithm without preventing collisions or intersecionts
+- Density of the lowest layer if sum of all pathlengths are stored in the lowest layer
+- Estimated number of intersections, calculated by drawing straight lines for all nets and keeping count of the intersections
+- Average number of intersections per net
+
+A gate can host no more than 5 connections, so a solution cannot be found and hence will not be searched for
+if a gate has to make 6 connections or more. Otherwise, a solution will be searched for using an A* algorithm.
+The arguments for the A* are pop=0, gate_space=2, sorting_algorithm=(sort_length, acending).
+See the README on Github of or the description in A_star.py for an explanation of what those parameters represent.
+It could very well be that this set of parameters can't find a solution while another set can, but
+it takes way too long to test a large set of netlists with all different combinations.
+"""
 import csv
 import argparse
 from copy import deepcopy
@@ -175,23 +194,6 @@ def check_density(net_coordinates, display):
 
 
 def main(netlist, randomized, display):
-    """
-    Calculates a number of factors which might influence the solvability of a netlist without actually solving it.
-    Netlist will only be solved if those factors cannot guarantee it is impossibe to solve. Factors to be calculated are:
-    - Number of connections the most occupied gate has to make
-    - Average pathlength of all nets if a greedy algorithm solves the netlist without preventing collisions or intersections
-    - Sum of all pathlengths if all paths are solved with a greedy algorithm without preventing collisions or intersecionts
-    - Density of the lowest layer if sum of all pathlengths are stored in the lowest layer
-    - Estimated number of intersections, calculated by drawing straight lines for all nets and keeping count of the intersections
-    - Average number of intersections per net
-    
-    A gate can host no more than 5 connections, so a solution cannot be found and hence will not be searched for
-    if a gate has to make 6 connections or more. Otherwise, a solution will be searched for using an A* algorithm.
-    The arguments for the A* are pop=0, gate_space=2, sorting_algorithm=(sort_length, acending).
-    See the README on Github of or the description in A_star.py for an explanation of what those parameters represent.
-    It could very well be that this set of parameters can't find a solution while another set can, but
-    it takes way too long to test a large set of netlists with all different combinations.
-    """
 
     # Calculate chip number from netlist number
     chip = int((netlist - 1) / 3)

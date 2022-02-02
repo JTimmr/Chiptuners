@@ -1,35 +1,36 @@
+"""
+A_star.py
+
+Hosts and executes an A* algorithm in order to solve a given netlist as efficiently as possible.
+A solution consists of a sometimes quite large number of nets, which can all be seen as a solution on it's own.
+Hence, this algorithm doesn't try to solve everything at once, but loops over the nets one after another.
+This does however raise the question, in which order will the nets be solved?
+There are 9 different sorting algorithms to choose from:
+- Random
+- Decreasing path length
+- Increading path length
+- From inside to outside
+- From outside to inside
+- From busy gates to quiet gates
+- From quiet gates to busy gates
+- Increading estimated number of intersections
+- Decreasing estimated number of intersections
+For further explanation of these algorithms, see sorting.py.
+
+After the nets are sorted, the solving algorithm will lay all paths in the desired order.
+The A* algorithm lays each step within a path using the following formula:
+Priority = (Costs to lay path to get to this point) + (estimated remaining costs to reach destination).
+Costs to lay path is calculated by C = n + 300 * k, 
+where n is the number of steps taken and k is the number of intersections.
+The heuristic to estimate the remaining costs is just the number of steps required for a
+greedy algorithm to reach the destination.
+The algorithm will always choose the option corresponding to the LOWEST priority.
+
+A situation could occur where the algorithm is unable to create a valid solution, because a
+net cannot reach it's destination. The algorithm stops if such a situation occurs, and returns False.
+If all connections are made without failure, the program will return True.
+"""
 class A_Star:
-    """
-    Hosts and executes an A* algorithm in order to solve a given netlist as efficiently as possible.
-    A solution consists of a sometimes quite large number of nets, which can all be seen as a solution on it's own.
-    Hence, this algorithm doesn't try to solve everything at once, but loops over the nets one after another.
-    This does however raise the question, in which order will the nets be solved?
-    There are 9 different sorting algorithms to choose from:
-    - Random
-    - Decreasing path length
-    - Increading path length
-    - From inside to outside
-    - From outside to inside
-    - From busy gates to quiet gates
-    - From quiet gates to busy gates
-    - Increading estimated number of intersections
-    - Decreasing estimated number of intersections
-    for further explanation of these algorithms, see sorting.py.
-
-    After the nets are sorted, the solving algorithm will lay all paths in the desired order.
-    The A* algorithm lays each step within a path using the following formula:
-    Priority = (Costs to lay path to get to this point) + (estimated remaining costs to reach destination).
-    Costs to lay path is calculated by C = n + 300 * k, 
-    where n is the number of steps taken and k is the number of intersections.
-    The heuristic to estimate the remaining costs is just the number of steps required for a
-    greedy algorithm to reach the destination.
-    The algorithm will always choose the option corresponding to the LOWEST priority.
-
-    A situation could occur where the algorithm is unable to create a valid solution, because a
-    net cannot reach it's destination. The algorithm stops if such a situation occurs, and returns False.
-    If all connections are made without failure, the program will return True.
-    """
-
     def __init__(self, grid, sorting_method, pop, gate_space, display=False):
         self.grid = grid
         self.sorting = sorting_method

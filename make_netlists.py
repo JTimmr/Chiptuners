@@ -1,7 +1,17 @@
+"""
+make_netlists.py
+
+Creates a random netlist equivalent of the netlist given as argument.
+Netlist will be stored in a CSV file, in the correct chip subfolder in the data directory.
+To prevent overwriting the original netlists, the random netlists will be stored in a folder named random.
+For the random netlists, there are a few criteria:
+- The number of nets are identical to the original netlist (hence 'eqiuivalent')
+- A gate cannot make a connection with itself
+- Each net in a netlist is unique. If path a to b already exists, neither a to b nor b to a can be added to the netlist.
+"""
 import csv
 import random
 import argparse
-from scipy.stats import poisson
 import math
 
 
@@ -67,15 +77,6 @@ def probability_gate_overflow(amount_nets, amount_gates):
     return nets_left_for_duplicate
 
 def main(netlist):
-    """
-    Creates a random netlist equivalent of the netlist given as argument.
-    Netlist will be stored in a CSV file, in the correct chip subfolder in the data directory.
-    To prevent overwriting the original netlists, the random netlists will be stored in a folder named random.
-    For the random netlists, there are a few criteria:
-    - The number of nets are identical to the original netlist (hence 'eqiuivalent')
-    - A gate cannot make a connection with itself
-    - Each net in a netlist is unique. If path a to b already exists, neither a to b nor b to a can be added to the netlist.
-    """
 
     # Calculate chip number from netlist number
     chip = int((netlist - 1) / 3)
